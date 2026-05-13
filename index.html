@@ -39,10 +39,91 @@
 
     .shell { min-height: 100vh; padding: 22px; }
 
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      max-width: 1720px;
+      margin: 0 auto 18px;
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      border-top: 4px solid #70431e;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,250,240,.96);
+      padding: 0 22px;
+      box-shadow: 0 10px 24px rgba(30,25,15,.08);
+    }
+
+    .menu-toggle,
+    .menu-close {
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .menu-toggle {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 18px;
+    }
+
+    .menu-toggle:hover,
+    .menu-close:hover {
+      background: rgba(23,33,29,.06);
+    }
+
+    .site-title {
+      min-width: 0;
+    }
+
+    .site-title strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .site-title span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .site-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .header-pill {
+      border: 1px solid rgba(23,33,29,.16);
+      padding: 8px 11px;
+      background: rgba(244,239,229,.7);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
     .frame {
       display: grid;
-      grid-template-columns: 330px minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: minmax(0, 1fr);
       max-width: 1720px;
       margin: 0 auto;
     }
@@ -54,16 +135,52 @@
     }
 
     .side {
-      position: sticky;
-      top: 22px;
-      height: calc(100vh - 44px);
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      width: min(620px, calc(100vw - 28px));
+      height: 100vh;
       overflow: hidden;
       display: grid;
       grid-template-rows: auto auto auto 1fr;
+      transform: translateX(-104%);
+      transition: transform .28s ease;
+      box-shadow: 26px 0 70px rgba(23,33,29,.24);
+    }
+
+    body.nav-open .side { transform: translateX(0); }
+
+    .menu-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      background: rgba(23,33,29,.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .24s ease;
+    }
+
+    body.nav-open .menu-backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      font-size: 24px;
+      line-height: 1;
+      z-index: 2;
     }
 
     .brand {
-      padding: 22px 22px 18px;
+      position: relative;
+      padding: 30px 72px 20px 28px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -864,7 +981,6 @@
 
     @media (max-width: 1180px) {
       .frame { grid-template-columns: 1fr; }
-      .side { position: relative; top: 0; height: auto; }
       .detail { max-height: none; }
       .topbar, .thesis, .bottom-grid { grid-template-columns: 1fr; }
       .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -876,6 +992,13 @@
 
     @media (max-width: 680px) {
       .shell { padding: 12px; }
+      .site-header {
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 0 12px;
+        gap: 10px;
+      }
+      .site-actions { display: none; }
+      .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
       .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav { grid-template-columns: 1fr; }
       .directory-head { display: block; }
@@ -898,8 +1021,21 @@
 </head>
 <body>
   <main class="shell">
+    <header class="site-header">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="打开研究导航" aria-expanded="false" aria-controls="sideNav">☰</button>
+      <div class="site-title">
+        <strong>Market Cycle Dashboard</strong>
+        <span>资本周期、估值盈利与行业研究池</span>
+      </div>
+      <div class="site-actions">
+        <a class="header-pill" href="#capital-cycle">Capital Cycle</a>
+        <span>Research Terminal</span>
+      </div>
+    </header>
+    <div class="menu-backdrop" id="menuBackdrop"></div>
     <div class="frame">
-      <aside class="side panel">
+      <aside class="side panel" id="sideNav" aria-label="隐藏式研究导航">
+        <button class="menu-close" id="menuClose" type="button" aria-label="关闭研究导航">×</button>
         <section class="brand">
           <div class="kicker">Marathon Capital Cycle · A Shares</div>
           <h1>A股行业资本周期波浪图</h1>
@@ -1138,6 +1274,20 @@
     const scoreValue = document.getElementById("scoreValue");
     const stockDetail = document.getElementById("stockDetail");
     const researchPoolEl = document.getElementById("researchPool");
+    const menuToggle = document.getElementById("menuToggle");
+    const menuClose = document.getElementById("menuClose");
+    const menuBackdrop = document.getElementById("menuBackdrop");
+    const sideNav = document.getElementById("sideNav");
+
+    function setNavOpen(open) {
+      document.body.classList.toggle("nav-open", open);
+      menuToggle?.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        sideNav?.querySelector("a, button, input")?.focus({ preventScroll: true });
+      } else {
+        menuToggle?.focus({ preventScroll: true });
+      }
+    }
 
     function fmt(value, suffix = "", digits = 1) {
       if (value === null || value === undefined || Number.isNaN(Number(value))) return "NA";
@@ -1866,6 +2016,18 @@
         state.selectedCompany = null;
       }
       render();
+    });
+
+    menuToggle?.addEventListener("click", () => setNavOpen(true));
+    menuClose?.addEventListener("click", () => setNavOpen(false));
+    menuBackdrop?.addEventListener("click", () => setNavOpen(false));
+    sideNav?.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => setNavOpen(false));
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && document.body.classList.contains("nav-open")) {
+        setNavOpen(false);
+      }
     });
 
     setupFilters();
