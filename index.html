@@ -143,7 +143,7 @@
       height: 100vh;
       overflow: hidden;
       display: grid;
-      grid-template-rows: auto auto auto 1fr;
+      grid-template-rows: auto 1fr;
       transform: translateX(-104%);
       transition: transform .28s ease;
       box-shadow: 26px 0 70px rgba(23,33,29,.24);
@@ -180,7 +180,7 @@
 
     .brand {
       position: relative;
-      padding: 30px 72px 20px 28px;
+      padding: 26px 72px 18px 28px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -193,8 +193,8 @@
     }
 
     h1 {
-      margin: 10px 0 0;
-      font-size: 30px;
+      margin: 8px 0 0;
+      font-size: 26px;
       line-height: 1.04;
       font-weight: 800;
     }
@@ -275,6 +275,7 @@
       border-bottom: 1px solid var(--line);
       display: grid;
       gap: 14px;
+      background: rgba(255, 250, 240, .7);
     }
 
     .label {
@@ -470,7 +471,7 @@
     }
 
     .directory {
-      padding: 18px;
+      padding: 14px 18px;
     }
 
     .directory-head {
@@ -478,12 +479,12 @@
       align-items: end;
       justify-content: space-between;
       gap: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .directory-head h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
       line-height: 1.2;
     }
 
@@ -500,8 +501,8 @@
     }
 
     .module-card {
-      min-height: 112px;
-      padding: 14px;
+      min-height: 86px;
+      padding: 11px 12px;
       border: 1px solid rgba(23,33,29,.14);
       background: rgba(255,250,240,.66);
       color: var(--ink);
@@ -526,17 +527,17 @@
 
     .module-card b {
       display: block;
-      margin-top: 8px;
-      font-size: 16px;
+      margin-top: 6px;
+      font-size: 14px;
       line-height: 1.25;
     }
 
     .module-card small {
       display: block;
-      margin-top: 10px;
+      margin-top: 7px;
       color: inherit;
       opacity: .7;
-      line-height: 1.45;
+      line-height: 1.35;
     }
 
     .module-card.disabled {
@@ -601,6 +602,25 @@
     }
 
     .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+
+    .cycle-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .cycle-inspector {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      background: #fffaf0;
+    }
+
+    .cycle-inspector .detail {
+      max-height: 620px;
+    }
 
     .wave-panel {
       position: relative;
@@ -982,8 +1002,10 @@
     @media (max-width: 1180px) {
       .frame { grid-template-columns: 1fr; }
       .detail { max-height: none; }
-      .topbar, .thesis, .bottom-grid { grid-template-columns: 1fr; }
-      .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topbar, .thesis, .cycle-workspace, .bottom-grid { grid-template-columns: 1fr; }
+      .cycle-inspector { grid-template-rows: auto auto; }
+      .cycle-inspector .detail { max-height: none; }
+      .module-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .legend { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
       .radar-head { grid-template-columns: 1fr; }
       .radar-key { min-width: 0; }
@@ -1037,9 +1059,9 @@
       <aside class="side panel" id="sideNav" aria-label="隐藏式研究导航">
         <button class="menu-close" id="menuClose" type="button" aria-label="关闭研究导航">×</button>
         <section class="brand">
-          <div class="kicker">Marathon Capital Cycle · A Shares</div>
-          <h1>A股行业资本周期波浪图</h1>
-          <p class="read">点击行业点查看行业内个股，再点击个股查看 2010-2025 年财务数据轨迹。</p>
+          <div class="kicker">Market Cycle Dashboard</div>
+          <h1>研究导航</h1>
+          <p class="read">从一级框架进入各研究模块。</p>
         </section>
 
         <nav class="site-nav" aria-label="研究目录">
@@ -1063,30 +1085,6 @@
             <span><strong>更多框架</strong><span>库存周期、价格周期、组合跟踪等</span></span>
           </a>
         </nav>
-
-        <section class="controls">
-          <label>
-            <span class="label">Industry</span>
-            <input class="search" id="search" placeholder="搜索行业，例如 锂、化学制剂、风电">
-          </label>
-          <div>
-            <span class="label">Stage</span>
-            <div class="stage-filter" id="stageFilter"></div>
-          </div>
-          <div>
-            <span class="label">Market</span>
-            <div class="stage-filter" id="marketFilter"></div>
-          </div>
-          <div>
-            <span class="label">Minimum Score</span>
-            <div class="range-row">
-              <input id="scoreRange" type="range" min="-7" max="4" step="0.1" value="-7">
-              <span id="scoreValue">全部</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="detail" id="detail"></section>
       </aside>
 
       <section class="main">
@@ -1143,15 +1141,43 @@
 
         <section class="legend panel" id="legend"></section>
 
-        <section class="wave-panel panel" id="cycle-wave">
-          <div class="axis-title">
-            <div class="phase"><strong>高回报吸引资本</strong>投资人和管理层 extrapolate 增长</div>
-            <div class="phase"><strong>资本投入竞争</strong>产能扩张，竞争者跟随</div>
-            <div class="phase"><strong>过剩与承压</strong>回报下滑，现金质量分化</div>
-            <div class="phase"><strong>收缩出清</strong>资本撤出，供给纪律形成</div>
-            <div class="phase"><strong>回报右侧</strong>低再投资，现金积累，ROIC 修复</div>
-          </div>
-          <svg id="waveSvg" viewBox="0 0 1200 620" role="img" aria-label="A股行业资本周期波浪图"></svg>
+        <section class="cycle-workspace" aria-label="资本周期工作区">
+          <section class="wave-panel panel" id="cycle-wave">
+            <div class="axis-title">
+              <div class="phase"><strong>高回报吸引资本</strong>投资人和管理层 extrapolate 增长</div>
+              <div class="phase"><strong>资本投入竞争</strong>产能扩张，竞争者跟随</div>
+              <div class="phase"><strong>过剩与承压</strong>回报下滑，现金质量分化</div>
+              <div class="phase"><strong>收缩出清</strong>资本撤出，供给纪律形成</div>
+              <div class="phase"><strong>回报右侧</strong>低再投资，现金积累，ROIC 修复</div>
+            </div>
+            <svg id="waveSvg" viewBox="0 0 1200 620" role="img" aria-label="A股行业资本周期波浪图"></svg>
+          </section>
+
+          <aside class="cycle-inspector panel" aria-label="资本周期筛选与行业详情">
+            <section class="controls">
+              <label>
+                <span class="label">Industry</span>
+                <input class="search" id="search" placeholder="搜索行业，例如 锂、化学制剂、风电">
+              </label>
+              <div>
+                <span class="label">Stage</span>
+                <div class="stage-filter" id="stageFilter"></div>
+              </div>
+              <div>
+                <span class="label">Market</span>
+                <div class="stage-filter" id="marketFilter"></div>
+              </div>
+              <div>
+                <span class="label">Minimum Score</span>
+                <div class="range-row">
+                  <input id="scoreRange" type="range" min="-7" max="4" step="0.1" value="-7">
+                  <span id="scoreValue">全部</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="detail" id="detail"></section>
+          </aside>
         </section>
 
         <section class="radar-panel panel" id="research-radar">
