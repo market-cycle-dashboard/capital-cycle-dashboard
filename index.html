@@ -1028,7 +1028,7 @@
         <span>资本周期、估值盈利与行业研究池</span>
       </div>
       <div class="site-actions">
-        <a class="header-pill" href="#capital-cycle">Capital Cycle</a>
+        <a class="header-pill" href="#capital-cycle-module">Capital Cycle</a>
         <span>Research Terminal</span>
       </div>
     </header>
@@ -1044,24 +1044,24 @@
 
         <nav class="site-nav" aria-label="研究目录">
           <span class="label">Research Directory</span>
-          <a class="nav-link" href="#capital-cycle">
+          <a class="nav-link" href="#capital-cycle-module">
             <span class="nav-index">01</span>
-            <span><strong>资本周期</strong><span>行业位置、右侧修复、现金积累与个股线索</span></span>
-          </a>
-          <a class="nav-link muted" href="#module-pbroe">
-            <span class="nav-index">02</span>
-            <span><strong>PB-ROE</strong><span>估值盈利二维框架，作为后续独立模块</span></span>
-          </a>
-          <a class="nav-link muted" href="#module-pipeline">
-            <span class="nav-index">03</span>
-            <span><strong>研究池</strong><span>行业交集、待复核假设、跟踪清单</span></span>
+            <span><strong>资本周期</strong><span>进入当前完整分析界面</span></span>
           </a>
           <div class="subnav">
-            <a href="#cycle-wave">周期波浪</a>
-            <a href="#research-radar">研究雷达</a>
-            <a href="#pb-roe-map">PB-ROE</a>
-            <a href="#research-pool-section">交集池</a>
+            <a href="#cycle-wave">资本周期波浪</a>
+            <a href="#research-radar">行业研究雷达</a>
+            <a href="#pb-roe-map">PB-ROE 子框架</a>
+            <a href="#research-pool-section">交集研究池</a>
           </div>
+          <a class="nav-link muted" href="#module-liquidity">
+            <span class="nav-index">02</span>
+            <span><strong>流动性分析</strong><span>后续新增的一级研究框架</span></span>
+          </a>
+          <a class="nav-link muted" href="#module-more">
+            <span class="nav-index">03</span>
+            <span><strong>更多框架</strong><span>库存周期、价格周期、组合跟踪等</span></span>
+          </a>
         </nav>
 
         <section class="controls">
@@ -1096,28 +1096,28 @@
             <span>从行业状态到个股复核的投研框架</span>
           </div>
           <div class="module-grid">
-            <a class="module-card active" id="capital-cycle" href="#cycle-wave">
+            <a class="module-card active" id="capital-cycle" href="#capital-cycle-module">
               <span>
                 <em>01 / ACTIVE</em>
                 <b>资本周期研究框架</b>
               </span>
-              <small>用资本开支、ROIC、现金流、负债率判断行业处于扩张、出清、右侧修复或成熟现金牛。</small>
+              <small>当前完整分析界面。下级包含资本周期波浪、行业研究雷达、PB-ROE 子框架与交集研究池。</small>
             </a>
-            <a class="module-card" id="module-pbroe" href="#pb-roe-map">
+            <a class="module-card disabled" id="module-liquidity" href="#site-directory">
               <span>
-                <em>02 / INTEGRATED</em>
-                <b>PB-ROE 行业估值盈利</b>
+                <em>02 / NEXT</em>
+                <b>流动性分析框架</b>
               </span>
-              <small>寻找高 ROE、低 PB 的行业，与资本周期改善信号做交叉验证。</small>
+              <small>后续作为一级栏目加入，用资金面、成交、信用与市场结构刻画资产定价环境。</small>
             </a>
-            <a class="module-card disabled" id="module-pipeline" href="#research-pool-section">
+            <a class="module-card disabled" id="module-cycle-extra" href="#site-directory">
               <span>
-                <em>03 / NEXT</em>
-                <b>潜在研究池</b>
+                <em>03 / LATER</em>
+                <b>库存与价格周期</b>
               </span>
-              <small>把行业交集、核心假设、后续调研动作沉淀为持续跟踪清单。</small>
+              <small>可用于补充供需验证，把价格、库存、产能利用率和行业资本纪律连接起来。</small>
             </a>
-            <a class="module-card disabled" id="module-portfolio" href="#market-pulse">
+            <a class="module-card disabled" id="module-more" href="#site-directory">
               <span>
                 <em>04 / LATER</em>
                 <b>组合与市场脉冲</b>
@@ -1127,7 +1127,7 @@
           </div>
         </section>
 
-        <div class="topbar">
+        <div class="topbar" id="capital-cycle-module">
           <section class="thesis panel">
             <div>
               <h2>全 A 处在资本开支退潮后段，现金流改善领先于 ROIC 修复。</h2>
