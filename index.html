@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A股资本周期波浪图</title>
+  <script src="data.js"></script>
+  <style>
+    :root {
+      --paper: #f4efe5;
+      --paper-2: #fffaf0;
+      --ink: #17211d;
+      --muted: #6f756f;
+      --line: rgba(23, 33, 29, .16);
+      --red: #b6402d;
+      --amber: #c9851a;
+      --blue: #315f8f;
+      --teal: #1d7b6a;
+      --green: #4f7f3f;
+      --violet: #6e587d;
+      --charcoal: #2b302c;
+      --shadow: 0 18px 50px rgba(30, 25, 15, .13);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(23,33,29,.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(rgba(23,33,29,.03) 1px, transparent 1px) 0 0 / 34px 34px,
+        var(--paper);
+      font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
+      letter-spacing: 0;
+    }
+
+    button, input { font: inherit; }
+
+    .shell { min-height: 100vh; padding: 22px; }
+
+    .frame {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 18px;
+      max-width: 1720px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 240, .83);
+      box-shadow: var(--shadow);
+    }
+
+    .side {
+      position: sticky;
+      top: 22px;
+      height: calc(100vh - 44px);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .brand {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .kicker {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    h1 {
+      margin: 10px 0 0;
+      font-size: 30px;
+      line-height: 1.04;
+      font-weight: 800;
+    }
+
+    .read {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .controls {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 14px;
+    }
+
+    .label {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: .08em;
+    }
+
+    .search {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      color: var(--ink);
+      padding: 0 12px;
+      outline: none;
+      border-radius: 0;
+    }
+
+    .search:focus {
+      border-color: rgba(182, 64, 45, .62);
+      box-shadow: 0 0 0 3px rgba(182, 64, 45, .10);
+    }
+
+    .stage-filter { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      min-height: 30px;
+      padding: 0 9px;
+      cursor: pointer;
+      border-radius: 0;
+      font-size: 12px;
+    }
+
+    .chip.active {
+      color: var(--paper-2);
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--red); }
+
+    .detail {
+      min-height: 0;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .detail h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: #fffaf0;
+      background: var(--charcoal);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .metric {
+      border-top: 2px solid var(--ink);
+      padding-top: 8px;
+      min-height: 64px;
+    }
+
+    .metric strong {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 18px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .diagnosis {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.72;
+      border-left: 3px solid var(--red);
+      padding-left: 12px;
+    }
+
+    .subhead {
+      margin: 22px 0 8px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .subhead h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .subhead span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .company-list {
+      display: grid;
+      gap: 6px;
+      max-height: 330px;
+      overflow: auto;
+      padding-right: 3px;
+    }
+
+    .company-button {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 240, .7);
+      color: var(--ink);
+      padding: 9px;
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .company-button.active,
+    .company-button:hover {
+      border-color: rgba(23, 33, 29, .45);
+      background: rgba(23, 33, 29, .06);
+    }
+
+    .company-button b {
+      display: block;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .company-button small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+
+    .right-tag {
+      color: #fffaf0;
+      background: var(--teal);
+      font-size: 11px;
+      padding: 3px 5px;
+      white-space: nowrap;
+    }
+
+    .main { min-width: 0; display: grid; gap: 18px; }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .thesis {
+      padding: 20px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
+      gap: 18px;
+      align-items: center;
+      background: #fff9ec;
+    }
+
+    .thesis h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.15;
+    }
+
+    .thesis p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      max-width: 780px;
+    }
+
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .number {
+      background: rgba(23, 33, 29, .045);
+      border: 1px solid var(--line);
+      padding: 12px;
+      min-height: 78px;
+    }
+
+    .number b { display: block; font-size: 24px; line-height: 1; }
+    .number span { display: block; color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+    .legend {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(96px, 1fr));
+      gap: 6px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+
+    .wave-panel {
+      position: relative;
+      min-height: 620px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 30% 18%, rgba(201,133,26,.11), transparent 24%),
+        linear-gradient(180deg, #fffaf0 0%, #f2eadb 100%);
+    }
+
+    .axis-title {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      right: 24px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .phase {
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted);
+      border-top: 2px solid rgba(23,33,29,.25);
+      padding-top: 8px;
+    }
+
+    .phase strong {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    #waveSvg { width: 100%; height: 620px; display: block; }
+    .wave-line { fill: none; stroke: rgba(23, 33, 29, .82); stroke-width: 3; stroke-linecap: round; }
+    .wave-shadow { fill: none; stroke: rgba(182, 64, 45, .16); stroke-width: 18; stroke-linecap: round; }
+
+    .point {
+      cursor: pointer;
+      stroke: #fffaf0;
+      stroke-width: 1.5;
+      filter: drop-shadow(0 5px 6px rgba(23,33,29,.24));
+      transition: opacity .18s ease, r .18s ease;
+    }
+
+    .point.dimmed { opacity: .13; pointer-events: none; }
+    .point.selected { stroke: var(--ink); stroke-width: 3; }
+
+    .label-text {
+      font-size: 12px;
+      fill: var(--ink);
+      paint-order: stroke;
+      stroke: #fffaf0;
+      stroke-width: 4px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .radar-panel {
+      position: relative;
+      padding: 18px;
+      min-height: 620px;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(201,133,26,.10), transparent 50%, rgba(182,64,45,.09)),
+        linear-gradient(0deg, rgba(49,95,143,.10), transparent 48%, rgba(29,123,106,.10)),
+        #fffaf0;
+    }
+
+    .radar-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .radar-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .radar-head p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 900px;
+    }
+
+    .radar-key {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 6px;
+      min-width: 300px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .key-cell {
+      border: 1px solid var(--line);
+      padding: 8px;
+      background: rgba(255, 250, 240, .58);
+    }
+
+    .key-cell b {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    #researchRadar {
+      width: 100%;
+      height: 500px;
+      display: block;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 240, .42);
+    }
+
+    .radar-point {
+      cursor: pointer;
+      stroke: #fffaf0;
+      stroke-width: 1.4;
+      filter: drop-shadow(0 4px 5px rgba(23,33,29,.22));
+    }
+
+    .radar-point.dimmed { opacity: .12; pointer-events: none; }
+    .radar-point.selected { stroke: var(--ink); stroke-width: 3; }
+
+    .radar-label {
+      font-size: 12px;
+      fill: var(--ink);
+      paint-order: stroke;
+      stroke: #fffaf0;
+      stroke-width: 4px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .pbroe-panel {
+      padding: 18px;
+      min-height: 650px;
+      background:
+        linear-gradient(90deg, rgba(49,95,143,.08), transparent 50%, rgba(79,127,63,.09)),
+        linear-gradient(0deg, rgba(201,133,26,.12), transparent 45%, rgba(182,64,45,.08)),
+        #fffaf0;
+    }
+
+    .pbroe-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(290px, 420px);
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .pbroe-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .pbroe-head p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      max-width: 900px;
+    }
+
+    .pbroe-key {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #pbRoeChart {
+      width: 100%;
+      height: 520px;
+      display: block;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 240, .48);
+    }
+
+    .pbroe-point {
+      cursor: pointer;
+      stroke: #fffaf0;
+      stroke-width: 1.2;
+      filter: drop-shadow(0 3px 5px rgba(23,33,29,.2));
+    }
+
+    .pbroe-point.selected {
+      stroke: var(--ink);
+      stroke-width: 3;
+    }
+
+    .pbroe-point.dimmed {
+      opacity: .16;
+    }
+
+    .pbroe-label {
+      font-size: 12px;
+      fill: var(--ink);
+      paint-order: stroke;
+      stroke: #fffaf0;
+      stroke-width: 4px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(420px, .82fr);
+      gap: 18px;
+    }
+
+    .table-panel,
+    .stock-panel,
+    .market-panel {
+      padding: 18px;
+      min-height: 360px;
+      background: #fffaf0;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 { margin: 0; font-size: 20px; }
+    .section-head span { color: var(--muted); font-size: 12px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    tr { cursor: pointer; }
+    tr:hover td { background: rgba(182, 64, 45, .06); }
+
+    .stage-pill {
+      display: inline-block;
+      max-width: 100%;
+      padding: 3px 7px;
+      color: #fffaf0;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stock-title {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stock-title h2 { margin: 0; font-size: 22px; }
+    .stock-title p { margin: 4px 0 0; color: var(--muted); font-family: "Cascadia Mono", "Consolas", monospace; font-size: 12px; }
+
+    .mini-chart,
+    .stock-chart {
+      width: 100%;
+      display: block;
+      border: 1px solid var(--line);
+      background: rgba(23, 33, 29, .025);
+    }
+
+    .mini-chart { height: 260px; }
+    .stock-chart { height: 300px; }
+
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .stock-metric {
+      border: 1px solid var(--line);
+      padding: 9px;
+      min-height: 64px;
+      background: rgba(23,33,29,.025);
+    }
+
+    .stock-metric b {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 16px;
+    }
+
+    .stock-metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .history-wrap { max-height: 270px; overflow: auto; margin-top: 12px; }
+
+    .pool-list {
+      display: grid;
+      gap: 8px;
+      max-height: 430px;
+      overflow: auto;
+    }
+
+    .pool-item {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 10px;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pool-item:hover {
+      background: rgba(201,133,26,.09);
+      border-color: rgba(23,33,29,.38);
+    }
+
+    .pool-item b {
+      display: block;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pool-item small {
+      display: block;
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 12px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+
+    .market-note {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1180px) {
+      .frame { grid-template-columns: 1fr; }
+      .side { position: relative; top: 0; height: auto; }
+      .detail { max-height: none; }
+      .topbar, .thesis, .bottom-grid { grid-template-columns: 1fr; }
+      .legend { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
+      .radar-head { grid-template-columns: 1fr; }
+      .radar-key { min-width: 0; }
+      .pbroe-head { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .shell { padding: 12px; }
+      h1 { font-size: 25px; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key { grid-template-columns: 1fr; }
+      .axis-title { position: static; padding: 14px; }
+      .wave-panel { min-height: 560px; }
+      #waveSvg { height: 520px; }
+      #researchRadar { height: 440px; }
+      #pbRoeChart { height: 440px; }
+      th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="frame">
+      <aside class="side panel">
+        <section class="brand">
+          <div class="kicker">Marathon Capital Cycle · A Shares</div>
+          <h1>A股行业资本周期波浪图</h1>
+          <p class="read">点击行业点查看行业内个股，再点击个股查看 2010-2025 年财务数据轨迹。</p>
+        </section>
+
+        <section class="controls">
+          <label>
+            <span class="label">Industry</span>
+            <input class="search" id="search" placeholder="搜索行业，例如 锂、化学制剂、风电">
+          </label>
+          <div>
+            <span class="label">Stage</span>
+            <div class="stage-filter" id="stageFilter"></div>
+          </div>
+          <div>
+            <span class="label">Market</span>
+            <div class="stage-filter" id="marketFilter"></div>
+          </div>
+          <div>
+            <span class="label">Minimum Score</span>
+            <div class="range-row">
+              <input id="scoreRange" type="range" min="-7" max="4" step="0.1" value="-7">
+              <span id="scoreValue">全部</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail" id="detail"></section>
+      </aside>
+
+      <section class="main">
+        <div class="topbar">
+          <section class="thesis panel">
+            <div>
+              <h2>全 A 处在资本开支退潮后段，现金流改善领先于 ROIC 修复。</h2>
+              <p>行业点位展示供给侧资本周期位置；个股面板展示行业内部谁已经出现低再投资、现金改善和 ROIC 修复。</p>
+            </div>
+            <div class="numbers">
+              <div class="number"><b id="industryCount">265</b><span>行业点位</span></div>
+              <div class="number"><b id="rightCount">0</b><span>右侧/现金牛行业</span></div>
+              <div class="number"><b id="companyCount">0</b><span>个股样本</span></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="legend panel" id="legend"></section>
+
+        <section class="wave-panel panel">
+          <div class="axis-title">
+            <div class="phase"><strong>高回报吸引资本</strong>投资人和管理层 extrapolate 增长</div>
+            <div class="phase"><strong>资本投入竞争</strong>产能扩张，竞争者跟随</div>
+            <div class="phase"><strong>过剩与承压</strong>回报下滑，现金质量分化</div>
+            <div class="phase"><strong>收缩出清</strong>资本撤出，供给纪律形成</div>
+            <div class="phase"><strong>回报右侧</strong>低再投资，现金积累，ROIC 修复</div>
+          </div>
+          <svg id="waveSvg" viewBox="0 0 1200 620" role="img" aria-label="A股行业资本周期波浪图"></svg>
+        </section>
+
+        <section class="radar-panel panel">
+          <div class="radar-head">
+            <div>
+              <h2>行业研究雷达</h2>
+              <p>横轴是资本投入强度，越往右代表资本仍在进入或扩张；纵轴是基本面改善度，越往上代表 ROIC、现金流和负债表趋势更好。四个象限对应不同研究动作，而不是直接买卖信号。</p>
+            </div>
+            <div class="radar-key">
+              <div class="key-cell"><b>高质量成长候选</b>高投入且改善，需要验证护城河</div>
+              <div class="key-cell"><b>危险扩张</b>高投入但恶化，警惕回报摊薄</div>
+              <div class="key-cell"><b>改善右侧</b>低投入且改善，进入深度研究</div>
+              <div class="key-cell"><b>极度恶化</b>低投入但差，跟踪出清拐点</div>
+            </div>
+          </div>
+          <svg id="researchRadar" viewBox="0 0 1200 500" role="img" aria-label="行业研究雷达"></svg>
+        </section>
+
+        <section class="pbroe-panel panel">
+          <div class="pbroe-head">
+            <div>
+              <h2>PB-ROE 估值盈利地图</h2>
+              <p>横轴为行业 ROE 中位数，越往右盈利能力越强；纵轴为行业 PB 中位数，越往下估值越低。右下角是“高 ROE + 低 PB”的黄金候选区，用来辅助定位值得继续做个股复核的行业。</p>
+            </div>
+            <div class="pbroe-key">
+              <div class="key-cell"><b>高估优质</b>高 ROE + 高 PB，验证成长持续性</div>
+              <div class="key-cell"><b>高估低质</b>低 ROE + 高 PB，警惕估值压缩</div>
+              <div class="key-cell"><b>黄金候选</b>高 ROE + 低 PB，进入核心复核</div>
+              <div class="key-cell"><b>便宜陷阱</b>低 ROE + 低 PB，先查资产质量</div>
+            </div>
+          </div>
+          <svg id="pbRoeChart" viewBox="0 0 1200 520" role="img" aria-label="行业 PB-ROE 二维模型"></svg>
+        </section>
+
+        <section class="bottom-grid">
+          <section class="table-panel panel">
+            <div class="section-head">
+              <h2>行业清单</h2>
+              <span id="tableCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 18%">市场</th>
+                  <th style="width: 22%">行业</th>
+                  <th style="width: 24%">阶段</th>
+                  <th style="width: 13%">得分</th>
+                  <th style="width: 11%">ROIC</th>
+                  <th style="width: 12%">开支</th>
+                </tr>
+              </thead>
+              <tbody id="industryTable"></tbody>
+            </table>
+          </section>
+
+          <section class="stock-panel panel">
+            <div id="stockDetail"></div>
+          </section>
+        </section>
+
+        <section class="table-panel panel">
+          <div class="section-head">
+            <h2>PB-ROE × 资本周期交集研究池</h2>
+            <span id="poolCount"></span>
+          </div>
+          <div class="pool-list" id="researchPool"></div>
+        </section>
+
+        <section class="market-panel panel">
+          <div class="section-head">
+            <h2>全 A 年度脉冲</h2>
+            <span>2010-2025</span>
+          </div>
+          <svg class="mini-chart" id="marketChart" viewBox="0 0 620 260" role="img" aria-label="全A年度指标"></svg>
+          <div class="market-note">
+            <div><span class="dot" style="display:inline-block;background:var(--red)"></span> 年度脉冲展示当前筛选市场的资本开支、ROIC 与现金转换趋势。</div>
+            <div><span class="dot" style="display:inline-block;background:var(--teal)"></span> 最新主面板年份随数据文件更新，目前使用 2025 年报口径。</div>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const data = window.CAPITAL_CYCLE_DATA;
+    const industries = data.industries;
+    const companies = data.companies || [];
+    const companyHistory = data.companyHistory || {};
+    const markets = data.markets || Array.from(new Set(industries.map(d => d.market))).sort();
+    const researchPool = data.researchPool || [];
+    const stages = ["资本投入竞争", "过度扩张/回报承压", "收缩出清", "回报修复/现金积累", "成熟现金牛", "中性/待确认"];
+    const colors = {
+      "资本投入竞争": "#c9851a",
+      "过度扩张/回报承压": "#b6402d",
+      "收缩出清": "#315f8f",
+      "回报修复/现金积累": "#1d7b6a",
+      "成熟现金牛": "#4f7f3f",
+      "中性/待确认": "#6e587d"
+    };
+
+    const state = {
+      stage: "全部",
+      market: "全部",
+      query: "",
+      minScore: -7,
+      selected: industries.find(d => d.stage === "回报修复/现金积累") || industries[0],
+      selectedCompany: null
+    };
+
+    const svg = document.getElementById("waveSvg");
+    const radarSvg = document.getElementById("researchRadar");
+    const pbRoeSvg = document.getElementById("pbRoeChart");
+    const table = document.getElementById("industryTable");
+    const detail = document.getElementById("detail");
+    const stageFilter = document.getElementById("stageFilter");
+    const marketFilter = document.getElementById("marketFilter");
+    const legend = document.getElementById("legend");
+    const search = document.getElementById("search");
+    const scoreRange = document.getElementById("scoreRange");
+    const scoreValue = document.getElementById("scoreValue");
+    const stockDetail = document.getElementById("stockDetail");
+    const researchPoolEl = document.getElementById("researchPool");
+
+    function fmt(value, suffix = "", digits = 1) {
+      if (value === null || value === undefined || Number.isNaN(Number(value))) return "NA";
+      return Number(value).toFixed(digits) + suffix;
+    }
+
+    function filtered() {
+      const q = state.query.trim().toLowerCase();
+      return industries.filter(d => {
+        const stageOk = state.stage === "全部" || d.stage === state.stage;
+        const marketOk = state.market === "全部" || d.market === state.market;
+        const queryOk = !q || d.industry.toLowerCase().includes(q) || d.market.toLowerCase().includes(q);
+        const scoreOk = d.score >= state.minScore;
+        return stageOk && marketOk && queryOk && scoreOk;
+      });
+    }
+
+    function companiesForIndustry(industryId) {
+      return companies
+        .filter(c => c.industryId === industryId)
+        .sort((a, b) => Number(b.rightSide) - Number(a.rightSide) || (b.roicTrend ?? -999) - (a.roicTrend ?? -999));
+    }
+
+    function visibleIndustriesForPbRoe() {
+      return industries.filter(c => {
+        const marketOk = state.market === "全部" || c.market === state.market;
+        const hasModel = Number.isFinite(Number(c.pb)) && Number(c.pb) > 0 && Number.isFinite(Number(c.roe));
+        return marketOk && hasModel;
+      });
+    }
+
+    function quantile(values, q) {
+      const sorted = values.filter(v => Number.isFinite(v)).sort((a, b) => a - b);
+      if (!sorted.length) return NaN;
+      const pos = (sorted.length - 1) * q;
+      const base = Math.floor(pos);
+      const rest = pos - base;
+      return sorted[base + 1] !== undefined ? sorted[base] + rest * (sorted[base + 1] - sorted[base]) : sorted[base];
+    }
+
+    function rankMap(items, key, ascending = true) {
+      const vals = items
+        .map(d => ({ id: d.id, value: Number(d[key]) }))
+        .filter(d => Number.isFinite(d.value))
+        .sort((a, b) => ascending ? a.value - b.value : b.value - a.value);
+      const map = new Map();
+      const denom = Math.max(vals.length - 1, 1);
+      vals.forEach((d, i) => map.set(d.id, i / denom));
+      return map;
+    }
+
+    const radarRanks = (() => {
+      const capex = rankMap(industries, "capex3y", true);
+      const capexTrend = rankMap(industries, "capexTrend", true);
+      const roicTrend = rankMap(industries, "roicTrend", true);
+      const cashTrend = rankMap(industries, "cashTrend", true);
+      const cash = rankMap(industries, "cash3y", true);
+      const debtTrend = rankMap(industries, "debtTrend", true);
+      return { capex, capexTrend, roicTrend, cashTrend, cash, debtTrend };
+    })();
+
+    function radarPosition(d) {
+      const r = (map, fallback = .5) => map.get(d.id) ?? fallback;
+      const capitalIntensity = .68 * r(radarRanks.capex) + .32 * r(radarRanks.capexTrend);
+      const improvement =
+        .46 * r(radarRanks.roicTrend)
+        + .24 * r(radarRanks.cashTrend)
+        + .18 * r(radarRanks.cash)
+        + .12 * (1 - r(radarRanks.debtTrend));
+      return {
+        x: Math.max(.03, Math.min(.97, capitalIntensity)),
+        y: Math.max(.03, Math.min(.97, improvement))
+      };
+    }
+
+    function radarBucket(d) {
+      const p = radarPosition(d);
+      if (p.x < .5 && p.y >= .5) return "改善右侧";
+      if (p.x >= .5 && p.y >= .5) return "高质量成长候选";
+      if (p.x >= .5 && p.y < .5) return "危险扩张";
+      return "极度恶化";
+    }
+
+    function radarColor(bucket) {
+      return {
+        "改善右侧": "#1d7b6a",
+        "高质量成长候选": "#4f7f3f",
+        "危险扩张": "#b6402d",
+        "极度恶化": "#315f8f"
+      }[bucket] || "#6e587d";
+    }
+
+    function setupFilters() {
+      const all = ["全部", ...stages];
+      stageFilter.innerHTML = all.map(stage => `<button class="chip ${stage === state.stage ? "active" : ""}" data-stage="${stage}">${stage}</button>`).join("");
+      stageFilter.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.stage = btn.dataset.stage;
+          state.selectedCompany = null;
+          setupFilters();
+          render();
+        });
+      });
+
+      const marketItems = ["全部", ...markets];
+      marketFilter.innerHTML = marketItems.map(market => `<button class="chip ${market === state.market ? "active" : ""}" data-market="${market}">${market}</button>`).join("");
+      marketFilter.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.market = btn.dataset.market;
+          state.selectedCompany = null;
+          const first = filtered()[0];
+          if (first) state.selected = first;
+          setupFilters();
+          drawMarketChart();
+          render();
+        });
+      });
+
+      legend.innerHTML = stages.map(stage => {
+        const count = industries.filter(d => d.stage === stage && (state.market === "全部" || d.market === state.market)).length;
+        return `<div class="legend-item"><i class="dot" style="background:${colors[stage]}"></i><span>${stage} · ${count}</span></div>`;
+      }).join("");
+    }
+
+    function pathForWave() {
+      const pts = [];
+      for (let i = 0; i <= 100; i += 1) {
+        const x = 70 + i / 100 * 1060;
+        const y = 310 + 165 * Math.sin(i / 100 * Math.PI * 2 - Math.PI / 4);
+        pts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
+      }
+      return pts.join(" ");
+    }
+
+    function drawWave() {
+      svg.innerHTML = "";
+      const grid = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      for (let i = 0; i <= 5; i++) {
+        const x = 70 + i * 212;
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x);
+        line.setAttribute("x2", x);
+        line.setAttribute("y1", 82);
+        line.setAttribute("y2", 570);
+        line.setAttribute("stroke", "rgba(23,33,29,.11)");
+        grid.appendChild(line);
+      }
+      svg.appendChild(grid);
+
+      const shadow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      shadow.setAttribute("d", pathForWave());
+      shadow.setAttribute("class", "wave-shadow");
+      svg.appendChild(shadow);
+
+      const wave = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      wave.setAttribute("d", pathForWave());
+      wave.setAttribute("class", "wave-line");
+      svg.appendChild(wave);
+    }
+
+    function selectIndustry(d) {
+      state.selected = d;
+      const list = companiesForIndustry(d.id);
+      state.selectedCompany = list.find(c => c.rightSide) || list[0] || null;
+      render();
+    }
+
+    function selectCompany(c) {
+      state.selectedCompany = c;
+      const industry = industries.find(d => d.id === c.industryId);
+      if (industry) state.selected = industry;
+      render();
+    }
+
+    function renderPoints(items) {
+      const visible = new Set(items.map(d => d.id));
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      industries.forEach(d => {
+        const cx = 70 + d.x / 100 * 1060;
+        const cy = 58 + d.y / 100 * 510;
+        const r = Math.max(5, Math.min(15, 4 + Math.sqrt(d.companies || 5)));
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", cx);
+        circle.setAttribute("cy", cy);
+        circle.setAttribute("r", r);
+        circle.setAttribute("fill", colors[d.stage]);
+        circle.setAttribute("class", "point" + (visible.has(d.id) ? "" : " dimmed") + (state.selected && state.selected.id === d.id ? " selected" : ""));
+        circle.addEventListener("click", () => selectIndustry(d));
+        g.appendChild(circle);
+      });
+      svg.appendChild(g);
+
+      const labelLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      const labelItems = items.slice().sort((a, b) => b.score - a.score).slice(0, 18);
+      if (state.selected && !labelItems.some(d => d.id === state.selected.id)) labelItems.push(state.selected);
+      labelItems.forEach(d => {
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", 70 + d.x / 100 * 1060 + 10);
+        text.setAttribute("y", 58 + d.y / 100 * 510 - 10);
+        text.setAttribute("class", "label-text");
+        text.textContent = `${d.market} ${d.industry}`;
+        labelLayer.appendChild(text);
+      });
+      svg.appendChild(labelLayer);
+    }
+
+    function drawResearchRadar(items) {
+      radarSvg.innerHTML = "";
+      const visible = new Set(items.map(d => d.id));
+      const W = 1200;
+      const H = 500;
+      const pad = { l: 72, r: 34, t: 34, b: 58 };
+      const w = W - pad.l - pad.r;
+      const h = H - pad.t - pad.b;
+      const x = value => pad.l + value * w;
+      const y = value => pad.t + (1 - value) * h;
+
+      const quadrants = [
+        { x: pad.l, y: pad.t, w: w / 2, h: h / 2, fill: "rgba(29,123,106,.075)", title: "改善右侧", desc: "低投入 + 改善" },
+        { x: pad.l + w / 2, y: pad.t, w: w / 2, h: h / 2, fill: "rgba(79,127,63,.075)", title: "高质量成长候选", desc: "高投入 + 改善" },
+        { x: pad.l, y: pad.t + h / 2, w: w / 2, h: h / 2, fill: "rgba(49,95,143,.075)", title: "极度恶化", desc: "低投入 + 未改善" },
+        { x: pad.l + w / 2, y: pad.t + h / 2, w: w / 2, h: h / 2, fill: "rgba(182,64,45,.075)", title: "危险扩张", desc: "高投入 + 恶化" }
+      ];
+
+      quadrants.forEach(q => {
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", q.x);
+        rect.setAttribute("y", q.y);
+        rect.setAttribute("width", q.w);
+        rect.setAttribute("height", q.h);
+        rect.setAttribute("fill", q.fill);
+        radarSvg.appendChild(rect);
+
+        const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        title.setAttribute("x", q.x + 18);
+        title.setAttribute("y", q.y + 28);
+        title.setAttribute("font-size", "18");
+        title.setAttribute("font-weight", "700");
+        title.setAttribute("fill", "#17211d");
+        title.textContent = q.title;
+        radarSvg.appendChild(title);
+
+        const desc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        desc.setAttribute("x", q.x + 18);
+        desc.setAttribute("y", q.y + 48);
+        desc.setAttribute("font-size", "12");
+        desc.setAttribute("fill", "#6f756f");
+        desc.textContent = q.desc;
+        radarSvg.appendChild(desc);
+      });
+
+      for (let i = 0; i <= 4; i++) {
+        const gx = pad.l + i / 4 * w;
+        const gy = pad.t + i / 4 * h;
+        const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        vLine.setAttribute("x1", gx);
+        vLine.setAttribute("x2", gx);
+        vLine.setAttribute("y1", pad.t);
+        vLine.setAttribute("y2", pad.t + h);
+        vLine.setAttribute("stroke", "rgba(23,33,29,.12)");
+        radarSvg.appendChild(vLine);
+
+        const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        hLine.setAttribute("x1", pad.l);
+        hLine.setAttribute("x2", pad.l + w);
+        hLine.setAttribute("y1", gy);
+        hLine.setAttribute("y2", gy);
+        hLine.setAttribute("stroke", "rgba(23,33,29,.12)");
+        radarSvg.appendChild(hLine);
+      }
+
+      const midX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      midX.setAttribute("x1", x(.5));
+      midX.setAttribute("x2", x(.5));
+      midX.setAttribute("y1", pad.t);
+      midX.setAttribute("y2", pad.t + h);
+      midX.setAttribute("stroke", "rgba(23,33,29,.45)");
+      midX.setAttribute("stroke-dasharray", "6 7");
+      radarSvg.appendChild(midX);
+
+      const midY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      midY.setAttribute("x1", pad.l);
+      midY.setAttribute("x2", pad.l + w);
+      midY.setAttribute("y1", y(.5));
+      midY.setAttribute("y2", y(.5));
+      midY.setAttribute("stroke", "rgba(23,33,29,.45)");
+      midY.setAttribute("stroke-dasharray", "6 7");
+      radarSvg.appendChild(midY);
+
+      const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xLabel.setAttribute("x", pad.l + w / 2);
+      xLabel.setAttribute("y", H - 16);
+      xLabel.setAttribute("text-anchor", "middle");
+      xLabel.setAttribute("font-size", "13");
+      xLabel.setAttribute("fill", "#17211d");
+      xLabel.textContent = "资本投入强度  ← 低 / 收缩        高 / 扩张 →";
+      radarSvg.appendChild(xLabel);
+
+      const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yLabel.setAttribute("x", 18);
+      yLabel.setAttribute("y", pad.t + h / 2);
+      yLabel.setAttribute("transform", `rotate(-90 18 ${pad.t + h / 2})`);
+      yLabel.setAttribute("text-anchor", "middle");
+      yLabel.setAttribute("font-size", "13");
+      yLabel.setAttribute("fill", "#17211d");
+      yLabel.textContent = "基本面改善度  ← 差        好 →";
+      radarSvg.appendChild(yLabel);
+
+      const points = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      industries.forEach(d => {
+        const p = radarPosition(d);
+        const bucket = radarBucket(d);
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x(p.x));
+        circle.setAttribute("cy", y(p.y));
+        circle.setAttribute("r", Math.max(4.5, Math.min(12, 3 + Math.sqrt(d.companies || 5))));
+        circle.setAttribute("fill", radarColor(bucket));
+        circle.setAttribute("class", "radar-point" + (visible.has(d.id) ? "" : " dimmed") + (state.selected && state.selected.id === d.id ? " selected" : ""));
+        circle.addEventListener("click", () => selectIndustry(d));
+        points.appendChild(circle);
+      });
+      radarSvg.appendChild(points);
+
+      const labelLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      const labelItems = items
+        .slice()
+        .sort((a, b) => Math.abs(radarPosition(b).y - .5) + Math.abs(radarPosition(b).x - .5) - (Math.abs(radarPosition(a).y - .5) + Math.abs(radarPosition(a).x - .5)))
+        .slice(0, 22);
+      if (state.selected && !labelItems.some(d => d.id === state.selected.id)) labelItems.push(state.selected);
+      labelItems.forEach(d => {
+        const p = radarPosition(d);
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x(p.x) + 9);
+        text.setAttribute("y", y(p.y) - 8);
+        text.setAttribute("class", "radar-label");
+        text.textContent = `${d.market} ${d.industry}`;
+        labelLayer.appendChild(text);
+      });
+      radarSvg.appendChild(labelLayer);
+    }
+
+    function pbRoeBucket(c, medRoe, medPb) {
+      const roeHigh = Number(c.roe) >= medRoe;
+      const pbLow = Number(c.pb) <= medPb;
+      if (roeHigh && pbLow) return "黄金候选";
+      if (roeHigh && !pbLow) return "高估优质";
+      if (!roeHigh && pbLow) return "便宜陷阱";
+      return "高估低质";
+    }
+
+    function pbRoeColor(bucket) {
+      return {
+        "黄金候选": "#c9851a",
+        "高估优质": "#4f7f3f",
+        "便宜陷阱": "#315f8f",
+        "高估低质": "#b6402d"
+      }[bucket] || "#6e587d";
+    }
+
+    function drawPbRoeChart() {
+      pbRoeSvg.innerHTML = "";
+      const rows = visibleIndustriesForPbRoe();
+      if (!rows.length) return;
+      const W = 1200;
+      const H = 520;
+      const pad = { l: 76, r: 34, t: 36, b: 60 };
+      const w = W - pad.l - pad.r;
+      const h = H - pad.t - pad.b;
+      const roeVals = rows.map(c => Number(c.roe));
+      const pbLogVals = rows.map(c => Math.log(Number(c.pb)));
+      const roeMin = quantile(roeVals, .02);
+      const roeMax = quantile(roeVals, .98);
+      const pbLogMin = quantile(pbLogVals, .02);
+      const pbLogMax = quantile(pbLogVals, .98);
+      const medRoe = quantile(roeVals, .5);
+      const medPb = Math.exp(quantile(pbLogVals, .5));
+      const medPbLog = Math.log(medPb);
+      const xNorm = roe => Math.max(0, Math.min(1, (roe - roeMin) / (roeMax - roeMin || 1)));
+      const yNorm = pb => Math.max(0, Math.min(1, (Math.log(pb) - pbLogMin) / (pbLogMax - pbLogMin || 1)));
+      const x = roe => pad.l + xNorm(roe) * w;
+      const y = pb => pad.t + (1 - yNorm(pb)) * h;
+      const xMed = pad.l + xNorm(medRoe) * w;
+      const yMed = pad.t + (1 - yNorm(medPb)) * h;
+
+      const quadrants = [
+        { x: pad.l, y: pad.t, w: xMed - pad.l, h: yMed - pad.t, fill: "rgba(182,64,45,.08)", title: "高估低质" },
+        { x: xMed, y: pad.t, w: pad.l + w - xMed, h: yMed - pad.t, fill: "rgba(79,127,63,.08)", title: "高估优质" },
+        { x: pad.l, y: yMed, w: xMed - pad.l, h: pad.t + h - yMed, fill: "rgba(49,95,143,.08)", title: "便宜陷阱" },
+        { x: xMed, y: yMed, w: pad.l + w - xMed, h: pad.t + h - yMed, fill: "rgba(201,133,26,.14)", title: "黄金候选" }
+      ];
+      quadrants.forEach(q => {
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", q.x);
+        rect.setAttribute("y", q.y);
+        rect.setAttribute("width", Math.max(0, q.w));
+        rect.setAttribute("height", Math.max(0, q.h));
+        rect.setAttribute("fill", q.fill);
+        pbRoeSvg.appendChild(rect);
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", q.x + 16);
+        text.setAttribute("y", q.y + 28);
+        text.setAttribute("font-size", "18");
+        text.setAttribute("font-weight", "700");
+        text.setAttribute("fill", "#17211d");
+        text.textContent = q.title;
+        pbRoeSvg.appendChild(text);
+      });
+
+      for (let i = 0; i <= 4; i++) {
+        const gx = pad.l + i / 4 * w;
+        const gy = pad.t + i / 4 * h;
+        const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        vLine.setAttribute("x1", gx);
+        vLine.setAttribute("x2", gx);
+        vLine.setAttribute("y1", pad.t);
+        vLine.setAttribute("y2", pad.t + h);
+        vLine.setAttribute("stroke", "rgba(23,33,29,.12)");
+        pbRoeSvg.appendChild(vLine);
+        const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        hLine.setAttribute("x1", pad.l);
+        hLine.setAttribute("x2", pad.l + w);
+        hLine.setAttribute("y1", gy);
+        hLine.setAttribute("y2", gy);
+        hLine.setAttribute("stroke", "rgba(23,33,29,.12)");
+        pbRoeSvg.appendChild(hLine);
+      }
+
+      [["line", xMed, pad.t, xMed, pad.t + h], ["line", pad.l, yMed, pad.l + w, yMed]].forEach(([_, x1, y1, x2, y2]) => {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x1);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x2);
+        line.setAttribute("y2", y2);
+        line.setAttribute("stroke", "rgba(23,33,29,.45)");
+        line.setAttribute("stroke-dasharray", "6 7");
+        pbRoeSvg.appendChild(line);
+      });
+
+      const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xLabel.setAttribute("x", pad.l + w / 2);
+      xLabel.setAttribute("y", H - 18);
+      xLabel.setAttribute("text-anchor", "middle");
+      xLabel.setAttribute("font-size", "13");
+      xLabel.setAttribute("fill", "#17211d");
+      xLabel.textContent = `行业 ROE 中位数  ← 低        高 →    市场中位数 ${fmt(medRoe, "%")}`;
+      pbRoeSvg.appendChild(xLabel);
+
+      const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yLabel.setAttribute("x", 18);
+      yLabel.setAttribute("y", pad.t + h / 2);
+      yLabel.setAttribute("transform", `rotate(-90 18 ${pad.t + h / 2})`);
+      yLabel.setAttribute("text-anchor", "middle");
+      yLabel.setAttribute("font-size", "13");
+      yLabel.setAttribute("fill", "#17211d");
+      yLabel.textContent = `行业 PB 中位数  ← 低        高 →    市场中位数 ${fmt(medPb, "x")}`;
+      pbRoeSvg.appendChild(yLabel);
+
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      rows.forEach(c => {
+        const bucket = pbRoeBucket(c, medRoe, medPb);
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x(Number(c.roe)));
+        circle.setAttribute("cy", y(Number(c.pb)));
+        circle.setAttribute("r", Math.max(5, Math.min(14, 4 + Math.sqrt(c.companies || 5))));
+        circle.setAttribute("fill", pbRoeColor(bucket));
+        circle.setAttribute("class", "pbroe-point"
+          + (state.selected && state.selected.id !== c.id ? "" : "")
+          + (state.selected && state.selected.id === c.id ? " selected" : ""));
+        circle.addEventListener("click", () => selectIndustry(c));
+        g.appendChild(circle);
+      });
+      pbRoeSvg.appendChild(g);
+
+      const labels = rows
+        .filter(c => c.roe >= medRoe && c.pb <= medPb)
+        .sort((a, b) => (b.roe - a.roe) + (a.pb - b.pb))
+        .slice(0, 24);
+      if (state.selected && !labels.some(c => c.id === state.selected.id)) labels.push(state.selected);
+      const labelLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      labels.forEach(c => {
+        if (!Number.isFinite(Number(c.pb)) || !Number.isFinite(Number(c.roe)) || Number(c.pb) <= 0) return;
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x(Number(c.roe)) + 8);
+        text.setAttribute("y", y(Number(c.pb)) - 7);
+        text.setAttribute("class", "pbroe-label");
+        text.textContent = `${c.market} ${c.industry}`;
+        labelLayer.appendChild(text);
+      });
+      pbRoeSvg.appendChild(labelLayer);
+    }
+
+    function renderDetail() {
+      const d = state.selected || filtered()[0] || industries[0];
+      state.selected = d;
+      const list = companiesForIndustry(d.id);
+      if (!state.selectedCompany || state.selectedCompany.industryId !== d.id) {
+        state.selectedCompany = list.find(c => c.rightSide) || list[0] || null;
+      }
+      const companyButtons = list.slice(0, 120).map(c => `
+        <button class="company-button ${state.selectedCompany && state.selectedCompany.market === c.market && state.selectedCompany.code === c.code ? "active" : ""}" data-key="${c.market}:${c.code}">
+          <span><b>${c.name}</b><small>${c.market} · ${c.code} · ROIC ${fmt(c.roic, "%")} · 变化 ${fmt(c.roicTrend, "pct")}</small></span>
+          ${c.rightSide ? `<span class="right-tag">右侧</span>` : `<span></span>`}
+        </button>
+      `).join("");
+      detail.innerHTML = `
+        <h2>${d.industry}</h2>
+        <span class="badge">${d.market}</span>
+        <span class="badge" style="background:${colors[d.stage]}">${d.stage}</span>
+        <div class="metrics">
+          <div class="metric"><strong>${fmt(d.score, "", 2)}</strong><span>资本周期得分</span></div>
+          <div class="metric"><strong>${d.companies}</strong><span>样本公司</span></div>
+          <div class="metric"><strong>${fmt(d.roic, "%")}</strong><span>ROIC 最新</span></div>
+          <div class="metric"><strong>${fmt(d.roicTrend, "pct")}</strong><span>ROIC 三年变化</span></div>
+          <div class="metric"><strong>${fmt(d.capex3y, "x")}</strong><span>资本开支/折旧摊销</span></div>
+          <div class="metric"><strong>${fmt(d.cash3y, "%")}</strong><span>现金流/营业利润</span></div>
+        </div>
+        <p class="diagnosis">${d.diagnosis}</p>
+        <div class="subhead"><h3>行业内个股</h3><span>${list.length} 家，优先显示右侧候选</span></div>
+        <div class="company-list">${companyButtons || "<p class='read'>没有可展示的公司数据。</p>"}</div>
+      `;
+      detail.querySelectorAll(".company-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.selectedCompany = companies.find(c => `${c.market}:${c.code}` === btn.dataset.key);
+          renderDetail();
+          renderStockDetail();
+        });
+      });
+    }
+
+    function renderTable(items) {
+      const rows = items.slice().sort((a, b) => b.score - a.score).slice(0, 80);
+      table.innerHTML = rows.map(d => `
+        <tr data-industry-id="${d.id}">
+          <td>${d.market}</td>
+          <td>${d.industry}</td>
+          <td><span class="stage-pill" style="background:${colors[d.stage]}">${d.stage}</span></td>
+          <td>${fmt(d.score, "", 2)}</td>
+          <td>${fmt(d.roic, "%")}</td>
+          <td>${fmt(d.capex3y, "x")}</td>
+        </tr>
+      `).join("");
+      table.querySelectorAll("tr").forEach(tr => {
+        tr.addEventListener("click", () => {
+          const item = industries.find(d => d.id === tr.dataset.industryId);
+          if (item) selectIndustry(item);
+        });
+      });
+      document.getElementById("tableCount").textContent = `${items.length} 个匹配行业`;
+    }
+
+    function renderResearchPool() {
+      const rows = researchPool
+        .filter(d => state.market === "全部" || d.market === state.market)
+        .sort((a, b) => (b.researchScore ?? -999) - (a.researchScore ?? -999));
+      researchPoolEl.innerHTML = rows.map(d => `
+        <div class="pool-item" data-id="${d.id}">
+          <span>
+            <b>${d.market} · ${d.industry}</b>
+            <small>${d.bucket} · ROE ${fmt(d.roe, "%")} · PB ${fmt(d.pb, "x")} · 周期分 ${fmt(d.cycleScore, "", 2)}</small>
+          </span>
+          <span class="stage-pill" style="background:${colors[d.stage] || "#6e587d"}">${d.stage}</span>
+        </div>
+      `).join("");
+      researchPoolEl.querySelectorAll(".pool-item").forEach(el => {
+        el.addEventListener("click", () => {
+          const item = industries.find(d => d.id === el.dataset.id);
+          if (item) selectIndustry(item);
+        });
+      });
+      document.getElementById("poolCount").textContent = `${rows.length} 个行业`;
+    }
+
+    function valueRange(rows, keys) {
+      const vals = rows.flatMap(r => keys.map(k => r[k])).filter(v => v !== null && v !== undefined && !Number.isNaN(Number(v)));
+      if (!vals.length) return [0, 1];
+      let min = Math.min(...vals);
+      let max = Math.max(...vals);
+      if (min === max) { min -= 1; max += 1; }
+      const pad = (max - min) * .12;
+      return [min - pad, max + pad];
+    }
+
+    function drawLineChart(svgEl, rows, series, yRange = null) {
+      svgEl.innerHTML = "";
+      if (!rows || !rows.length) return;
+      const pad = { l: 46, r: 24, t: 24, b: 34 };
+      const box = svgEl.viewBox.baseVal;
+      const width = box.width || 620;
+      const height = box.height || 300;
+      const w = width - pad.l - pad.r;
+      const h = height - pad.t - pad.b;
+      const years = rows.map(d => d.year);
+      const minYear = Math.min(...years);
+      const maxYear = Math.max(...years);
+      const [minV, maxV] = yRange || valueRange(rows, series.map(s => s.key));
+      const x = year => pad.l + (year - minYear) / (maxYear - minYear || 1) * w;
+      const y = value => pad.t + h - (value - minV) / (maxV - minV || 1) * h;
+
+      for (let i = 0; i <= 4; i++) {
+        const gy = pad.t + i / 4 * h;
+        const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        grid.setAttribute("x1", pad.l);
+        grid.setAttribute("x2", pad.l + w);
+        grid.setAttribute("y1", gy);
+        grid.setAttribute("y2", gy);
+        grid.setAttribute("stroke", "rgba(23,33,29,.12)");
+        svgEl.appendChild(grid);
+      }
+
+      series.forEach((s, index) => {
+        const valid = rows.filter(r => r[s.key] !== null && r[s.key] !== undefined);
+        if (!valid.length) return;
+        const d = valid.map((row, i) => `${i ? "L" : "M"} ${x(row.year).toFixed(1)} ${y(row[s.key]).toFixed(1)}`).join(" ");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", s.color);
+        path.setAttribute("stroke-width", s.width || 3);
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        svgEl.appendChild(path);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", pad.l + index * 92);
+        label.setAttribute("y", 17);
+        label.setAttribute("font-size", "12");
+        label.setAttribute("fill", s.color);
+        label.textContent = s.label;
+        svgEl.appendChild(label);
+      });
+
+      [2010, 2015, 2020, 2025].forEach(year => {
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x(year));
+        text.setAttribute("y", height - 10);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("font-size", "11");
+        text.setAttribute("fill", "#6f756f");
+        text.textContent = year;
+        svgEl.appendChild(text);
+      });
+    }
+
+    function renderStockDetail() {
+      const c = state.selectedCompany;
+      if (!c) {
+        stockDetail.innerHTML = `<div class="section-head"><h2>个股财务轨迹</h2><span>先选择一个行业</span></div><p class="read">点击左侧行业内个股后，这里会显示 2010-2025 年的指标变化。</p>`;
+        return;
+      }
+      const history = companyHistory[`${c.market}:${c.code}`] || [];
+      stockDetail.innerHTML = `
+        <div class="stock-title">
+          <div>
+            <h2>${c.name}</h2>
+            <p>${c.market} · ${c.code} · ${c.industry}</p>
+          </div>
+          ${c.rightSide ? `<span class="right-tag">右侧候选</span>` : `<span class="badge">普通样本</span>`}
+        </div>
+        <div class="stock-grid">
+          <div class="stock-metric"><b>${fmt(c.roic, "%")}</b><span>${data.year} ROIC</span></div>
+          <div class="stock-metric"><b>${fmt(c.roe, "%")}</b><span>${data.year} ROE</span></div>
+          <div class="stock-metric"><b>${fmt(c.pb, "x")}</b><span>最新 PB</span></div>
+          <div class="stock-metric"><b>${fmt(c.roicTrend, "pct")}</b><span>ROIC 三年变化</span></div>
+          <div class="stock-metric"><b>${fmt(c.capex3y, "x")}</b><span>三年资本开支/折旧</span></div>
+          <div class="stock-metric"><b>${fmt(c.cash3y, "%", 0)}</b><span>三年现金流/利润</span></div>
+        </div>
+        <svg class="stock-chart" id="stockChart" viewBox="0 0 620 300" role="img" aria-label="个股年度财务指标"></svg>
+        <div class="history-wrap">
+          <table>
+            <thead><tr><th>年份</th><th>ROIC</th><th>ROE</th><th>资本开支/折旧</th><th>现金流/利润</th><th>负债率</th></tr></thead>
+            <tbody>${history.map(h => `<tr><td>${h.year}</td><td>${fmt(h.roic, "%")}</td><td>${fmt(h.roe, "%")}</td><td>${fmt(h.capex, "x")}</td><td>${fmt(h.cash, "%", 0)}</td><td>${fmt(h.debt, "%")}</td></tr>`).join("")}</tbody>
+          </table>
+        </div>
+      `;
+      drawLineChart(document.getElementById("stockChart"), history, [
+        { key: "roic", label: "ROIC", color: "#315f8f" },
+        { key: "roe", label: "ROE", color: "#4f7f3f" },
+        { key: "capex", label: "资本开支", color: "#b6402d" },
+        { key: "debt", label: "负债率", color: "#6e587d" }
+      ]);
+    }
+
+    function drawMarketChart() {
+      const marketRows = (data.market || []).filter(d => d.market === (state.market === "全部" ? "A股" : state.market));
+      drawLineChart(document.getElementById("marketChart"), marketRows, [
+        { key: "capex", label: "资本开支", color: "#b6402d", width: 3.5 },
+        { key: "roic", label: "ROIC", color: "#315f8f" },
+        { key: "cash", label: "现金转换", color: "#1d7b6a" }
+      ], [0, 160]);
+    }
+
+    function render() {
+      const items = filtered();
+      drawWave();
+      renderPoints(items);
+      drawResearchRadar(items);
+      drawPbRoeChart();
+      renderDetail();
+      renderStockDetail();
+      renderTable(items);
+      renderResearchPool();
+      const marketIndustryBase = industries.filter(d => state.market === "全部" || d.market === state.market);
+      const marketCompanyBase = companies.filter(d => state.market === "全部" || d.market === state.market);
+      document.getElementById("industryCount").textContent = marketIndustryBase.length;
+      document.getElementById("rightCount").textContent = marketIndustryBase.filter(d => d.stage === "回报修复/现金积累" || d.stage === "成熟现金牛").length;
+      document.getElementById("companyCount").textContent = marketCompanyBase.length;
+      scoreValue.textContent = state.minScore <= -6.9 ? "全部" : state.minScore.toFixed(1);
+    }
+
+    search.addEventListener("input", e => {
+      state.query = e.target.value;
+      const first = filtered()[0];
+      if (first) {
+        state.selected = first;
+        state.selectedCompany = null;
+      }
+      drawMarketChart();
+      render();
+    });
+
+    scoreRange.addEventListener("input", e => {
+      state.minScore = Number(e.target.value);
+      const first = filtered()[0];
+      if (first) {
+        state.selected = first;
+        state.selectedCompany = null;
+      }
+      render();
+    });
+
+    setupFilters();
+    drawMarketChart();
+    render();
+  </script>
+</body>
+</html>
