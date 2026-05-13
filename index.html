@@ -59,7 +59,7 @@
       height: calc(100vh - 44px);
       overflow: hidden;
       display: grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto auto auto 1fr;
     }
 
     .brand {
@@ -87,6 +87,70 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.65;
+    }
+
+    .site-nav {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      background: rgba(244, 239, 229, .56);
+    }
+
+    .nav-link {
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid rgba(23,33,29,.14);
+      color: var(--ink);
+      text-decoration: none;
+      background: rgba(255,250,240,.62);
+    }
+
+    .nav-link strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .nav-link span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .nav-index {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: var(--paper-2);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+    }
+
+    .nav-link.muted {
+      opacity: .62;
+    }
+
+    .subnav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .subnav a {
+      padding: 7px 8px;
+      border: 1px solid rgba(23,33,29,.12);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      background: rgba(255,250,240,.48);
     }
 
     .controls {
@@ -286,6 +350,81 @@
       grid-template-columns: minmax(0, 1fr);
       gap: 18px;
       align-items: stretch;
+    }
+
+    .directory {
+      padding: 18px;
+    }
+
+    .directory-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .directory-head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .directory-head span {
+      color: var(--muted);
+      font-size: 12px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: 1.35fr repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .module-card {
+      min-height: 112px;
+      padding: 14px;
+      border: 1px solid rgba(23,33,29,.14);
+      background: rgba(255,250,240,.66);
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .module-card.active {
+      background: var(--ink);
+      color: var(--paper-2);
+    }
+
+    .module-card em {
+      font-style: normal;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+      color: inherit;
+      opacity: .72;
+    }
+
+    .module-card b {
+      display: block;
+      margin-top: 8px;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .module-card small {
+      display: block;
+      margin-top: 10px;
+      color: inherit;
+      opacity: .7;
+      line-height: 1.45;
+    }
+
+    .module-card.disabled {
+      opacity: .6;
+      cursor: default;
     }
 
     .thesis {
@@ -728,6 +867,7 @@
       .side { position: relative; top: 0; height: auto; }
       .detail { max-height: none; }
       .topbar, .thesis, .bottom-grid { grid-template-columns: 1fr; }
+      .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .legend { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
       .radar-head { grid-template-columns: 1fr; }
       .radar-key { min-width: 0; }
@@ -737,7 +877,9 @@
     @media (max-width: 680px) {
       .shell { padding: 12px; }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav { grid-template-columns: 1fr; }
+      .directory-head { display: block; }
+      .directory-head span { display: block; margin-top: 6px; }
       .axis-title { position: static; padding: 14px; }
       .wave-panel { min-height: 560px; }
       #waveSvg { height: 520px; }
@@ -763,6 +905,28 @@
           <h1>A股行业资本周期波浪图</h1>
           <p class="read">点击行业点查看行业内个股，再点击个股查看 2010-2025 年财务数据轨迹。</p>
         </section>
+
+        <nav class="site-nav" aria-label="研究目录">
+          <span class="label">Research Directory</span>
+          <a class="nav-link" href="#capital-cycle">
+            <span class="nav-index">01</span>
+            <span><strong>资本周期</strong><span>行业位置、右侧修复、现金积累与个股线索</span></span>
+          </a>
+          <a class="nav-link muted" href="#module-pbroe">
+            <span class="nav-index">02</span>
+            <span><strong>PB-ROE</strong><span>估值盈利二维框架，作为后续独立模块</span></span>
+          </a>
+          <a class="nav-link muted" href="#module-pipeline">
+            <span class="nav-index">03</span>
+            <span><strong>研究池</strong><span>行业交集、待复核假设、跟踪清单</span></span>
+          </a>
+          <div class="subnav">
+            <a href="#cycle-wave">周期波浪</a>
+            <a href="#research-radar">研究雷达</a>
+            <a href="#pb-roe-map">PB-ROE</a>
+            <a href="#research-pool-section">交集池</a>
+          </div>
+        </nav>
 
         <section class="controls">
           <label>
@@ -790,6 +954,43 @@
       </aside>
 
       <section class="main">
+        <section class="directory panel" id="site-directory">
+          <div class="directory-head">
+            <h2>研究目录</h2>
+            <span>从行业状态到个股复核的投研框架</span>
+          </div>
+          <div class="module-grid">
+            <a class="module-card active" id="capital-cycle" href="#cycle-wave">
+              <span>
+                <em>01 / ACTIVE</em>
+                <b>资本周期研究框架</b>
+              </span>
+              <small>用资本开支、ROIC、现金流、负债率判断行业处于扩张、出清、右侧修复或成熟现金牛。</small>
+            </a>
+            <a class="module-card" id="module-pbroe" href="#pb-roe-map">
+              <span>
+                <em>02 / INTEGRATED</em>
+                <b>PB-ROE 行业估值盈利</b>
+              </span>
+              <small>寻找高 ROE、低 PB 的行业，与资本周期改善信号做交叉验证。</small>
+            </a>
+            <a class="module-card disabled" id="module-pipeline" href="#research-pool-section">
+              <span>
+                <em>03 / NEXT</em>
+                <b>潜在研究池</b>
+              </span>
+              <small>把行业交集、核心假设、后续调研动作沉淀为持续跟踪清单。</small>
+            </a>
+            <a class="module-card disabled" id="module-portfolio" href="#market-pulse">
+              <span>
+                <em>04 / LATER</em>
+                <b>组合与市场脉冲</b>
+              </span>
+              <small>后续可加入组合观察、行业权重、回撤与基本面验证记录。</small>
+            </a>
+          </div>
+        </section>
+
         <div class="topbar">
           <section class="thesis panel">
             <div>
@@ -806,7 +1007,7 @@
 
         <section class="legend panel" id="legend"></section>
 
-        <section class="wave-panel panel">
+        <section class="wave-panel panel" id="cycle-wave">
           <div class="axis-title">
             <div class="phase"><strong>高回报吸引资本</strong>投资人和管理层 extrapolate 增长</div>
             <div class="phase"><strong>资本投入竞争</strong>产能扩张，竞争者跟随</div>
@@ -817,7 +1018,7 @@
           <svg id="waveSvg" viewBox="0 0 1200 620" role="img" aria-label="A股行业资本周期波浪图"></svg>
         </section>
 
-        <section class="radar-panel panel">
+        <section class="radar-panel panel" id="research-radar">
           <div class="radar-head">
             <div>
               <h2>行业研究雷达</h2>
@@ -833,7 +1034,7 @@
           <svg id="researchRadar" viewBox="0 0 1200 500" role="img" aria-label="行业研究雷达"></svg>
         </section>
 
-        <section class="pbroe-panel panel">
+        <section class="pbroe-panel panel" id="pb-roe-map">
           <div class="pbroe-head">
             <div>
               <h2>PB-ROE 估值盈利地图</h2>
@@ -875,7 +1076,7 @@
           </section>
         </section>
 
-        <section class="table-panel panel">
+        <section class="table-panel panel" id="research-pool-section">
           <div class="section-head">
             <h2>PB-ROE × 资本周期交集研究池</h2>
             <span id="poolCount"></span>
@@ -883,7 +1084,7 @@
           <div class="pool-list" id="researchPool"></div>
         </section>
 
-        <section class="market-panel panel">
+        <section class="market-panel panel" id="market-pulse">
           <div class="section-head">
             <h2>全 A 年度脉冲</h2>
             <span>2010-2025</span>
