@@ -377,6 +377,53 @@ window.REPORTS_DATA = {
       linkedModules: ["capital-cycle"],
       linkedIndustryId: null,
       markdownFile: "reports/vstecs-deep-report.md"
+    },
+    {
+      id: "report-008",
+      type: "company",
+      title: "泡泡玛特：LABUBU 之后，泡泡玛特是不是中国的 Sanrio？",
+      subtitle: "从潮玩零售商到全球 IP 运营平台，拆解管理层、竞争格局、R/N/g 与安全边际",
+      author: "NSC Research",
+      date: "2026-05-16",
+      tags: ["泡泡玛特", "POP MART", "LABUBU", "潮玩", "IP", "港股", "全球化"],
+      company: "泡泡玛特",
+      industry: "潮玩与消费IP",
+      market: "港股",
+      status: "published",
+      confidence: "中高",
+      conclusion: "泡泡玛特已经从潮玩零售商升级为以自有 IP 为核心、用产品和渠道完成全球商业化的文化消费公司。2025 年 LABUBU/THE MONSTERS 全球爆发证明了爆款能力，但公司仍需用 2026-2027 年证明超级 IP 的长寿能力和多 IP 接棒能力。当前 HK$152.40 位于需要成长兑现的区间，HK$110-120 以下更符合安全边际纪律。",
+      keyEvidence: [
+        "2025 年收入 RMB 371.20 亿元，同比增长 184.7%；归母净利润 RMB 127.76 亿元，同比增长 308.8%",
+        "THE MONSTERS 收入 RMB 141.61 亿元，占总收入约 38.1%，LABUBU 成为全球级爆款",
+        "自有产品收入占比 99.1%，公司利润主要来自自有或深度运营 IP，而非简单渠道差价",
+        "王宁被视为持股 48.73%，创始人控制力强；Post-IPO 股份奖励计划绑定核心员工",
+        "估值上 AV 约 HK$15-22/股，EPV 中性约 HK$100-120/股，当前价格已包含可见成长价值"
+      ],
+      sections: [
+        {
+          title: "核心矛盾",
+          content: "泡泡玛特是不是好公司已不是最核心的问题。2025 年之后，它更像一家全球 IP 运营平台，而不是单纯盲盒或潮玩零售商。真正的核心矛盾是：LABUBU 的爆发到底是一段超级爆款周期，还是泡泡玛特可持续生产全球 IP 的组织能力证明？"
+        },
+        {
+          title: "管理层与叙事转折",
+          content: "王宁在 2025 年年报中称“LABUBU 像一個金礦”，同时把 2026 年比作“维修站”年份，强调加油换轮胎和可持续增长。前一句体现信心，后一句体现对高速增长后组织消化的警觉。管理层综合评价为条件信任：创始人持股高、战略清楚、财务克制、执行结果突出，但必须证明非 THE MONSTERS 的 IP 矩阵能接棒。"
+        },
+        {
+          title: "竞争与护城河",
+          content: "核心对标是 Sanrio，辅助对照是 Funko。Sanrio 证明角色 IP 可以跨越几十年；Funko 则说明仅靠授权玩具和渠道铺货，可能陷入库存和利润波动。泡泡玛特 2025 年毛利率 72.1%、净利率 35.1%，显著高于 Funko，并接近成熟 IP 公司的利润结构。护城河评级为中等偏宽，正在变宽，但尚未达到成熟宽护城河。"
+        },
+        {
+          title: "估值与买入纪律",
+          content: "泡泡玛特不是资产保护型投资，AV 约 HK$15-22/股；保守 EPV 约 HK$70-90/股，中性 EPV 约 HK$100-120/股。当前 HK$152.40 位于 EPV + 可见成长价值区间，价格层安全边际不厚。较好的新买入区间在 HK$110-120 以下；HK$90 附近则接近明显便宜。"
+        },
+        {
+          title: "风险与跟踪指标",
+          content: "主要风险包括单一 IP 依赖、库存上升、海外组织降速、仿品和品牌秩序。每半年重点跟踪 THE MONSTERS 占比、非 THE MONSTERS 前六大 IP 增速、海外收入环比和单店收入、存货周转天数、经营利润率是否稳定在 30% 以上。"
+        }
+      ],
+      linkedModules: [],
+      linkedIndustryId: null,
+      markdownFile: "reports/popmart-deep-report.md"
     }
   ]
 };
