@@ -2686,7 +2686,7 @@
               <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
             </div>
           </div>
-          <button class="report-close-btn" onclick="reportState.expandedId=null;renderReports();" aria-label="关闭详情">×</button>
+          <button class="report-close-btn" onclick="reportState.expandedId=null;history.replaceState(null,'',window.location.pathname);renderReports();" aria-label="关闭详情">×</button>
         </div>
         ${hasFullMd ? '' : `<div class="report-evidence-box">
           <h4>核心结论</h4>
@@ -2720,7 +2720,7 @@
               <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
             </div>
           </div>
-          <button class="report-close-btn" onclick="reportState.expandedId=null;renderReports();" aria-label="关闭详情">×</button>
+          <button class="report-close-btn" onclick="reportState.expandedId=null;history.replaceState(null,'',window.location.pathname);renderReports();" aria-label="关闭详情">×</button>
         </div>
         <div class="company-snapshot">
           <div class="snapshot-card">
@@ -2755,7 +2755,7 @@
               <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
             </div>
           </div>
-          <button class="report-close-btn" onclick="reportState.expandedId=null;renderReports();" aria-label="关闭详情">×</button>
+          <button class="report-close-btn" onclick="reportState.expandedId=null;history.replaceState(null,'',window.location.pathname);renderReports();" aria-label="关闭详情">×</button>
         </div>
         <div class="report-evidence-box">
           <h4>生命线结论</h4>
@@ -2785,6 +2785,12 @@
         card.addEventListener("click", () => {
           const id = card.dataset.reportId;
           reportState.expandedId = reportState.expandedId === id ? null : id;
+          // Update URL hash for deep linking
+          if (reportState.expandedId) {
+            history.replaceState(null, '', '#report-' + id);
+          } else {
+            history.replaceState(null, '', window.location.pathname);
+          }
           renderReports();
           if (reportState.expandedId) {
             const detailEl = document.getElementById("reportDetail-" + id);
@@ -2819,6 +2825,35 @@
 
     setupReportFilters();
     renderReports();
+
+    // Deep link routing: open a specific report from URL hash
+    function handleReportDeepLink() {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#report-')) {
+        const reportId = hash.substring(1); // e.g. 'report-007'
+        const targetReport = reportsData.find(r => r.id === reportId);
+        if (targetReport) {
+          // Switch to deep reports module
+          switchModule('deep-reports');
+          // Set filter to match this report's type
+          reportState.type = 'all';
+          reportState.confidence = '全部';
+          reportState.query = '';
+          reportState.expandedId = reportId;
+          setupReportFilters();
+          renderReports();
+          // Scroll to the expanded report after DOM updates
+          setTimeout(() => {
+            const detailEl = document.getElementById('reportDetail-' + reportId);
+            if (detailEl) detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 200);
+        }
+      }
+    }
+    handleReportDeepLink();
+
+    // Also handle back/forward navigation
+    window.addEventListener('hashchange', handleReportDeepLink);
   </script>
 </body>
 </html>

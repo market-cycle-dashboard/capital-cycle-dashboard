@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-05-13",
+  "provider": "akshare",
+  "source_function": "stock_financial_analysis_indicator",
+  "start_year": "2024",
+  "stocks": [
+    {
+      "symbol": "000001.SZ",
+      "name": "平安银行",
+      "market": "A股",
+      "latest_report_date": "2026-03-31",
+      "roe": 2.67,
+      "debt_to_assets": 90.983,
+      "operating_cashflow_to_net_profit": 2.6029,
+      "revenue_growth": null,
+      "net_profit_growth": 3.0292
+    },
+    {
+      "symbol": "300750.SZ",
+      "name": "宁德时代",
+      "market": "A股",
+      "latest_report_date": "2026-03-31",
+      "roe": 5.8,
+      "debt_to_assets": 62.3223,
+      "operating_cashflow_to_net_profit": 1.4813,
+      "revenue_growth": 52.4487,
+      "net_profit_growth": 52.993
+    },
+    {
+      "symbol": "600519.SH",
+      "name": "贵州茅台",
+      "market": "A股",
+      "latest_report_date": "2026-03-31",
+      "roe": 10.06,
+      "debt_to_assets": 12.1227,
+      "operating_cashflow_to_net_profit": 0.9558,
+      "revenue_growth": 6.538,
+      "net_profit_growth": 1.3653
+    }
+  ]
+}

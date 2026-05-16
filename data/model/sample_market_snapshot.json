@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-05-13",
+  "window": {
+    "start": "2025-01-01",
+    "end": "2026-05-13"
+  },
+  "providers": [
+    "tencent",
+    "fred"
+  ],
+  "stocks": [
+    {
+      "symbol": "000001.SZ",
+      "name": "平安银行",
+      "market": "A股",
+      "start_date": "2025-01-02",
+      "end_date": "2026-05-13",
+      "start_close": 10.832,
+      "end_close": 11.14,
+      "period_return_pct": 2.8434,
+      "latest_amount": null
+    },
+    {
+      "symbol": "300750.SZ",
+      "name": "宁德时代",
+      "market": "A股",
+      "start_date": "2025-01-02",
+      "end_date": "2026-05-13",
+      "start_close": 245.11,
+      "end_close": 434.05,
+      "period_return_pct": 77.0838,
+      "latest_amount": null
+    },
+    {
+      "symbol": "600519.SH",
+      "name": "贵州茅台",
+      "market": "A股",
+      "start_date": "2025-01-02",
+      "end_date": "2026-05-13",
+      "start_close": 1436.443,
+      "end_close": 1344.09,
+      "period_return_pct": -6.4293,
+      "latest_amount": null
+    }
+  ],
+  "macro": [
+    {
+      "series_id": "BAMLH0A0HYM2",
+      "series_name": "US High Yield OAS",
+      "latest_date": "2026-05-11",
+      "latest_value": 2.79
+    },
+    {
+      "series_id": "DGS10",
+      "series_name": "US 10Y Treasury Yield",
+      "latest_date": "2026-05-11",
+      "latest_value": 4.42
+    }
+  ]
+}
