@@ -424,6 +424,49 @@ window.REPORTS_DATA = {
       linkedModules: [],
       linkedIndustryId: null,
       markdownFile: "reports/popmart-deep-report.md"
+    },
+    {
+      id: "report-009",
+      type: "company",
+      title: "京东方 A：面板双寡头时代的周期与价值",
+      subtitle: "全球 LCD 龙头 × OLED 转型 × ROE 能否突破资本成本",
+      author: "NSC Research",
+      date: "2026-05-16",
+      tags: ["京东方", "BOE", "面板", "LCD", "OLED", "周期股", "A股"],
+      company: "京东方A",
+      industry: "半导体显示",
+      market: "A股",
+      status: "published",
+      confidence: "中",
+      conclusion: "京东方A（000725.SZ）是全球面板龙头，LCD出货面积全球第一。双寡头格局初步形成，但5年平均ROE仅7.4%，低于10%资本成本——公司目前不创造经济价值。EPV约2.0元/股，当前4.14元是EPV的2倍，安全边际不存在。理想买入区间3.0元以下。",
+      keyEvidence: [
+        "2025年收入2046亿元，归母净利润58.6亿元，ROE仅4.4%，远低于10%资本成本",
+        "5年平均ROE 7.4%，EPV≈AV，几乎不存在经济商誉——规模优势未转化为超额回报",
+        "全球LCD产能高度集中于京东方+TCL华星，双寡头定价权初步形成",
+        "TCL华星2025年净利润80.1亿已超过京东方58.6亿，经营效率反超是警惕信号",
+        "Q公式显示ROE<资本成本时合理PB应低于1，当前PB 1.14x意味市场在赌ROE提升"
+      ],
+      sections: [
+        {
+          title: "核心矛盾",
+          content: "京东方的核心矛盾是：全球面板龙头的规模优势是否能在双寡头格局下转化为真实的超额回报？5年平均ROE 7.4%低于10%资本成本，说明目前为止答案是否定的。市场正在提前定价'格局改善→ROE提升'的逻辑，但财务数据尚未验证。"
+        },
+        {
+          title: "竞争与护城河",
+          content: "产能规模护城河为宽，但综合护城河仅为中等。关键问题是TCL华星2025年净利润已反超京东方——规模最大≠效率最高。面板行业利润夹在高壁垒上游和强势下游之间，结构性薄利。护城河→WACC取10.5%。"
+        },
+        {
+          title: "估值与买入纪律",
+          content: "EPV约2.0元/股，AV约2.0元/股。EPV≈AV说明不存在经济商誉。当前4.14元是EPV的2倍。股东权益回报率3.9%（远低于10%门槛）。分红回本40年以上。三个成长价值验证工具全部不达标。理想买入区间3.0元以下。"
+        },
+        {
+          title: "风险与跟踪指标",
+          content: "面板价格下行压力测试：EPV降至0.64元，下行85%，完全不可吸收。OLED转型不及预期：EPV降至0.59元，同样不可吸收。核心跟踪：ROE是否突破7%、OLED良率、LCD价格稳定性、是否再次定增、TCL华星利润率趋势。"
+        }
+      ],
+      linkedModules: [],
+      linkedIndustryId: null,
+      markdownFile: "reports/boe-deep-report.md"
     }
   ]
 };
