@@ -7,6 +7,98 @@ window.REPORTS_DATA = {
   updatedAt: "2026-05-16",
   reports: [
     {
+      id: "report-century-ge",
+      type: "century",
+      title: "GE 百年专题：从发明家企业到工业组合的生命脉络",
+      subtitle: "用长期历史理解一家公司的业务扩张、管理更替、资本配置与回报周期",
+      author: "NSC Research",
+      date: "2026-05-15",
+      tags: ["GE", "百年专题", "公司史", "资本配置"],
+      company: "General Electric",
+      industry: "综合工业",
+      market: "US",
+      status: "published",
+      confidence: "中",
+      conclusion: "GE 的百年史不是单一产品公司的成长史，而是一部工业技术、金融扩张、管理文化和资本配置反复切换的历史。研究这类公司，关键不是只看某一年的利润，而是识别每个阶段的主导业务、管理层目标和资本回报来源。",
+      keyEvidence: [
+        "早期依靠电气化和工程能力建立工业平台，随后不断进入新产业。",
+        "管理层更替往往对应资本配置范式变化，从工程导向到组合管理，再到去金融化和业务收缩。",
+        "长期复盘能帮助识别公司从成长、扩张、复杂化到重新聚焦的完整生命周期。"
+      ],
+      timeline: [
+        { period: "1878-1892", title: "成立前夜", summary: "爱迪生体系和 Thomson-Houston 等电气公司奠定技术与商业化基础，电气化成为新产业浪潮。" },
+        { period: "1892-1922", title: "工业平台形成", summary: "合并后的 GE 围绕电力设备、照明和工程能力建立平台型工业公司形态。" },
+        { period: "1922-1950", title: "接班与战争周期", summary: "公司在管理制度、生产能力和大型工业需求中扩张，战争和基础设施需求强化制造能力。" },
+        { period: "1950-1981", title: "多元化与去中心化", summary: "业务边界扩张，管理体系复杂化，GE 从单一工业公司逐渐变成大型综合集团。" },
+        { period: "1981-2000", title: "Jack Welch 时代", summary: "强调效率、排名、资本回报和组合管理，金融业务与工业业务共同推高集团估值。" },
+        { period: "2000-2017", title: "后 Welch 调整", summary: "金融化和复杂集团折价暴露，资产出售、去金融化和重新聚焦成为主线。" }
+      ],
+      sections: [
+        {
+          title: "如何读百年公司",
+          content: "百年专题的目标不是写传记，而是拆解公司在不同历史阶段的主导矛盾：靠什么业务赚钱、资本投向哪里、管理层如何定义增长、回报率为何上升或下降。这样的框架能把公司史和资本周期连接起来。"
+        },
+        {
+          title: "投资研究含义",
+          content: "公司生命线能帮助投资者避免只看短期财务表。对 GE 这类公司，单一指标常常会被业务组合变化掩盖，必须把产业周期、管理层战略和资本配置放在同一张时间线上看。"
+        }
+      ],
+      linkedModules: ["capital-cycle"],
+      linkedIndustryId: null
+    },
+    {
+      id: "report-card-fedex",
+      type: "company-card",
+      title: "FedEx 公司卡片：快递网络、业务结构与成长变化",
+      subtitle: "用一张卡片快速理解公司做什么、靠什么增长、和谁竞争",
+      author: "NSC Research",
+      date: "2026-05-15",
+      tags: ["FedEx", "公司卡片", "物流", "业务结构"],
+      company: "FedEx",
+      industry: "综合物流",
+      market: "US",
+      status: "published",
+      confidence: "中",
+      conclusion: "FedEx 的核心资产是全球航空快递网络和地面配送网络。公司成长史体现为网络密度、服务半径和并购整合的叠加，研究重点应放在包裹量、单票收入、网络成本和竞争格局变化。",
+      quickStats: [
+        { label: "核心业务", value: "Express / Ground / Freight" },
+        { label: "竞争对手", value: "UPS / DHL" },
+        { label: "成长方式", value: "网络扩张 + 并购整合" },
+        { label: "关键变量", value: "包裹量、单价、成本率" }
+      ],
+      businessMix: [
+        { name: "FedEx Express", share: 45 },
+        { name: "FedEx Ground", share: 30 },
+        { name: "TNT Express", share: 12 },
+        { name: "FedEx Freight", share: 11 },
+        { name: "Services", share: 3 }
+      ],
+      keyEvidence: [
+        "业务由航空快递、地面配送、货运和服务平台构成，网络协同是核心壁垒。",
+        "1998 年后多次并购补齐地面货运、办公服务和国际网络能力。",
+        "财务分析要同时看收入增速、运营利润率、资本开支和周转效率。"
+      ],
+      timeline: [
+        { period: "1970s-1980s", title: "航空快递网络起步", summary: "以隔夜快递和航空枢纽网络建立差异化，核心是速度和可靠性。" },
+        { period: "1998", title: "地面货运能力补齐", summary: "通过收购强化地面运输和区域配送能力，网络从空运向综合物流延伸。" },
+        { period: "2000", title: "面向 C 端配送", summary: "拓展 Home Delivery 等服务，适应电商和居民配送需求。" },
+        { period: "2004", title: "办公服务并购", summary: "收购 Kinko's，尝试把物流触点和办公服务网络结合。" },
+        { period: "2016", title: "国际网络扩张", summary: "收购 TNT Express 强化欧洲和跨境网络，但也带来整合成本。" }
+      ],
+      sections: [
+        {
+          title: "公司卡片怎么用",
+          content: "公司卡片用于快速建立研究对象的第一印象：管理层、业务构成、竞争对手、成长路径和核心财务变量。它不是完整深度报告，而是进入研究前的速览页。"
+        },
+        {
+          title: "后续可补充字段",
+          content: "真实版本可以继续补充年度财务表、分部利润率、区域收入、并购价格、资本开支、员工数、包裹量和单票收入等字段。"
+        }
+      ],
+      linkedModules: [],
+      linkedIndustryId: null
+    },
+    {
       id: "report-001",
       type: "industry",
       title: "锂电行业资本周期深度：供给出清拐点何时到来？",

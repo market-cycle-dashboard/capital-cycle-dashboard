@@ -1125,6 +1125,8 @@
     .report-type-badge.industry { background: var(--teal); }
     .report-type-badge.company { background: var(--blue); }
     .report-type-badge.theme { background: var(--amber); }
+    .report-type-badge.century { background: var(--charcoal); }
+    .report-type-badge.company-card { background: var(--violet); }
 
     .report-card-date {
       color: var(--muted);
@@ -1299,6 +1301,114 @@
       border-color: rgba(23,33,29,.3);
     }
 
+    .company-snapshot {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .snapshot-card {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.4);
+      padding: 14px;
+    }
+
+    .snapshot-card h4,
+    .timeline-panel h4 {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .snapshot-metric {
+      border-top: 2px solid var(--ink);
+      padding-top: 8px;
+      min-height: 58px;
+    }
+
+    .snapshot-metric b {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .snapshot-metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .business-bars {
+      display: grid;
+      gap: 8px;
+    }
+
+    .business-bar {
+      display: grid;
+      grid-template-columns: minmax(90px, 1fr) 2fr auto;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .business-track {
+      height: 8px;
+      background: rgba(23,33,29,.09);
+      overflow: hidden;
+    }
+
+    .business-fill {
+      height: 100%;
+      background: var(--teal);
+    }
+
+    .timeline-panel {
+      border: 1px solid var(--line);
+      background: #fffaf0;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .life-timeline {
+      display: grid;
+      gap: 10px;
+      position: relative;
+    }
+
+    .life-event {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .life-event time {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      color: var(--red);
+      font-size: 12px;
+    }
+
+    .life-event b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .life-event p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .reports-empty {
       grid-column: 1 / -1;
       padding: 40px;
@@ -1310,10 +1420,14 @@
     @media (max-width: 1180px) {
       .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .reports-thesis { grid-template-columns: 1fr; }
+      .company-snapshot { grid-template-columns: 1fr; }
     }
     @media (max-width: 680px) {
       .report-grid { grid-template-columns: 1fr; }
       .report-detail-header { grid-template-columns: 1fr; }
+      .snapshot-grid { grid-template-columns: 1fr; }
+      .business-bar { grid-template-columns: 1fr; }
+      .life-event { grid-template-columns: 1fr; gap: 4px; }
     }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KPH20KFDWH"></script>
@@ -1365,9 +1479,10 @@
             <span><strong>深度报告</strong><span>行业、公司与主题深度研究</span></span>
           </a>
           <div class="subnav">
+            <a href="#deep-reports-module" data-report-type="century">百年专题</a>
+            <a href="#deep-reports-module" data-report-type="company-card">公司卡片</a>
             <a href="#deep-reports-module" data-report-type="industry">行业报告</a>
             <a href="#deep-reports-module" data-report-type="company">公司报告</a>
-            <a href="#deep-reports-module" data-report-type="theme">主题报告</a>
           </div>
           <a class="nav-link muted" href="#module-liquidity">
             <span class="nav-index">03</span>
@@ -1557,8 +1672,8 @@
         <section class="reports-module module-view hidden" id="deep-reports-module">
           <section class="reports-thesis panel">
             <div>
-              <h2>深度报告：行业、公司与主题研究</h2>
-              <p>深度报告回答一个核心问题——某个行业、公司或主题的核心矛盾是什么？每篇报告包含结论、关键证据、分段分析和投资含义，并关联到资本周期等量化模块。</p>
+              <h2>深度报告：公司生命线、公司卡片与主题研究</h2>
+              <p>深度报告回答一个核心问题：一家公司如何穿越周期、业务结构如何变化、成长线索是否仍在。百年专题看长期生命脉络，公司卡片负责快速复盘业务、管理层、竞争和财务变化。</p>
             </div>
             <div class="numbers">
               <div class="number"><b id="reportTotal">0</b><span>报告总数</span></div>
@@ -2442,8 +2557,8 @@
 
     /* ══ Deep Reports Module ══ */
     const reportsData = (window.REPORTS_DATA || {}).reports || [];
-    const reportTypeLabels = { industry: "行业报告", company: "公司报告", theme: "主题报告" };
-    const reportTypeColors = { industry: "var(--teal)", company: "var(--blue)", theme: "var(--amber)" };
+    const reportTypeLabels = { industry: "行业报告", company: "公司报告", theme: "主题报告", century: "百年专题", "company-card": "公司卡片" };
+    const reportTypeColors = { industry: "var(--teal)", company: "var(--blue)", theme: "var(--amber)", century: "var(--charcoal)", "company-card": "var(--violet)" };
     const reportConfLevels = ["全部", "高", "中高", "中", "低"];
     const reportState = { type: "全部", query: "", confidence: "全部", expandedId: null };
 
@@ -2458,13 +2573,13 @@
         if (r.status !== "published") return false;
         const typeOk = reportState.type === "全部" || r.type === reportState.type;
         const confOk = reportState.confidence === "全部" || r.confidence === reportState.confidence;
-        const queryOk = !q || r.title.toLowerCase().includes(q) || (r.tags || []).some(t => t.toLowerCase().includes(q)) || (r.industry || "").toLowerCase().includes(q) || (r.subtitle || "").toLowerCase().includes(q);
+        const queryOk = !q || r.title.toLowerCase().includes(q) || (r.company || "").toLowerCase().includes(q) || (r.tags || []).some(t => t.toLowerCase().includes(q)) || (r.industry || "").toLowerCase().includes(q) || (r.subtitle || "").toLowerCase().includes(q);
         return typeOk && confOk && queryOk;
       });
     }
 
     function setupReportFilters() {
-      const types = ["全部", "industry", "company", "theme"];
+      const types = ["全部", "century", "company-card", "industry", "company", "theme"];
       reportTypeFilter.innerHTML = types.map(t => {
         const label = t === "全部" ? "全部" : reportTypeLabels[t];
         return `<button class="chip ${t === reportState.type ? "active" : ""}" data-type="${t}">${label}</button>`;
@@ -2483,11 +2598,13 @@
 
     function renderReportCard(r) {
       const isExpanded = reportState.expandedId === r.id;
+      const cardKpis = (r.quickStats || []).slice(0, 2).map(s => `<span class="report-card-date">${s.label}: ${s.value}</span>`).join("");
       return `<div class="report-card ${isExpanded ? "active" : ""}" data-report-id="${r.id}">
         <div class="report-card-head">
           <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type] || r.type}</span>
           <span class="report-card-date">${r.date}</span>
           ${r.market ? `<span class="report-card-date">${r.market}</span>` : ""}
+          ${cardKpis}
         </div>
         <h3>${r.title}</h3>
         <div class="report-card-subtitle">${r.subtitle || ""}</div>
@@ -2501,6 +2618,8 @@
     }
 
     function renderReportDetail(r) {
+      if (r.type === "company-card") return renderCompanyCardDetail(r);
+      if (r.type === "century") return renderCenturyDetail(r);
       const sectionsHtml = (r.sections || []).map(s =>
         `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`
       ).join("");
@@ -2532,6 +2651,73 @@
         </div>
         <div class="report-sections">${sectionsHtml}</div>
         ${linksHtml}
+      </div>`;
+    }
+
+    function renderCompanyCardDetail(r) {
+      const metricsHtml = (r.quickStats || []).map(s => `<div class="snapshot-metric"><b>${s.value}</b><span>${s.label}</span></div>`).join("");
+      const businessHtml = (r.businessMix || []).map(item => `<div class="business-bar">
+        <span>${item.name}</span>
+        <div class="business-track"><div class="business-fill" style="width:${Math.max(0, Math.min(100, Number(item.share) || 0))}%"></div></div>
+        <b>${item.share}%</b>
+      </div>`).join("");
+      const timelineHtml = (r.timeline || []).map(e => `<div class="life-event"><time>${e.period}</time><div><b>${e.title}</b><p>${e.summary}</p></div></div>`).join("");
+      const sectionsHtml = (r.sections || []).map(s => `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`).join("");
+      return `<div class="report-detail-panel" id="reportDetail-${r.id}">
+        <div class="report-detail-header">
+          <div>
+            <h2>${r.title}</h2>
+            <div class="report-detail-meta">
+              <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type]}</span>
+              ${r.company ? `<span class="badge">${r.company}</span>` : ""}
+              ${r.market ? `<span class="badge">${r.market}</span>` : ""}
+              <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
+            </div>
+          </div>
+          <button class="report-close-btn" onclick="reportState.expandedId=null;renderReports();" aria-label="关闭详情">×</button>
+        </div>
+        <div class="company-snapshot">
+          <div class="snapshot-card">
+            <h4>公司速览</h4>
+            <div class="snapshot-grid">${metricsHtml}</div>
+          </div>
+          <div class="snapshot-card">
+            <h4>业务构成</h4>
+            <div class="business-bars">${businessHtml}</div>
+          </div>
+        </div>
+        <div class="report-evidence-box">
+          <h4>卡片结论</h4>
+          <p>${r.conclusion}</p>
+          <ul class="report-evidence-list">${(r.keyEvidence || []).map(e => `<li>${e}</li>`).join("")}</ul>
+        </div>
+        <div class="timeline-panel"><h4>业务与成长变化</h4><div class="life-timeline">${timelineHtml}</div></div>
+        <div class="report-sections">${sectionsHtml}</div>
+      </div>`;
+    }
+
+    function renderCenturyDetail(r) {
+      const timelineHtml = (r.timeline || []).map(e => `<div class="life-event"><time>${e.period}</time><div><b>${e.title}</b><p>${e.summary}</p></div></div>`).join("");
+      const sectionsHtml = (r.sections || []).map(s => `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`).join("");
+      return `<div class="report-detail-panel" id="reportDetail-${r.id}">
+        <div class="report-detail-header">
+          <div>
+            <h2>${r.title}</h2>
+            <div class="report-detail-meta">
+              <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type]}</span>
+              ${r.company ? `<span class="badge">${r.company}</span>` : ""}
+              <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
+            </div>
+          </div>
+          <button class="report-close-btn" onclick="reportState.expandedId=null;renderReports();" aria-label="关闭详情">×</button>
+        </div>
+        <div class="report-evidence-box">
+          <h4>生命线结论</h4>
+          <p>${r.conclusion}</p>
+          <ul class="report-evidence-list">${(r.keyEvidence || []).map(e => `<li>${e}</li>`).join("")}</ul>
+        </div>
+        <div class="timeline-panel"><h4>公司生命脉络</h4><div class="life-timeline">${timelineHtml}</div></div>
+        <div class="report-sections">${sectionsHtml}</div>
       </div>`;
     }
 
