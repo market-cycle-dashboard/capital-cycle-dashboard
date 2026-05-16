@@ -2528,7 +2528,8 @@
     const deepReportsContent = document.getElementById("deep-reports-module");
     const moduleCards = document.querySelectorAll(".module-card");
 
-    function switchModule(moduleId) {
+    function switchModule(moduleId, options = {}) {
+      const { scroll = true } = options;
       // Toggle visibility
       capitalCycleContent.classList.toggle("hidden", moduleId !== "capital-cycle");
       deepReportsContent.classList.toggle("hidden", moduleId !== "deep-reports");
@@ -2544,8 +2545,9 @@
         }
       });
 
-      // Scroll to top of module
-      document.getElementById("site-directory").scrollIntoView({ behavior: "smooth" });
+      if (scroll) {
+        document.getElementById("site-directory").scrollIntoView({ behavior: "smooth" });
+      }
     }
 
     // Module card click handlers
@@ -2584,6 +2586,32 @@
     const reportTypeFilter = document.getElementById("reportTypeFilter");
     const reportConfFilter = document.getElementById("reportConfFilter");
     const reportSearchInput = document.getElementById("reportSearch");
+
+    function getReportIdFromHash(hash = window.location.hash) {
+      if (!hash || !hash.startsWith("#report-")) return null;
+      const raw = decodeURIComponent(hash.slice(1));
+      if (reportsData.some(r => r.id === raw)) return raw;
+
+      // Backward compatibility for mistakenly shared links like #report-report-008.
+      const withoutExtraPrefix = raw.replace(/^report-/, "");
+      if (reportsData.some(r => r.id === withoutExtraPrefix)) return withoutExtraPrefix;
+      return null;
+    }
+
+    function setReportHash(reportId, mode = "replace") {
+      const nextHash = reportId ? `#${reportId}` : "#deep-reports-module";
+      if (window.location.hash === nextHash) return;
+      const method = mode === "push" ? "pushState" : "replaceState";
+      history[method](null, "", nextHash);
+    }
+
+    function closeReportDetail() {
+      reportState.expandedId = null;
+      setReportHash(null);
+      renderReports();
+    }
+
+    window.closeReportDetail = closeReportDetail;
 
     function filteredReports() {
       const q = reportState.query.trim().toLowerCase();
@@ -2686,7 +2714,7 @@
               <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
             </div>
           </div>
-          <button class="report-close-btn" onclick="reportState.expandedId=null;history.replaceState(null,'',window.location.pathname);renderReports();" aria-label="关闭详情">×</button>
+          <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
         </div>
         ${hasFullMd ? '' : `<div class="report-evidence-box">
           <h4>核心结论</h4>
@@ -2720,7 +2748,7 @@
               <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
             </div>
           </div>
-          <button class="report-close-btn" onclick="reportState.expandedId=null;history.replaceState(null,'',window.location.pathname);renderReports();" aria-label="关闭详情">×</button>
+          <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
         </div>
         <div class="company-snapshot">
           <div class="snapshot-card">
@@ -2755,7 +2783,7 @@
               <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
             </div>
           </div>
-          <button class="report-close-btn" onclick="reportState.expandedId=null;history.replaceState(null,'',window.location.pathname);renderReports();" aria-label="关闭详情">×</button>
+          <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
         </div>
         <div class="report-evidence-box">
           <h4>生命线结论</h4>
@@ -2785,11 +2813,10 @@
         card.addEventListener("click", () => {
           const id = card.dataset.reportId;
           reportState.expandedId = reportState.expandedId === id ? null : id;
-          // Update URL hash for deep linking
           if (reportState.expandedId) {
-            history.replaceState(null, '', '#report-' + id);
+            setReportHash(id, "push");
           } else {
-            history.replaceState(null, '', window.location.pathname);
+            setReportHash(null, "push");
           }
           renderReports();
           if (reportState.expandedId) {
@@ -2823,37 +2850,42 @@
       renderReports();
     });
 
-    setupReportFilters();
-    renderReports();
+    function openReportFromHash({ initial = false } = {}) {
+      const reportId = getReportIdFromHash();
+      if (!reportId) return false;
 
-    // Deep link routing: open a specific report from URL hash
-    function handleReportDeepLink() {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#report-')) {
-        const reportId = hash.substring(1); // e.g. 'report-007'
-        const targetReport = reportsData.find(r => r.id === reportId);
-        if (targetReport) {
-          // Switch to deep reports module
-          switchModule('deep-reports');
-          // Set filter to match this report's type
-          reportState.type = 'all';
-          reportState.confidence = '全部';
-          reportState.query = '';
-          reportState.expandedId = reportId;
-          setupReportFilters();
-          renderReports();
-          // Scroll to the expanded report after DOM updates
-          setTimeout(() => {
-            const detailEl = document.getElementById('reportDetail-' + reportId);
-            if (detailEl) detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 200);
-        }
-      }
+      const targetReport = reportsData.find(r => r.id === reportId);
+      if (!targetReport) return false;
+
+      switchModule("deep-reports", { scroll: !initial });
+      reportState.type = "全部";
+      reportState.confidence = "全部";
+      reportState.query = "";
+      reportState.expandedId = reportId;
+      reportSearchInput.value = "";
+      setupReportFilters();
+      renderReports();
+
+      setReportHash(reportId);
+      setTimeout(() => {
+        const detailEl = document.getElementById("reportDetail-" + reportId);
+        if (detailEl) detailEl.scrollIntoView({ behavior: initial ? "auto" : "smooth", block: "start" });
+      }, initial ? 0 : 100);
+      return true;
     }
-    handleReportDeepLink();
 
-    // Also handle back/forward navigation
-    window.addEventListener('hashchange', handleReportDeepLink);
+    const openedInitialReport = openReportFromHash({ initial: true });
+    if (!openedInitialReport) {
+      setupReportFilters();
+      renderReports();
+    }
+
+    window.addEventListener("hashchange", () => {
+      if (!openReportFromHash()) {
+        reportState.expandedId = null;
+        renderReports();
+      }
+    });
   </script>
 </body>
 </html>
