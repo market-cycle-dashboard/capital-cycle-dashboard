@@ -6,6 +6,7 @@
   <title>A股资本周期波浪图</title>
   <script src="data.js"></script>
   <script src="reports-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
       --paper: #f4efe5;
@@ -1429,6 +1430,23 @@
       .business-bar { grid-template-columns: 1fr; }
       .life-event { grid-template-columns: 1fr; gap: 4px; }
     }
+
+    /* ── Full Markdown Report ── */
+    .report-full-md { font-size: 14px; line-height: 1.78; color: var(--ink); }
+    .report-full-md h1 { font-size: 22px; margin: 24px 0 12px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+    .report-full-md h2 { font-size: 18px; margin: 22px 0 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+    .report-full-md h3 { font-size: 15px; margin: 18px 0 8px; }
+    .report-full-md h4 { font-size: 14px; margin: 14px 0 6px; }
+    .report-full-md p { margin: 8px 0; }
+    .report-full-md hr { border: none; border-top: 1px solid var(--line); margin: 20px 0; }
+    .report-full-md table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .report-full-md th, .report-full-md td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }
+    .report-full-md th { background: rgba(244,239,229,.6); font-weight: 600; }
+    .report-full-md strong { color: var(--ink); }
+    .report-full-md ul, .report-full-md ol { padding-left: 20px; margin: 8px 0; }
+    .report-full-md li { margin: 4px 0; }
+    .report-full-md blockquote { border-left: 3px solid var(--red); padding: 8px 14px; margin: 12px 0; background: rgba(244,239,229,.3); color: var(--muted); }
+    .report-md-loading { padding: 40px; text-align: center; color: var(--muted); font-size: 14px; }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KPH20KFDWH"></script>
   <script>
@@ -2620,15 +2638,43 @@
     function renderReportDetail(r) {
       if (r.type === "company-card") return renderCompanyCardDetail(r);
       if (r.type === "century") return renderCenturyDetail(r);
-      const sectionsHtml = (r.sections || []).map(s =>
-        `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`
-      ).join("");
+
+      // If report has a full markdown file, show loading placeholder and fetch it
+      const hasFullMd = !!r.markdownFile;
+      const sectionsHtml = hasFullMd
+        ? `<div class="report-md-loading" id="mdContent-${r.id}">正在加载完整报告…</div>`
+        : (r.sections || []).map(s =>
+            `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`
+          ).join("");
       const linksHtml = (r.linkedModules || []).includes("capital-cycle")
         ? `<div class="report-links">
-            <button class="report-module-link" onclick="document.getElementById('capital-cycle-module').scrollIntoView({behavior:'smooth'})">→ 查看资本周期模块</button>
-            <button class="report-module-link" onclick="document.getElementById('research-radar').scrollIntoView({behavior:'smooth'})">→ 行业研究雷达</button>
-            <button class="report-module-link" onclick="document.getElementById('pb-roe-map').scrollIntoView({behavior:'smooth'})">→ PB-ROE 估值地图</button>
+            <button class="report-module-link" onclick="switchModule('capital-cycle')">→ 查看资本周期模块</button>
+            <button class="report-module-link" onclick="switchModule('capital-cycle');setTimeout(()=>document.getElementById('research-radar')?.scrollIntoView({behavior:'smooth'}),300)">→ 行业研究雷达</button>
+            <button class="report-module-link" onclick="switchModule('capital-cycle');setTimeout(()=>document.getElementById('pb-roe-map')?.scrollIntoView({behavior:'smooth'}),300)">→ PB-ROE 估值地图</button>
           </div>` : "";
+
+      // Schedule markdown loading after DOM insert
+      if (hasFullMd) {
+        setTimeout(() => {
+          fetch(r.markdownFile)
+            .then(res => res.ok ? res.text() : Promise.reject('fetch failed'))
+            .then(md => {
+              const el = document.getElementById('mdContent-' + r.id);
+              if (el && typeof marked !== 'undefined') {
+                el.className = 'report-full-md';
+                el.innerHTML = marked.parse(md);
+              } else if (el) {
+                el.innerHTML = '<pre style="white-space:pre-wrap;font-size:13px;line-height:1.7">' + md.replace(/</g,'&lt;') + '</pre>';
+                el.className = 'report-full-md';
+              }
+            })
+            .catch(() => {
+              const el = document.getElementById('mdContent-' + r.id);
+              if (el) el.textContent = '报告加载失败，请刷新重试。';
+            });
+        }, 50);
+      }
+
       return `<div class="report-detail-panel" id="reportDetail-${r.id}">
         <div class="report-detail-header">
           <div>
@@ -2642,13 +2688,13 @@
           </div>
           <button class="report-close-btn" onclick="reportState.expandedId=null;renderReports();" aria-label="关闭详情">×</button>
         </div>
-        <div class="report-evidence-box">
+        ${hasFullMd ? '' : `<div class="report-evidence-box">
           <h4>核心结论</h4>
           <p>${r.conclusion}</p>
           <ul class="report-evidence-list">
             ${(r.keyEvidence || []).map(e => `<li>${e}</li>`).join("")}
           </ul>
-        </div>
+        </div>`}
         <div class="report-sections">${sectionsHtml}</div>
         ${linksHtml}
       </div>`;

@@ -375,7 +375,8 @@ window.REPORTS_DATA = {
         }
       ],
       linkedModules: ["capital-cycle"],
-      linkedIndustryId: null
+      linkedIndustryId: null,
+      markdownFile: "reports/vstecs-deep-report.md"
     }
   ]
 };
