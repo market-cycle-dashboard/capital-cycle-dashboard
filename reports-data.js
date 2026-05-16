@@ -427,3 +427,148 @@ window.REPORTS_DATA = {
     }
   ]
 };
+
+(function setupReportDeepLinkFallback() {
+  function normalizeReportHash(hash) {
+    if (!hash || !hash.startsWith("#report-")) return null;
+    const raw = decodeURIComponent(hash.slice(1));
+    const reports = (window.REPORTS_DATA && window.REPORTS_DATA.reports) || [];
+    if (reports.some(report => report.id === raw)) return raw;
+
+    const withoutExtraPrefix = raw.replace(/^report-/, "");
+    if (reports.some(report => report.id === withoutExtraPrefix)) return withoutExtraPrefix;
+    return null;
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function typeLabel(type) {
+    return {
+      industry: "行业报告",
+      company: "公司报告",
+      theme: "主题报告",
+      century: "百年专题",
+      "company-card": "公司卡片"
+    }[type] || type || "报告";
+  }
+
+  function renderDirectReport(report) {
+    const capitalCycleContent = document.getElementById("capital-cycle-content");
+    const deepReportsContent = document.getElementById("deep-reports-module");
+    const reportGrid = document.getElementById("reportGrid");
+    if (!deepReportsContent || !reportGrid) return false;
+
+    capitalCycleContent?.classList.add("hidden");
+    deepReportsContent.classList.remove("hidden");
+    document.getElementById("capital-cycle")?.classList.remove("active");
+    document.getElementById("module-reports")?.classList.add("active");
+
+    const tags = (report.tags || []).map(tag => `<span class="report-tag">${escapeHtml(tag)}</span>`).join("");
+    const evidence = (report.keyEvidence || []).map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    const summarySections = (report.sections || []).map(section => `
+      <div class="report-section-block">
+        <h4>${escapeHtml(section.title)}</h4>
+        <div class="section-text">${escapeHtml(section.content)}</div>
+      </div>
+    `).join("");
+
+    reportGrid.innerHTML = `
+      <div class="report-card active" data-report-id="${escapeHtml(report.id)}">
+        <div class="report-card-head">
+          <span class="report-type-badge ${escapeHtml(report.type)}">${escapeHtml(typeLabel(report.type))}</span>
+          <span class="report-card-date">${escapeHtml(report.date)}</span>
+          ${report.market ? `<span class="report-card-date">${escapeHtml(report.market)}</span>` : ""}
+        </div>
+        <h3>${escapeHtml(report.title)}</h3>
+        <div class="report-card-subtitle">${escapeHtml(report.subtitle || "")}</div>
+        <div class="report-card-conclusion">${escapeHtml(report.conclusion || "")}</div>
+        <div class="report-tags">${tags}</div>
+        <div class="report-card-footer">
+          <span class="report-confidence">置信度: ${escapeHtml(report.confidence || "")}</span>
+          <span class="report-card-date">${escapeHtml(report.author || "")}</span>
+        </div>
+      </div>
+      <div class="report-detail-panel" id="reportDetail-${escapeHtml(report.id)}">
+        <div class="report-detail-header">
+          <div>
+            <h2>${escapeHtml(report.title)}</h2>
+            <div class="report-detail-meta">
+              <span class="report-type-badge ${escapeHtml(report.type)}">${escapeHtml(typeLabel(report.type))}</span>
+              ${report.market ? `<span class="badge">${escapeHtml(report.market)}</span>` : ""}
+              ${report.industry ? `<span class="badge">${escapeHtml(report.industry)}</span>` : ""}
+              <span class="report-card-date">${escapeHtml(report.date)} · ${escapeHtml(report.author || "")} · 置信度 ${escapeHtml(report.confidence || "")}</span>
+            </div>
+          </div>
+          <button class="report-close-btn" data-report-close aria-label="关闭详情">×</button>
+        </div>
+        ${report.markdownFile ? `<div class="report-md-loading" id="directMdContent-${escapeHtml(report.id)}">正在加载完整报告…</div>` : `
+          <div class="report-evidence-box">
+            <h4>核心结论</h4>
+            <p>${escapeHtml(report.conclusion || "")}</p>
+            <ul class="report-evidence-list">${evidence}</ul>
+          </div>
+          <div class="report-sections">${summarySections}</div>
+        `}
+      </div>
+    `;
+
+    reportGrid.querySelector("[data-report-close]")?.addEventListener("click", () => {
+      history.replaceState(null, "", "#deep-reports-module");
+      const companyReportLink = document.querySelector('[data-report-type="company"]');
+      if (companyReportLink) {
+        companyReportLink.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      }
+      document.getElementById("deep-reports-module")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    if (report.markdownFile) {
+      fetch(report.markdownFile)
+        .then(response => response.ok ? response.text() : Promise.reject(new Error("markdown fetch failed")))
+        .then(markdown => {
+          const holder = document.getElementById("directMdContent-" + report.id);
+          if (!holder) return;
+          holder.className = "report-full-md";
+          holder.innerHTML = typeof marked !== "undefined"
+            ? marked.parse(markdown)
+            : `<pre style="white-space:pre-wrap;font-size:13px;line-height:1.7">${escapeHtml(markdown)}</pre>`;
+        })
+        .catch(() => {
+          const holder = document.getElementById("directMdContent-" + report.id);
+          if (holder) holder.textContent = "报告加载失败，请刷新重试。";
+        });
+    }
+
+    setTimeout(() => {
+      document.getElementById("reportDetail-" + report.id)?.scrollIntoView({ behavior: "auto", block: "start" });
+    }, 0);
+    return true;
+  }
+
+  function openReportHash() {
+    const reportId = normalizeReportHash(window.location.hash);
+    if (!reportId) return false;
+
+    const reports = (window.REPORTS_DATA && window.REPORTS_DATA.reports) || [];
+    const report = reports.find(item => item.id === reportId);
+    if (!report) return false;
+
+    if (window.location.hash !== "#" + reportId) {
+      history.replaceState(null, "", "#" + reportId);
+    }
+
+    return renderDirectReport(report);
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(openReportHash, 350);
+  });
+  window.addEventListener("hashchange", () => {
+    setTimeout(openReportHash, 80);
+  });
+})();
