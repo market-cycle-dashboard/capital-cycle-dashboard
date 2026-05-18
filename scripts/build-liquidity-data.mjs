@@ -176,15 +176,21 @@ const tgaDelta = deltas13("tga");
 const rrpLevel = baseRows.map(row => row.rrp);
 const dollarDelta = deltas13("dollarIndex");
 const sofrSpread = baseRows.map(row => Number.isFinite(row.sofrIorb) ? row.sofrIorb : 0);
+const fedAssetDelta = deltas13("fedAssets");
+const rrpExhaustionRisk = baseRows.map(row => {
+  if (!Number.isFinite(row.rrp)) return 0;
+  return clamp((50 - row.rrp) / 50, 0, 1);
+});
 
 const outputRows = baseRows.map((row, index) => {
   const impulse =
-    0.35 * zScore(netDelta, index) +
-    0.25 * zScore(reserveDelta, index) -
-    0.15 * zScore(tgaDelta, index) +
-    0.10 * zScore(rrpLevel, index) -
+    0.25 * zScore(netDelta, index) +
+    0.30 * zScore(reserveDelta, index) +
+    0.10 * zScore(fedAssetDelta, index) -
+    0.10 * zScore(tgaDelta, index) -
+    0.10 * zScore(rrpExhaustionRisk, index) -
     0.10 * zScore(dollarDelta, index) -
-    0.05 * zScore(sofrSpread, index);
+    0.15 * zScore(sofrSpread, index);
   const score = Math.round(clamp(50 + impulse * 10, 0, 100));
   const pressure = Math.round(clamp(100 - score, 0, 100));
   return {
@@ -215,12 +221,13 @@ const payload = {
     name: "Dollar Liquidity Pipe Score",
     description: "0-100 score. Higher means liquidity is more supportive for risk assets; lower means the system is closer to funding pressure. Offshore dollar pressure is currently proxied by broad dollar momentum and SOFR-IORB; direct EUR/USD and JPY/USD cross-currency basis series should replace the proxy when available.",
     weights: {
-      netLiquidityMomentum: 0.35,
-      reserveMomentum: 0.25,
-      tgaDrain: -0.15,
-      rrpBuffer: 0.10,
+      netLiquidityMomentum: 0.25,
+      reserveMomentum: 0.30,
+      fedAssetMomentum: 0.10,
+      tgaDrain: -0.10,
+      rrpExhaustionRisk: -0.10,
       offshoreDollarProxy: -0.10,
-      sofrIorbSpread: -0.05
+      sofrIorbSpread: -0.15
     },
     pendingSeries: [
       "SRF usage",

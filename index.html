@@ -2131,7 +2131,7 @@
               <article class="pipe-card"><b>5. Eurodollar：FX Swap / 基差</b><small id="pipeDollarValue">等待数据</small><div class="pipe-meter"><span id="pipeDollarMeter" style="width:44%"></span></div><p>离岸美元不是只看 DXY，而是看非美机构通过 FX swap 合成美元时，要为偏离 CIP 支付多少额外成本。</p></article>
               <article class="pipe-card"><b>6. SRF / SOFR-IORB：常规压力阀</b><small id="pipeSofrValue">等待数据</small><div class="pipe-meter"><span id="pipeSofrMeter" style="width:52%"></span></div><p>SRF 使用不再只意味着危机；SOFR-IORB 上穿和 SRF 频繁使用，说明准备金进入“够用但边际变贵”。</p></article>
             </div>
-            <p class="liquidity-footnote">当前版本接入 FRED：Fed 资产、TGA、ON RRP、准备金、SOFR、IORB 与广义美元指数。RMP 与 SRF 已进入框架解释层；Eurodollar 目前用 DXY 与 SOFR-IORB 作代理，下一步需接入 SRF 使用量、EUR/USD 与 JPY/USD 3M cross-currency basis、信用利差和美债期限溢价。</p>
+            <p class="liquidity-footnote">当前版本接入 FRED：Fed 资产、TGA、ON RRP、准备金、SOFR、IORB 与广义美元指数。模型权重已从“水量模型”改为“水位 + 融资价格 + 缓冲垫风险”：准备金与净流动性为核心，RRP 作为枯竭风险开关，SOFR-IORB 权重上调。Eurodollar 基差目前只展示，不参与总分。</p>
           </section>
 
           <section class="liquidity-dashboard" id="liquidity-dashboard">
@@ -2189,7 +2189,7 @@
               </article>
               <article class="basis-card">
                 <h3>它在模型里体现在哪</h3>
-                <p>当前仪表盘尚未直接接入基差序列，所以“离岸美元”只以广义美元指数和 SOFR-IORB 作代理：DXY 表示美元价格压力，SOFR-IORB 表示境内抵押融资堵点。它们不能替代基差，只能提示压力可能存在。</p>
+                <p>当前仪表盘尚未直接接入可用的基差序列，所以“离岸美元”只以广义美元指数和 SOFR-IORB 作代理：DXY 表示美元价格压力，SOFR-IORB 表示境内抵押融资堵点。它们不能替代基差，只能提示压力可能存在；真正的基差读数当前只展示授权状态，暂不参与模型总分。</p>
                 <code>当前代理：Offshore USD Proxy = DXY momentum + SOFR-IORB + RRP 枯竭</code>
                 <p>升级后应使用 3M EUR/USD basis、3M JPY/USD basis、FX swap implied USD rate 和 SRF 使用量，构成真正的海外美元压力分。</p>
               </article>
@@ -3272,7 +3272,7 @@
         { label: "模型总分", value: latest.score, text: latest.state },
         { label: "压力分数", value: latest.pressure, text: latest.pressure >= 60 ? "偏紧" : "可控" },
         { label: "TGA 抽水", value: Math.min(100, Math.round(latest.tga / 15)), text: `${latest.tga.toLocaleString()} bn` },
-        { label: "RRP 缓冲", value: Math.min(100, Math.round(latest.rrp / 25)), text: `${latest.rrp.toLocaleString()} bn` },
+        { label: "RRP 枯竭风险", value: Math.max(2, Math.min(100, Math.round((50 - latest.rrp) / 50 * 100))), text: `${latest.rrp.toLocaleString()} bn` },
         { label: "SOFR-IORB", value: Math.min(100, Math.max(0, Math.round((latest.sofrIorb || 0) * 1000 + 50))), text: latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%` }
       ];
 
@@ -3294,7 +3294,7 @@
           ["净流动性", `${latest.netLiquidity.toLocaleString()} bn`, "Fed资产 - TGA - RRP"],
           ["银行准备金", `${latest.reserves.toLocaleString()} bn`, "银行体系底层余额"],
           ["TGA", `${latest.tga.toLocaleString()} bn`, "财政部现金账户"],
-          ["RRP", `${latest.rrp.toLocaleString()} bn`, "货币基金缓冲垫"]
+          ["RRP", `${latest.rrp.toLocaleString()} bn`, "缓冲垫枯竭风险"]
         ].map(item => `<div class="liquidity-metric"><b>${item[1]}</b><span>${item[0]}</span><span>${item[2]}</span></div>`).join("");
       }
 
@@ -3321,7 +3321,7 @@
           { kind: "net", name: "净流动性", value: `${latest.netLiquidity.toLocaleString()} bn`, d4: latest.netLiquidity - prev4.netLiquidity, d13: latest.netLiquidity - prev13.netLiquidity, note: "Fed资产 - TGA - RRP，代表总闸门方向。" },
           { kind: "fed", name: "Fed 资产端", value: `${latest.fedAssets.toLocaleString()} bn`, d4: latest.fedAssets - prev4.fedAssets, d13: latest.fedAssets - prev13.fedAssets, note: "RMP/回购偏支撑，资产端下行才是抽水。" },
           { kind: "tga", name: "TGA 财政账户", value: `${latest.tga.toLocaleString()} bn`, d4: latest.tga - prev4.tga, d13: latest.tga - prev13.tga, note: "上升吸走银行体系现金，下降释放财政支出。" },
-          { kind: "rrp", name: "ON RRP 缓冲", value: `${latest.rrp.toLocaleString()} bn`, d4: latest.rrp - prev4.rrp, d13: latest.rrp - prev13.rrp, note: "2026 年接近零，更多是历史缓冲耗尽信号。" },
+          { kind: "rrp", name: "ON RRP 枯竭风险", value: `${latest.rrp.toLocaleString()} bn`, d4: latest.rrp - prev4.rrp, d13: latest.rrp - prev13.rrp, note: "2026 年接近零，按风险开关处理，而非普通加分项。" },
           { kind: "reserve", name: "银行准备金", value: `${latest.reserves.toLocaleString()} bn`, d4: latest.reserves - prev4.reserves, d13: latest.reserves - prev13.reserves, note: "准备金是融资稳定性的底层余额。" },
           { kind: "dollar", name: "离岸美元代理", value: latest.dollarIndex?.toFixed(2) || "n/a", d4: latest.dollarIndex - prev4.dollarIndex, d13: latest.dollarIndex - prev13.dollarIndex, note: "暂用 DXY 代理；真正指标是 EUR/USD、JPY/USD cross-currency basis。" },
           { kind: "sofr", name: "SOFR-IORB", value: latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`, d4: latest.sofrIorb - prev4.sofrIorb, d13: latest.sofrIorb - prev13.sofrIorb, note: "SRF 常态化后，这仍是边际准备金价格。" }
