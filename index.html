@@ -1024,7 +1024,9 @@
       .site-actions { display: none; }
       .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook { grid-template-columns: 1fr; }
+      .liquidity-thesis { grid-template-columns: 1fr; }
+      .liquidity-row { grid-template-columns: 1fr; gap: 6px; }
       .directory-head { display: block; }
       .directory-head span { display: block; margin-top: 6px; }
       .axis-title { position: static; padding: 14px; }
@@ -1038,6 +1040,100 @@
     /* ── Module Switching ── */
     .module-view { display: grid; gap: 18px; }
     .module-view.hidden { display: none; }
+
+    /* ── Liquidity Framework Module ── */
+    .liquidity-module { min-width: 0; display: grid; gap: 18px; }
+    .liquidity-thesis {
+      padding: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 380px);
+      gap: 18px;
+      align-items: center;
+      background: #f7fbf8;
+    }
+    .liquidity-thesis h2 { margin: 0; font-size: 25px; line-height: 1.18; max-width: 880px; }
+    .liquidity-thesis p { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 820px; }
+    .liquidity-map {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      background: linear-gradient(135deg, rgba(255,250,240,.88), rgba(237,246,241,.92));
+    }
+    .pipe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .pipe-card {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.78);
+      padding: 14px;
+      min-height: 160px;
+      display: grid;
+      align-content: start;
+      gap: 9px;
+    }
+    .pipe-card b { font-size: 15px; line-height: 1.35; }
+    .pipe-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .pipe-meter {
+      height: 8px;
+      border: 1px solid var(--line);
+      background: rgba(23,33,29,.07);
+      overflow: hidden;
+    }
+    .pipe-meter span { display: block; height: 100%; background: var(--teal); }
+    .liquidity-dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 18px;
+    }
+    .liquidity-stack {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .liquidity-row {
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr) 72px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .liquidity-track {
+      height: 10px;
+      background: rgba(23,33,29,.08);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .liquidity-fill { height: 100%; background: var(--red); }
+    .liquidity-state {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .state-list { display: grid; gap: 10px; }
+    .state-item {
+      border-left: 3px solid var(--teal);
+      background: rgba(244,239,229,.45);
+      padding: 10px 12px;
+    }
+    .state-item strong { display: block; font-size: 13px; margin-bottom: 4px; }
+    .state-item span { display: block; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .liquidity-playbook {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .playbook-card {
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: rgba(255,250,240,.74);
+      min-height: 148px;
+    }
+    .playbook-card h3 { margin: 0 0 8px; font-size: 15px; }
+    .playbook-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.62; }
+    .liquidity-footnote { color: var(--muted); font-size: 12px; line-height: 1.6; }
 
     /* ── Deep Reports Module ── */
     .reports-module { min-width: 0; display: grid; gap: 18px; }
@@ -1511,6 +1607,8 @@
       .reports-thesis { grid-template-columns: 1fr; }
       .company-snapshot { grid-template-columns: 1fr; }
       .recent-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .liquidity-thesis, .liquidity-dashboard { grid-template-columns: 1fr; }
+      .pipe-grid, .liquidity-playbook { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 680px) {
       .report-grid { grid-template-columns: 1fr; }
@@ -1558,6 +1656,7 @@
       <div class="site-actions">
         <a class="header-pill" href="#capital-cycle-module">Capital Cycle</a>
         <a class="header-pill" href="#deep-reports-module">Deep Reports</a>
+        <a class="header-pill" href="#liquidity-module">Liquidity</a>
         <span>Research Terminal</span>
       </div>
     </header>
@@ -1593,10 +1692,15 @@
             <a href="#deep-reports-module" data-report-type="industry">行业报告</a>
             <a href="#deep-reports-module" data-report-type="company">公司报告</a>
           </div>
-          <a class="nav-link muted" href="#module-liquidity">
+          <a class="nav-link" href="#liquidity-module">
             <span class="nav-index">03</span>
-            <span><strong>流动性分析</strong><span>后续新增的一级研究框架</span></span>
+            <span><strong>流动性分析</strong><span>Fed 管道、离岸美元与资产定价压力</span></span>
           </a>
+          <div class="subnav">
+            <a href="#liquidity-pipes">流动性管道</a>
+            <a href="#liquidity-dashboard">监测仪表盘</a>
+            <a href="#liquidity-playbook">研究动作</a>
+          </div>
           <a class="nav-link muted" href="#module-more">
             <span class="nav-index">04</span>
             <span><strong>更多框架</strong><span>库存周期、价格周期、组合跟踪等</span></span>
@@ -1625,12 +1729,12 @@
               </span>
               <small>行业、公司与主题深度研究报告。核心矛盾、关键证据与投资含义。</small>
             </a>
-            <a class="module-card disabled" id="module-liquidity" href="#site-directory">
+            <a class="module-card active" id="module-liquidity" href="#liquidity-module">
               <span>
-                <em>03 / NEXT</em>
+                <em>03 / ACTIVE</em>
                 <b>流动性分析框架</b>
               </span>
-              <small>后续作为一级栏目加入，用资金面、成交、信用与市场结构刻画资产定价环境。</small>
+              <small>基于 Zoltan 的金融管道视角，跟踪 Fed 资产负债表、TGA/RRP、准备金、离岸美元和抵押品压力。</small>
             </a>
             <a class="module-card disabled" id="module-more" href="#site-directory">
               <span>
@@ -1778,6 +1882,66 @@
         </div>
 
         <!-- ══ Deep Reports Module ══ -->
+        <section class="liquidity-module module-view hidden" id="liquidity-module">
+          <section class="liquidity-thesis panel">
+            <div>
+              <h2>流动性不是“水多水少”，而是美元从哪条管道进入、被哪只水桶吸走、在哪个环节变贵。</h2>
+              <p>这个模块先按 Zoltan Pozsar 的金融管道视角搭建：Fed 通过资产端扩表、回购、互换线和 FIMA 向体系派发美元；TGA、RRP、财政发债和 QT 会把准备金从银行体系抽走；当准备金、抵押品或交易商资产负债表变得稀缺，风险资产定价会先感受到“边际流动性价格”的变化。</p>
+            </div>
+            <div class="numbers">
+              <div class="number"><b>6</b><span>核心管道</span></div>
+              <div class="number"><b>4</b><span>压力状态</span></div>
+              <div class="number"><b>V0</b><span>框架草案</span></div>
+            </div>
+          </section>
+
+          <section class="liquidity-map panel" id="liquidity-pipes">
+            <div class="section-head">
+              <h2>美元流动性管道地图</h2>
+              <span>从中央银行资产负债表到全球资产价格</span>
+            </div>
+            <div class="pipe-grid">
+              <article class="pipe-card"><b>1. Fed 资产端：QE / QT / 回购</b><div class="pipe-meter"><span style="width:62%"></span></div><p>扩表或回购把高流动性准备金换给市场；缩表则让证券到期不再续作，准备金被动减少。</p></article>
+              <article class="pipe-card"><b>2. TGA：财政部现金账户</b><div class="pipe-meter"><span style="width:48%"></span></div><p>TGA 上升像抽水，财政部把市场现金吸回 Fed；TGA 下降像放水，财政支出重新进入银行体系。</p></article>
+              <article class="pipe-card"><b>3. ON RRP：货币基金蓄水池</b><div class="pipe-meter"><span style="width:35%"></span></div><p>RRP 高时可缓冲发债和 QT；RRP 低后，TGA 回补和缩表更容易直接冲击银行准备金。</p></article>
+              <article class="pipe-card"><b>4. 银行准备金：风险资产底层余额</b><div class="pipe-meter"><span style="width:56%"></span></div><p>准备金充裕时融资价格稳定；接近稀缺区间后，SOFR、回购利率和信用利差会更敏感。</p></article>
+              <article class="pipe-card"><b>5. 离岸美元：FX Swap 与 Eurodollar</b><div class="pipe-meter"><span style="width:44%"></span></div><p>美元短缺常先体现在交叉货币基差、离岸融资成本和新兴市场美元负债压力。</p></article>
+              <article class="pipe-card"><b>6. 安全阀：Swap Lines / FIMA / SRF</b><div class="pipe-meter"><span style="width:52%"></span></div><p>危机时 Fed 通过互换线、FIMA repo 和常备回购工具把美元或抵押品流动性送到堵点。</p></article>
+            </div>
+            <p class="liquidity-footnote">第一版先用框架占位，后续可接入 Fed H.4.1、纽约联储、美国财政部、FRED、SOFR、FX basis、美元指数与信用利差等数据。</p>
+          </section>
+
+          <section class="liquidity-dashboard" id="liquidity-dashboard">
+            <section class="liquidity-stack panel">
+              <div class="section-head"><h2>监测仪表盘</h2><span>待接入数据后的方向性评分</span></div>
+              <div class="liquidity-row"><strong>Fed 净流动性</strong><div class="liquidity-track"><div class="liquidity-fill" style="width:58%"></div></div><span>中性+</span></div>
+              <div class="liquidity-row"><strong>TGA 抽水压力</strong><div class="liquidity-track"><div class="liquidity-fill" style="width:46%"></div></div><span>中性</span></div>
+              <div class="liquidity-row"><strong>RRP 缓冲垫</strong><div class="liquidity-track"><div class="liquidity-fill" style="width:32%"></div></div><span>偏低</span></div>
+              <div class="liquidity-row"><strong>回购市场压力</strong><div class="liquidity-track"><div class="liquidity-fill" style="width:41%"></div></div><span>观察</span></div>
+              <div class="liquidity-row"><strong>离岸美元压力</strong><div class="liquidity-track"><div class="liquidity-fill" style="width:50%"></div></div><span>中性</span></div>
+            </section>
+            <section class="liquidity-state panel">
+              <div class="section-head"><h2>四种流动性状态</h2><span>用于资产配置与风格判断</span></div>
+              <div class="state-list">
+                <div class="state-item"><strong>宽松扩散</strong><span>Fed 扩表或财政放款，TGA/RRP 下降，准备金改善，成长和高久期资产更容易扩估值。</span></div>
+                <div class="state-item"><strong>表面宽松、管道淤堵</strong><span>总量不差，但抵押品、交易商资产负债表或离岸美元价格紧，风险偏好容易反复。</span></div>
+                <div class="state-item"><strong>抽水收缩</strong><span>QT、TGA 回补和发债共同吸收现金，RRP 缓冲不足时，准备金承压，权益估值折现率上行。</span></div>
+                <div class="state-item"><strong>危机再保险</strong><span>互换线、FIMA、SRF 或临时流动性工具启动，说明堵点已显性化，先稳融资，再看风险资产修复。</span></div>
+              </div>
+            </section>
+          </section>
+
+          <section class="panel" id="liquidity-playbook">
+            <div class="section-head"><h2>研究动作</h2><span>把流动性状态转成投研问题</span></div>
+            <div class="liquidity-playbook">
+              <article class="playbook-card"><h3>看总闸门</h3><p>跟踪 Fed 资产、TGA、RRP 与准备金的合成变化，判断美元净流动性是在派发还是回收。</p></article>
+              <article class="playbook-card"><h3>看堵点价格</h3><p>观察 SOFR-IORB、回购利率、美元基差、信用利差，判断压力是在银行、交易商还是离岸美元。</p></article>
+              <article class="playbook-card"><h3>看资产映射</h3><p>宽松扩散偏利好高久期成长；抽水收缩偏利好现金流确定、低杠杆、低估值资产。</p></article>
+              <article class="playbook-card"><h3>看政策反应</h3><p>一旦安全阀开启，先研究“谁被救、堵点在哪”，再判断权益、黄金、美元和利率的二阶影响。</p></article>
+            </div>
+          </section>
+        </section>
+
         <section class="reports-module module-view hidden" id="deep-reports-module">
           <section class="reports-thesis panel">
             <div>
@@ -2626,6 +2790,7 @@
     /* ══ Module Switching ══ */
     const capitalCycleContent = document.getElementById("capital-cycle-content");
     const deepReportsContent = document.getElementById("deep-reports-module");
+    const liquidityContent = document.getElementById("liquidity-module");
     const moduleCards = document.querySelectorAll(".module-card");
 
     function switchModule(moduleId, options = {}) {
@@ -2633,6 +2798,7 @@
       // Toggle visibility
       capitalCycleContent.classList.toggle("hidden", moduleId !== "capital-cycle");
       deepReportsContent.classList.toggle("hidden", moduleId !== "deep-reports");
+      liquidityContent?.classList.toggle("hidden", moduleId !== "liquidity");
 
       // Update module card active states
       moduleCards.forEach(card => {
@@ -2640,7 +2806,9 @@
           card.classList.add("active");
         } else if (card.id === "module-reports" && moduleId === "deep-reports") {
           card.classList.add("active");
-        } else if (card.id === "capital-cycle" || card.id === "module-reports") {
+        } else if (card.id === "module-liquidity" && moduleId === "liquidity") {
+          card.classList.add("active");
+        } else if (card.id === "capital-cycle" || card.id === "module-reports" || card.id === "module-liquidity") {
           card.classList.remove("active");
         }
       });
@@ -2653,6 +2821,7 @@
     // Module card click handlers
     document.getElementById("capital-cycle")?.addEventListener("click", e => { e.preventDefault(); switchModule("capital-cycle"); });
     document.getElementById("module-reports")?.addEventListener("click", e => { e.preventDefault(); switchModule("deep-reports"); });
+    document.getElementById("module-liquidity")?.addEventListener("click", e => { e.preventDefault(); switchModule("liquidity"); });
 
     // Header pill click handlers
     document.querySelectorAll(".header-pill").forEach(pill => {
@@ -2660,6 +2829,7 @@
         const href = pill.getAttribute("href");
         if (href === "#capital-cycle-module") { e.preventDefault(); switchModule("capital-cycle"); }
         else if (href === "#deep-reports-module") { e.preventDefault(); switchModule("deep-reports"); }
+        else if (href === "#liquidity-module") { e.preventDefault(); switchModule("liquidity"); }
       });
     });
 
@@ -2671,9 +2841,30 @@
           switchModule("capital-cycle");
         } else if (href === "#deep-reports-module") {
           switchModule("deep-reports");
+        } else if (href === "#liquidity-module" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-playbook") {
+          switchModule("liquidity");
         }
       });
     });
+
+    function openModuleFromHash() {
+      const hash = window.location.hash;
+      if (hash === "#liquidity-module" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-playbook") {
+        switchModule("liquidity", { scroll: false });
+        return true;
+      }
+      if (hash === "#deep-reports-module") {
+        switchModule("deep-reports", { scroll: false });
+        return true;
+      }
+      if (hash === "#capital-cycle-module" || hash === "#cycle-wave" || hash === "#research-radar" || hash === "#pb-roe-map" || hash === "#research-pool-section") {
+        switchModule("capital-cycle", { scroll: false });
+        return true;
+      }
+      return false;
+    }
+
+    openModuleFromHash();
 
     /* ══ Deep Reports Module ══ */
     const reportsData = (window.REPORTS_DATA || {}).reports || [];
@@ -3071,7 +3262,7 @@
     }
 
     window.addEventListener("hashchange", () => {
-      if (!openReportFromHash()) {
+      if (!openReportFromHash() && !openModuleFromHash()) {
         reportState.expandedId = null;
         renderReports();
       }
