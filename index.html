@@ -1025,7 +1025,7 @@
       .site-actions { display: none; }
       .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid { grid-template-columns: 1fr; }
       .liquidity-thesis { grid-template-columns: 1fr; }
       .liquidity-row { grid-template-columns: 1fr; gap: 6px; }
       .directory-head { display: block; }
@@ -1041,6 +1041,7 @@
     /* ── Module Switching ── */
     .module-view { display: grid; gap: 18px; }
     .module-view.hidden { display: none; }
+    section[id], .module-view[id] { scroll-margin-top: 86px; }
 
     /* ── Liquidity Framework Module ── */
     .liquidity-module { min-width: 0; display: grid; gap: 18px; }
@@ -1060,6 +1061,62 @@
       gap: 16px;
       background: linear-gradient(135deg, rgba(255,250,240,.88), rgba(237,246,241,.92));
     }
+    .liquidity-pulse {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+      gap: 16px;
+      align-items: stretch;
+      background: #fffaf3;
+    }
+    .liquidity-score-card {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      padding: 16px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+      min-height: 190px;
+    }
+    .liquidity-score-card b {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 48px;
+      line-height: .95;
+    }
+    .liquidity-score-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+    .liquidity-regime {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      background: var(--teal);
+      color: var(--paper-2);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .liquidity-brief {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      border-left: 3px solid var(--teal);
+      padding-left: 14px;
+    }
+    .liquidity-brief h3 { margin: 0; font-size: 18px; line-height: 1.25; }
+    .liquidity-brief p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .liquidity-brief ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
     .pipe-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1076,6 +1133,12 @@
     }
     .pipe-card b { font-size: 15px; line-height: 1.35; }
     .pipe-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .pipe-card small {
+      display: block;
+      color: var(--muted);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+    }
     .pipe-meter {
       height: 8px;
       border: 1px solid var(--line);
@@ -1178,6 +1241,101 @@
       gap: 8px;
       color: var(--muted);
       font-size: 12px;
+    }
+    .liquidity-driver-panel {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .liquidity-driver-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .liquidity-driver {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 12px;
+      min-height: 118px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+    .liquidity-driver strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .liquidity-driver b {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+    .liquidity-driver span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .liquidity-driver.supportive { border-left: 3px solid var(--teal); }
+    .liquidity-driver.tightening { border-left: 3px solid var(--red); }
+    .liquidity-driver.neutral { border-left: 3px solid var(--amber); }
+    .liquidity-method {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .basis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .basis-card {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.42);
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      min-height: 154px;
+    }
+    .basis-card h3 { margin: 0; font-size: 15px; line-height: 1.35; }
+    .basis-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .basis-card code {
+      display: block;
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      padding: 9px 10px;
+      color: var(--ink);
+      white-space: normal;
+      line-height: 1.55;
+      font-size: 12px;
+    }
+    .basis-readout {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .basis-readout-card {
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+      min-height: 112px;
+      align-content: start;
+    }
+    .basis-readout-card strong { font-size: 12px; line-height: 1.35; }
+    .basis-readout-card b {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+    .basis-readout-card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
     }
 
     /* ── Deep Reports Module ── */
@@ -1652,8 +1810,8 @@
       .reports-thesis { grid-template-columns: 1fr; }
       .company-snapshot { grid-template-columns: 1fr; }
       .recent-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .liquidity-thesis, .liquidity-dashboard, .liquidity-latest { grid-template-columns: 1fr; }
-      .pipe-grid, .liquidity-playbook { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .liquidity-thesis, .liquidity-dashboard, .liquidity-latest, .liquidity-pulse { grid-template-columns: 1fr; }
+      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 680px) {
       .report-grid { grid-template-columns: 1fr; }
@@ -1662,6 +1820,7 @@
       .business-bar { grid-template-columns: 1fr; }
       .life-event { grid-template-columns: 1fr; gap: 4px; }
       .recent-list { grid-template-columns: 1fr; }
+      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout { grid-template-columns: 1fr; }
       .copy-toast { left: 12px; right: 12px; text-align: center; }
     }
 
@@ -1741,12 +1900,14 @@
             <span class="nav-index">03</span>
             <span><strong>流动性分析</strong><span>Fed 管道、离岸美元与资产定价压力</span></span>
           </a>
-          <div class="subnav">
-            <a href="#liquidity-pipes">流动性管道</a>
-            <a href="#liquidity-dashboard">监测仪表盘</a>
-            <a href="#liquidity-history">历史曲线</a>
-            <a href="#liquidity-playbook">研究动作</a>
-          </div>
+            <div class="subnav">
+              <a href="#liquidity-pipes">流动性管道</a>
+              <a href="#liquidity-dashboard">监测仪表盘</a>
+              <a href="#liquidity-drivers">驱动拆解</a>
+              <a href="#liquidity-eurodollar">Eurodollar</a>
+              <a href="#liquidity-history">历史曲线</a>
+              <a href="#liquidity-playbook">研究动作</a>
+            </div>
           <a class="nav-link muted" href="#module-more">
             <span class="nav-index">04</span>
             <span><strong>更多框架</strong><span>库存周期、价格周期、组合跟踪等</span></span>
@@ -1780,7 +1941,7 @@
                 <em>03 / ACTIVE</em>
                 <b>流动性分析框架</b>
               </span>
-              <small>基于 Zoltan 的金融管道视角，跟踪 Fed 资产负债表、TGA/RRP、准备金、离岸美元和抵押品压力。</small>
+              <small>以 2026 年 RMP、RRP 枯竭与 SRF 常态化为核心，跟踪美元流动性的边际压力。</small>
             </a>
             <a class="module-card disabled" id="module-more" href="#site-directory">
               <span>
@@ -1932,12 +2093,28 @@
           <section class="liquidity-thesis panel">
             <div>
               <h2>流动性不是“水多水少”，而是美元从哪条管道进入、被哪只水桶吸走、在哪个环节变贵。</h2>
-              <p>这个模块先按 Zoltan Pozsar 的金融管道视角搭建：Fed 通过资产端扩表、回购、互换线和 FIMA 向体系派发美元；TGA、RRP、财政发债和 QT 会把准备金从银行体系抽走；当准备金、抵押品或交易商资产负债表变得稀缺，风险资产定价会先感受到“边际流动性价格”的变化。</p>
+              <p>2026 年的核心变化是：QT 已结束，Fed 进入 RMP（Reserve Management Purchases）准备金管理阶段；RRP 缓冲垫基本耗尽，SRF 从危机工具变成常规压力阀。因此本模块不再只看“扩表/缩表”，而是同时跟踪 RMP、TGA、准备金、SRF/SOFR-IORB 和离岸美元成本；其中 Eurodollar 的直接价格信号，是 FX swap / cross-currency basis 所体现的“合成美元融资溢价”。</p>
             </div>
             <div class="numbers">
-              <div class="number"><b>6</b><span>核心管道</span></div>
-              <div class="number"><b>4</b><span>压力状态</span></div>
-              <div class="number"><b>V0</b><span>框架草案</span></div>
+              <div class="number"><b id="liquidityHeroScore">--</b><span>模型总分</span></div>
+              <div class="number"><b id="liquidityHeroDelta">--</b><span>13 周变化</span></div>
+              <div class="number"><b id="liquidityHeroState">--</b><span>当前状态</span></div>
+            </div>
+          </section>
+
+          <section class="liquidity-pulse panel" id="liquidity-pulse">
+            <div class="liquidity-score-card">
+              <div>
+                <span>Dollar Liquidity Pipe Score</span>
+                <b id="liquidityPulseScore">--</b>
+                <span id="liquidityPulseDate">等待数据</span>
+              </div>
+              <div class="liquidity-regime" id="liquidityPulseRegime">等待数据</div>
+            </div>
+            <div class="liquidity-brief">
+              <h3 id="liquidityPulseTitle">等待流动性数据</h3>
+              <p id="liquidityPulseText">模型会把 Fed 资产、TGA、RRP、准备金、美元指数与 SOFR-IORB 合成成一张可跟踪的流动性仪表盘。</p>
+              <ul id="liquidityPulseBullets"></ul>
             </div>
           </section>
 
@@ -1947,30 +2124,88 @@
               <span>从中央银行资产负债表到全球资产价格</span>
             </div>
             <div class="pipe-grid">
-              <article class="pipe-card"><b>1. Fed 资产端：QE / QT / 回购</b><div class="pipe-meter"><span style="width:62%"></span></div><p>扩表或回购把高流动性准备金换给市场；缩表则让证券到期不再续作，准备金被动减少。</p></article>
-              <article class="pipe-card"><b>2. TGA：财政部现金账户</b><div class="pipe-meter"><span style="width:48%"></span></div><p>TGA 上升像抽水，财政部把市场现金吸回 Fed；TGA 下降像放水，财政支出重新进入银行体系。</p></article>
-              <article class="pipe-card"><b>3. ON RRP：货币基金蓄水池</b><div class="pipe-meter"><span style="width:35%"></span></div><p>RRP 高时可缓冲发债和 QT；RRP 低后，TGA 回补和缩表更容易直接冲击银行准备金。</p></article>
-              <article class="pipe-card"><b>4. 银行准备金：风险资产底层余额</b><div class="pipe-meter"><span style="width:56%"></span></div><p>准备金充裕时融资价格稳定；接近稀缺区间后，SOFR、回购利率和信用利差会更敏感。</p></article>
-              <article class="pipe-card"><b>5. 离岸美元：FX Swap 与 Eurodollar</b><div class="pipe-meter"><span style="width:44%"></span></div><p>美元短缺常先体现在交叉货币基差、离岸融资成本和新兴市场美元负债压力。</p></article>
-              <article class="pipe-card"><b>6. 安全阀：Swap Lines / FIMA / SRF</b><div class="pipe-meter"><span style="width:52%"></span></div><p>危机时 Fed 通过互换线、FIMA repo 和常备回购工具把美元或抵押品流动性送到堵点。</p></article>
+              <article class="pipe-card"><b>1. Fed 资产端：RMP / QE / 回购</b><small id="pipeFedValue">等待数据</small><div class="pipe-meter"><span id="pipeFedMeter" style="width:62%"></span></div><p>2026 年重点是 RMP：Fed 买入短期国债以匹配准备金趋势需求，性质更像管道维护，不等同于主动 QE。</p></article>
+              <article class="pipe-card"><b>2. TGA：财政部现金账户</b><small id="pipeTgaValue">等待数据</small><div class="pipe-meter"><span id="pipeTgaMeter" style="width:48%"></span></div><p>TGA 上升像抽水，财政部把市场现金吸回 Fed；TGA 下降像放水，财政支出重新进入银行体系。</p></article>
+              <article class="pipe-card"><b>3. ON RRP：缓冲垫耗尽</b><small id="pipeRrpValue">等待数据</small><div class="pipe-meter"><span id="pipeRrpMeter" style="width:35%"></span></div><p>RRP 曾在 2022-2023 年承担蓄水池功能；2026 年余额接近零后，更多是历史缓冲参考，不再是主要保护垫。</p></article>
+              <article class="pipe-card"><b>4. 银行准备金：风险资产底层余额</b><small id="pipeReserveValue">等待数据</small><div class="pipe-meter"><span id="pipeReserveMeter" style="width:56%"></span></div><p>准备金充裕时融资价格稳定；接近稀缺区间后，SOFR、回购利率和信用利差会更敏感。</p></article>
+              <article class="pipe-card"><b>5. Eurodollar：FX Swap / 基差</b><small id="pipeDollarValue">等待数据</small><div class="pipe-meter"><span id="pipeDollarMeter" style="width:44%"></span></div><p>离岸美元不是只看 DXY，而是看非美机构通过 FX swap 合成美元时，要为偏离 CIP 支付多少额外成本。</p></article>
+              <article class="pipe-card"><b>6. SRF / SOFR-IORB：常规压力阀</b><small id="pipeSofrValue">等待数据</small><div class="pipe-meter"><span id="pipeSofrMeter" style="width:52%"></span></div><p>SRF 使用不再只意味着危机；SOFR-IORB 上穿和 SRF 频繁使用，说明准备金进入“够用但边际变贵”。</p></article>
             </div>
-            <p class="liquidity-footnote">第一版先用框架占位，后续可接入 Fed H.4.1、纽约联储、美国财政部、FRED、SOFR、FX basis、美元指数与信用利差等数据。</p>
+            <p class="liquidity-footnote">当前版本接入 FRED：Fed 资产、TGA、ON RRP、准备金、SOFR、IORB 与广义美元指数。RMP 与 SRF 已进入框架解释层；Eurodollar 目前用 DXY 与 SOFR-IORB 作代理，下一步需接入 SRF 使用量、EUR/USD 与 JPY/USD 3M cross-currency basis、信用利差和美债期限溢价。</p>
           </section>
 
           <section class="liquidity-dashboard" id="liquidity-dashboard">
             <section class="liquidity-stack panel">
-              <div class="section-head"><h2>监测仪表盘</h2><span>待接入数据后的方向性评分</span></div>
+              <div class="section-head"><h2>监测仪表盘</h2><span>FRED 七线合成后的方向性评分</span></div>
               <div id="liquidityGaugeRows"></div>
             </section>
             <section class="liquidity-state panel">
-              <div class="section-head"><h2>四种流动性状态</h2><span>用于资产配置与风格判断</span></div>
+              <div class="section-head"><h2>五种流动性状态</h2><span>用于资产配置与风格判断</span></div>
               <div class="state-list">
                 <div class="state-item"><strong>宽松扩散</strong><span>Fed 扩表或财政放款，TGA/RRP 下降，准备金改善，成长和高久期资产更容易扩估值。</span></div>
-                <div class="state-item"><strong>表面宽松、管道淤堵</strong><span>总量不差，但抵押品、交易商资产负债表或离岸美元价格紧，风险偏好容易反复。</span></div>
-                <div class="state-item"><strong>抽水收缩</strong><span>QT、TGA 回补和发债共同吸收现金，RRP 缓冲不足时，准备金承压，权益估值折现率上行。</span></div>
-                <div class="state-item"><strong>危机再保险</strong><span>互换线、FIMA、SRF 或临时流动性工具启动，说明堵点已显性化，先稳融资，再看风险资产修复。</span></div>
+                <div class="state-item"><strong>RMP 维稳 / 温和宽松</strong><span>QT 后的准备金管理购买提供支撑，但并非主动 QE；要继续观察 TGA、准备金和回购利率是否同步改善。</span></div>
+                <div class="state-item"><strong>中性震荡 / 管道淤堵</strong><span>总量不差，但抵押品、交易商资产负债表或离岸美元价格紧，风险偏好容易反复。</span></div>
+                <div class="state-item"><strong>TGA 抽水 / RRP 枯竭</strong><span>RRP 缓冲耗尽后，TGA 回补和财政发债更容易直接冲击准备金，权益估值折现率上行。</span></div>
+                <div class="state-item"><strong>压力显性化 / SRF 常态化</strong><span>融资堵点已经进入价格或政策工具，SRF 使用本身不等于危机，但频繁高额使用说明边际准备金价格变贵。</span></div>
               </div>
             </section>
+          </section>
+
+          <section class="liquidity-driver-panel panel" id="liquidity-drivers">
+            <div class="section-head"><h2>驱动拆解</h2><span>最新 4 周与 13 周边际变化</span></div>
+            <div class="liquidity-driver-grid" id="liquidityDriverGrid"></div>
+          </section>
+
+          <section class="liquidity-method panel" id="liquidity-eurodollar">
+            <div class="section-head"><h2>Eurodollar 与交叉货币基差</h2><span>海外美元派生的定义与模型位置</span></div>
+            <div class="basis-readout" id="basisReadout">
+              <article class="basis-readout-card">
+                <strong>CME XEURBI EUR/USD Basis</strong>
+                <b id="basisEurUsd">未接入</b>
+                <span id="basisEurUsdNote">直接指标：CME XEURBI，需 CME OAuth 授权</span>
+              </article>
+              <article class="basis-readout-card">
+                <strong>3M JPY/USD Basis</strong>
+                <b id="basisJpyUsd">未接入</b>
+                <span id="basisJpyUsdNote">未找到稳定免授权公开日频源</span>
+              </article>
+              <article class="basis-readout-card">
+                <strong>当前代理：DXY</strong>
+                <b id="basisProxyDollar">--</b>
+                <span id="basisProxyDollarNote">用来观察美元价格压力，不等同于基差</span>
+              </article>
+              <article class="basis-readout-card">
+                <strong>当前代理：SOFR-IORB</strong>
+                <b id="basisProxySofr">--</b>
+                <span id="basisProxySofrNote">用来观察境内抵押融资边际价格</span>
+              </article>
+            </div>
+            <div class="basis-grid">
+              <article class="basis-card">
+                <h3>交叉货币基差是什么</h3>
+                <p>在无摩擦世界里，直接借美元与“借欧元/日元 + FX swap 换成美元”的成本应该一致，这就是 covered interest parity（CIP）。现实中这个等式经常失效，失效的残差就是 cross-currency basis。</p>
+                <code>合成美元成本 = 本币利率 + FX forward 隐含成本 + cross-currency basis</code>
+                <p>当 EUR/USD 或 JPY/USD 基差更负时，通常意味着非美机构通过 swap 借美元更贵，美元短缺或交易商资产负债表更稀缺。</p>
+              </article>
+              <article class="basis-card">
+                <h3>它在模型里体现在哪</h3>
+                <p>当前仪表盘尚未直接接入基差序列，所以“离岸美元”只以广义美元指数和 SOFR-IORB 作代理：DXY 表示美元价格压力，SOFR-IORB 表示境内抵押融资堵点。它们不能替代基差，只能提示压力可能存在。</p>
+                <code>当前代理：Offshore USD Proxy = DXY momentum + SOFR-IORB + RRP 枯竭</code>
+                <p>升级后应使用 3M EUR/USD basis、3M JPY/USD basis、FX swap implied USD rate 和 SRF 使用量，构成真正的海外美元压力分。</p>
+              </article>
+              <article class="basis-card">
+                <h3>海外美元派生怎么定义</h3>
+                <p>海外美元派生不是 Fed 直接投放准备金，而是美国境外银行、企业、基金和央行通过美元存款、美元贷款、商业票据、FX swap、cross-currency swap 创造出的美元债权债务链。</p>
+                <code>Eurodollar 派生 = 非美资产负债表上的美元负债扩张 + 衍生品合成美元融资</code>
+                <p>这套美元没有完整对应的 Fed 准备金支持，平时依靠银行资产负债表和 swap 市场滚动；压力期则体现在基差走阔、美元融资期限缩短、央行互换线或 FIMA/SRF 需求上升。</p>
+              </article>
+              <article class="basis-card">
+                <h3>读数规则</h3>
+                <p>如果 DXY 上行但基差不走阔，更多是汇率或利差驱动；如果 DXY 平稳但基差突然更负，说明真正的离岸融资管道在变贵；如果基差、SOFR-IORB、SRF 同时恶化，则说明境内外美元压力共振。</p>
+                <code>真正的红灯：basis 更负 + SOFR-IORB 上穿 + SRF 频繁使用 + 信用利差走阔</code>
+                <p>所以 Eurodollar 在模型中的角色，是“海外美元影子信用的价格阀”，不是 Fed 净流动性公式里的一个简单水桶。</p>
+              </article>
+            </div>
           </section>
 
           <section class="liquidity-chart-panel panel" id="liquidity-history">
@@ -1989,10 +2224,10 @@
           <section class="panel" id="liquidity-playbook">
             <div class="section-head"><h2>研究动作</h2><span>把流动性状态转成投研问题</span></div>
             <div class="liquidity-playbook">
-              <article class="playbook-card"><h3>看总闸门</h3><p>跟踪 Fed 资产、TGA、RRP 与准备金的合成变化，判断美元净流动性是在派发还是回收。</p></article>
-              <article class="playbook-card"><h3>看堵点价格</h3><p>观察 SOFR-IORB、回购利率、美元基差、信用利差，判断压力是在银行、交易商还是离岸美元。</p></article>
+              <article class="playbook-card"><h3>看 RMP 与 TGA</h3><p>QT 结束后，总闸门不再只看缩表，要看 RMP 购买能否抵消 TGA 回补、发债和准备金趋势需求。</p></article>
+              <article class="playbook-card"><h3>看 SRF 与堵点价格</h3><p>观察 SOFR-IORB、SRF 使用、回购利率和信用利差，判断压力是在银行、交易商还是抵押品市场。</p></article>
               <article class="playbook-card"><h3>看资产映射</h3><p>宽松扩散偏利好高久期成长；抽水收缩偏利好现金流确定、低杠杆、低估值资产。</p></article>
-              <article class="playbook-card"><h3>看政策反应</h3><p>一旦安全阀开启，先研究“谁被救、堵点在哪”，再判断权益、黄金、美元和利率的二阶影响。</p></article>
+              <article class="playbook-card"><h3>看离岸美元与关税</h3><p>贸易摩擦会让 FX swap、美元基差和非美银行融资成本独立收紧，这条线需要和货币政策管道分开观察。</p></article>
             </div>
           </section>
         </section>
@@ -2896,7 +3131,7 @@
           switchModule("capital-cycle");
         } else if (href === "#deep-reports-module") {
           switchModule("deep-reports");
-        } else if (href === "#liquidity-module" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-history" || href === "#liquidity-playbook") {
+        } else if (href === "#liquidity-module" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
           switchModule("liquidity");
         }
       });
@@ -2904,7 +3139,7 @@
 
     function openModuleFromHash() {
       const hash = window.location.hash;
-      if (hash === "#liquidity-module" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
+      if (hash === "#liquidity-module" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-drivers" || hash === "#liquidity-eurodollar" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
         switchModule("liquidity", { scroll: false });
         return true;
       }
@@ -2926,15 +3161,112 @@
     const liquidityLatest = document.getElementById("liquidityLatest");
     const liquidityUpdated = document.getElementById("liquidityUpdated");
     const liquidityGaugeRows = document.getElementById("liquidityGaugeRows");
+    const liquidityDriverGrid = document.getElementById("liquidityDriverGrid");
+    const liquidityHeroScore = document.getElementById("liquidityHeroScore");
+    const liquidityHeroDelta = document.getElementById("liquidityHeroDelta");
+    const liquidityHeroState = document.getElementById("liquidityHeroState");
+    const liquidityPulseScore = document.getElementById("liquidityPulseScore");
+    const liquidityPulseDate = document.getElementById("liquidityPulseDate");
+    const liquidityPulseRegime = document.getElementById("liquidityPulseRegime");
+    const liquidityPulseTitle = document.getElementById("liquidityPulseTitle");
+    const liquidityPulseText = document.getElementById("liquidityPulseText");
+    const liquidityPulseBullets = document.getElementById("liquidityPulseBullets");
+    const basisProxyDollar = document.getElementById("basisProxyDollar");
+    const basisProxyDollarNote = document.getElementById("basisProxyDollarNote");
+    const basisProxySofr = document.getElementById("basisProxySofr");
+    const basisProxySofrNote = document.getElementById("basisProxySofrNote");
+    const basisEurUsd = document.getElementById("basisEurUsd");
+    const basisEurUsdNote = document.getElementById("basisEurUsdNote");
+    const basisJpyUsd = document.getElementById("basisJpyUsd");
+    const basisJpyUsdNote = document.getElementById("basisJpyUsdNote");
 
     function liquidityPath(rows, x, y, key) {
       return rows.map((row, index) => `${index ? "L" : "M"} ${x(index).toFixed(1)} ${y(row[key]).toFixed(1)}`).join(" ");
+    }
+
+    function pctScale(value, min, max) {
+      if (!Number.isFinite(value)) return 2;
+      return Math.max(2, Math.min(100, ((value - min) / Math.max(.0001, max - min)) * 100));
+    }
+
+    function signed(value, digits = 1, suffix = "") {
+      if (!Number.isFinite(value)) return "n/a";
+      const sign = value > 0 ? "+" : "";
+      return `${sign}${value.toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: digits })}${suffix}`;
+    }
+
+    function findPreviousRow(rows, latest, weeks) {
+      const index = rows.findIndex(row => row.date === latest.date);
+      return rows[Math.max(0, (index >= 0 ? index : rows.length - 1) - weeks)] || rows[0];
+    }
+
+    function driverTone(kind, latest, delta13) {
+      if (!Number.isFinite(delta13)) return "neutral";
+      if (kind === "tga" || kind === "dollar" || kind === "sofr") {
+        if (delta13 > 0) return "tightening";
+        if (delta13 < 0) return "supportive";
+        return "neutral";
+      }
+      if (kind === "rrp") {
+        if (latest.rrp < 50) return "tightening";
+        if (delta13 > 0) return "supportive";
+        if (delta13 < 0) return "neutral";
+        return "neutral";
+      }
+      if (delta13 > 0) return "supportive";
+      if (delta13 < 0) return "tightening";
+      return "neutral";
+    }
+
+    function liquidityNarrative(latest, prev4, prev13) {
+      const scoreDelta13 = latest.score - prev13.score;
+      const netDelta13 = latest.netLiquidity - prev13.netLiquidity;
+      const tgaDelta13 = latest.tga - prev13.tga;
+      const rrpLevel = latest.rrp;
+      const title = `${latest.state}：${scoreDelta13 >= 0 ? "总分小幅改善" : "总分走弱"}，但要看管道结构。`;
+      const text = rrpLevel < 50
+        ? "RRP 缓冲垫已经接近耗尽，后续 TGA 回补、财政发债对准备金的影响会更直接。QT 结束后，关键不是“还在不在缩表”，而是 RMP 能否足够平滑准备金需求。"
+        : "RRP 仍有缓冲，财政抽水未必马上冲击银行准备金。QT 结束后，关键是观察 RMP 与 TGA 变化谁更强。";
+      const bullets = [
+        `13 周：模型总分 ${signed(scoreDelta13, 0)}，净流动性 ${signed(netDelta13, 1, " bn")}，TGA ${signed(tgaDelta13, 1, " bn")}。`,
+        `4 周：净流动性 ${signed(latest.netLiquidity - prev4.netLiquidity, 1, " bn")}，准备金 ${signed(latest.reserves - prev4.reserves, 1, " bn")}。`,
+        `堵点价格：SOFR-IORB ${latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`}，美元指数 ${latest.dollarIndex?.toFixed(2) || "n/a"}；SRF 与 cross-currency basis 待接入。`
+      ];
+      return { title, text, bullets };
     }
 
     function renderLiquidityData() {
       const rows = (liquidityData.history || []).filter(row => row.date >= "2015-01-01");
       const latest = liquidityData.latest || rows.at(-1);
       if (!rows.length || !latest || !liquidityChart) return;
+      const prev4 = findPreviousRow(rows, latest, 4);
+      const prev13 = findPreviousRow(rows, latest, 13);
+      const scoreDelta13 = latest.score - prev13.score;
+
+      if (liquidityHeroScore) liquidityHeroScore.textContent = latest.score;
+      if (liquidityHeroDelta) liquidityHeroDelta.textContent = signed(scoreDelta13, 0);
+      if (liquidityHeroState) liquidityHeroState.textContent = latest.state;
+      if (liquidityPulseScore) liquidityPulseScore.textContent = latest.score;
+      if (liquidityPulseDate) liquidityPulseDate.textContent = `更新至 ${latest.date}`;
+      if (liquidityPulseRegime) liquidityPulseRegime.textContent = latest.state;
+      const narrative = liquidityNarrative(latest, prev4, prev13);
+      if (liquidityPulseTitle) liquidityPulseTitle.textContent = narrative.title;
+      if (liquidityPulseText) liquidityPulseText.textContent = narrative.text;
+      if (liquidityPulseBullets) liquidityPulseBullets.innerHTML = narrative.bullets.map(item => `<li>${item}</li>`).join("");
+      if (basisProxyDollar) basisProxyDollar.textContent = latest.dollarIndex?.toFixed(2) || "n/a";
+      if (basisProxyDollarNote) basisProxyDollarNote.textContent = `13w ${signed(latest.dollarIndex - prev13.dollarIndex, 2)}；只是美元价格压力，不是 cross-currency basis。`;
+      if (basisProxySofr) basisProxySofr.textContent = latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`;
+      if (basisProxySofrNote) basisProxySofrNote.textContent = `13w ${signed(latest.sofrIorb - prev13.sofrIorb, 3, "%")}；反映境内回购边际压力。`;
+      const eurUsdSource = liquidityData.basisSources?.eurUsd;
+      if (basisEurUsd) basisEurUsd.textContent = Number.isFinite(latest.xeurbiBasis) ? `${latest.xeurbiBasis.toFixed(2)} bp` : "需授权";
+      if (basisEurUsdNote) {
+        basisEurUsdNote.textContent = Number.isFinite(latest.xeurbiBasis)
+          ? `CME XEURBI，${latest.xeurbiDate || latest.date}，bp on ESTR leg。`
+          : `${eurUsdSource?.productCode || "XEURBI"}：${eurUsdSource?.status || "not_configured"}；${eurUsdSource?.note || "需接入 CME Cross Currency API。"}`;
+      }
+      const jpyUsdSource = liquidityData.basisSources?.jpyUsd;
+      if (basisJpyUsd) basisJpyUsd.textContent = "未接入";
+      if (basisJpyUsdNote) basisJpyUsdNote.textContent = jpyUsdSource?.note || "未找到稳定免授权公开日频源。";
 
       const gaugeItems = [
         { label: "模型总分", value: latest.score, text: latest.state },
@@ -2964,6 +3296,47 @@
           ["TGA", `${latest.tga.toLocaleString()} bn`, "财政部现金账户"],
           ["RRP", `${latest.rrp.toLocaleString()} bn`, "货币基金缓冲垫"]
         ].map(item => `<div class="liquidity-metric"><b>${item[1]}</b><span>${item[0]}</span><span>${item[2]}</span></div>`).join("");
+      }
+
+      const pipeUpdates = [
+        ["pipeFedValue", "pipeFedMeter", latest.fedAssets, latest.fedAssets - prev13.fedAssets, "Fed Assets", " bn", pctScale(latest.fedAssets, 5500, 9000)],
+        ["pipeTgaValue", "pipeTgaMeter", latest.tga, latest.tga - prev13.tga, "TGA", " bn", pctScale(latest.tga, 0, 1500)],
+        ["pipeRrpValue", "pipeRrpMeter", latest.rrp, latest.rrp - prev13.rrp, "RRP", " bn", pctScale(latest.rrp, 0, 2500)],
+        ["pipeReserveValue", "pipeReserveMeter", latest.reserves, latest.reserves - prev13.reserves, "Reserves", " bn", pctScale(latest.reserves, 2000, 4200)],
+        ["pipeDollarValue", "pipeDollarMeter", latest.dollarIndex, latest.dollarIndex - prev13.dollarIndex, "Dollar", "", pctScale(latest.dollarIndex, 105, 125)],
+        ["pipeSofrValue", "pipeSofrMeter", latest.sofrIorb, latest.sofrIorb - prev13.sofrIorb, "SOFR-IORB", "%", pctScale((latest.sofrIorb || 0) * 100, -10, 20)]
+      ];
+      pipeUpdates.forEach(([valueId, meterId, value, delta, label, suffix, width]) => {
+        const valueEl = document.getElementById(valueId);
+        const meterEl = document.getElementById(meterId);
+        if (valueEl) {
+          const digits = suffix === "%" ? 3 : suffix ? 1 : 2;
+          valueEl.textContent = `${label}: ${Number.isFinite(value) ? value.toLocaleString(undefined, { maximumFractionDigits: digits }) : "n/a"}${suffix} · 13w ${signed(delta, digits, suffix)}`;
+        }
+        if (meterEl) meterEl.style.width = `${width}%`;
+      });
+
+      if (liquidityDriverGrid) {
+        const drivers = [
+          { kind: "net", name: "净流动性", value: `${latest.netLiquidity.toLocaleString()} bn`, d4: latest.netLiquidity - prev4.netLiquidity, d13: latest.netLiquidity - prev13.netLiquidity, note: "Fed资产 - TGA - RRP，代表总闸门方向。" },
+          { kind: "fed", name: "Fed 资产端", value: `${latest.fedAssets.toLocaleString()} bn`, d4: latest.fedAssets - prev4.fedAssets, d13: latest.fedAssets - prev13.fedAssets, note: "RMP/回购偏支撑，资产端下行才是抽水。" },
+          { kind: "tga", name: "TGA 财政账户", value: `${latest.tga.toLocaleString()} bn`, d4: latest.tga - prev4.tga, d13: latest.tga - prev13.tga, note: "上升吸走银行体系现金，下降释放财政支出。" },
+          { kind: "rrp", name: "ON RRP 缓冲", value: `${latest.rrp.toLocaleString()} bn`, d4: latest.rrp - prev4.rrp, d13: latest.rrp - prev13.rrp, note: "2026 年接近零，更多是历史缓冲耗尽信号。" },
+          { kind: "reserve", name: "银行准备金", value: `${latest.reserves.toLocaleString()} bn`, d4: latest.reserves - prev4.reserves, d13: latest.reserves - prev13.reserves, note: "准备金是融资稳定性的底层余额。" },
+          { kind: "dollar", name: "离岸美元代理", value: latest.dollarIndex?.toFixed(2) || "n/a", d4: latest.dollarIndex - prev4.dollarIndex, d13: latest.dollarIndex - prev13.dollarIndex, note: "暂用 DXY 代理；真正指标是 EUR/USD、JPY/USD cross-currency basis。" },
+          { kind: "sofr", name: "SOFR-IORB", value: latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`, d4: latest.sofrIorb - prev4.sofrIorb, d13: latest.sofrIorb - prev13.sofrIorb, note: "SRF 常态化后，这仍是边际准备金价格。" }
+        ];
+        liquidityDriverGrid.innerHTML = drivers.map(driver => {
+          const tone = driverTone(driver.kind, latest, driver.d13);
+          const unit = driver.kind === "sofr" ? "%" : (driver.kind === "dollar" ? "" : " bn");
+          const digits = driver.kind === "sofr" ? 3 : (driver.kind === "dollar" ? 2 : 1);
+          return `<article class="liquidity-driver ${tone}">
+            <strong>${driver.name}</strong>
+            <b>${driver.value}</b>
+            <span>4w ${signed(driver.d4, digits, unit)} · 13w ${signed(driver.d13, digits, unit)}</span>
+            <span>${driver.note}</span>
+          </article>`;
+        }).join("");
       }
 
       const width = 900;

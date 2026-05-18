@@ -3,15 +3,23 @@ window.LIQUIDITY_PIPE_DATA = {
   "source": "FRED public CSV",
   "model": {
     "name": "Dollar Liquidity Pipe Score",
-    "description": "0-100 score. Higher means liquidity is more supportive for risk assets; lower means the system is closer to funding pressure.",
+    "description": "0-100 score. Higher means liquidity is more supportive for risk assets; lower means the system is closer to funding pressure. Offshore dollar pressure is currently proxied by broad dollar momentum and SOFR-IORB; direct EUR/USD and JPY/USD cross-currency basis series should replace the proxy when available.",
     "weights": {
       "netLiquidityMomentum": 0.35,
       "reserveMomentum": 0.25,
       "tgaDrain": -0.15,
       "rrpBuffer": 0.1,
-      "dollarTightening": -0.1,
+      "offshoreDollarProxy": -0.1,
       "sofrIorbSpread": -0.05
-    }
+    },
+    "pendingSeries": [
+      "SRF usage",
+      "3M EUR/USD cross-currency basis",
+      "3M JPY/USD cross-currency basis",
+      "FX swap implied USD funding rate",
+      "credit spreads",
+      "Treasury term premium"
+    ]
   },
   "series": {
     "WALCL": "Assets: Total Assets: Total Assets (Less Eliminations from Consolidation)",
@@ -21,6 +29,24 @@ window.LIQUIDITY_PIPE_DATA = {
     "SOFR": "Secured Overnight Financing Rate",
     "IORB": "Interest Rate on Reserve Balances",
     "DTWEXBGS": "Nominal Broad U.S. Dollar Index"
+  },
+  "basisSources": {
+    "eurUsd": {
+      "name": "CME EUR/USD Cross Currency Basis Index",
+      "productCode": "XEURBI",
+      "unit": "bp",
+      "url": "https://markets.api.cmegroup.com/xccy/v1/latest?productCodes=XEURBI",
+      "status": "not_configured",
+      "note": "Set CME_OAUTH_TOKEN to fetch the CME XEURBI latest index value. CME requires OAuth entitlement."
+    },
+    "jpyUsd": {
+      "name": "JPY/USD cross-currency basis",
+      "productCode": null,
+      "unit": "bp",
+      "url": null,
+      "status": "not_found",
+      "note": "No stable no-auth public daily source found yet. Keep as explicit gap instead of proxying it with DXY."
+    }
   },
   "latest": {
     "date": "2026-05-13",
@@ -33,7 +59,8 @@ window.LIQUIDITY_PIPE_DATA = {
     "rrp": 3.7,
     "reserves": 2799.7,
     "dollarIndex": 118.04,
-    "sofrIorb": -0.06
+    "sofrIorb": -0.06,
+    "xeurbiBasis": null
   },
   "history": [
     {
@@ -47,7 +74,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 143.7,
       "reserves": 2683.7,
       "dollarIndex": 103.63,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-01-14",
@@ -60,7 +88,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 95.4,
       "reserves": 2683.7,
       "dollarIndex": 103.09,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-01-21",
@@ -73,7 +102,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 167.8,
       "reserves": 2683.7,
       "dollarIndex": 103.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-01-28",
@@ -86,7 +116,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 163.6,
       "reserves": 2683.7,
       "dollarIndex": 104.47,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-02-04",
@@ -99,7 +130,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 145.7,
       "reserves": 2496.9,
       "dollarIndex": 104.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-02-11",
@@ -112,7 +144,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 126.8,
       "reserves": 2496.9,
       "dollarIndex": 105.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-02-18",
@@ -125,7 +158,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 157.3,
       "reserves": 2496.9,
       "dollarIndex": 105.25,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-02-25",
@@ -138,7 +172,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 149.8,
       "reserves": 2496.9,
       "dollarIndex": 105.05,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-03-04",
@@ -151,7 +186,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 95.1,
       "reserves": 2675.2,
       "dollarIndex": 106.13,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-03-11",
@@ -164,7 +200,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 84.4,
       "reserves": 2675.2,
       "dollarIndex": 108.52,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-03-18",
@@ -177,7 +214,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 151.4,
       "reserves": 2675.2,
       "dollarIndex": 108.41,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-03-25",
@@ -190,7 +228,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 65.4,
       "reserves": 2675.2,
       "dollarIndex": 106.26,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-04-01",
@@ -203,7 +242,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 31.6,
       "reserves": 2699,
       "dollarIndex": 107.06,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-04-08",
@@ -216,7 +256,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 96.4,
       "reserves": 2699,
       "dollarIndex": 106.42,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-04-15",
@@ -229,7 +270,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 69.8,
       "reserves": 2699,
       "dollarIndex": 107.19,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-04-22",
@@ -242,7 +284,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 114.1,
       "reserves": 2699,
       "dollarIndex": 106.58,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-04-29",
@@ -255,7 +298,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 92.2,
       "reserves": 2699,
       "dollarIndex": 104.56,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-05-06",
@@ -268,7 +312,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 84.7,
       "reserves": 2584.4,
       "dollarIndex": 104.69,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-05-13",
@@ -281,7 +326,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 92.1,
       "reserves": 2584.4,
       "dollarIndex": 104.36,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-05-20",
@@ -294,7 +340,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 154.3,
       "reserves": 2584.4,
       "dollarIndex": 105.56,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-05-27",
@@ -307,7 +354,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 128.8,
       "reserves": 2584.4,
       "dollarIndex": 106.91,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-06-03",
@@ -320,7 +368,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 95.4,
       "reserves": 2553.1,
       "dollarIndex": 106.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-06-10",
@@ -333,7 +382,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 80.5,
       "reserves": 2553.1,
       "dollarIndex": 105.8,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-06-17",
@@ -346,7 +396,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 110.7,
       "reserves": 2553.1,
       "dollarIndex": 106.06,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-06-24",
@@ -359,7 +410,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 136.6,
       "reserves": 2553.1,
       "dollarIndex": 106.25,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-07-01",
@@ -372,7 +424,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 93.4,
       "reserves": 2590.8,
       "dollarIndex": 107.01,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-07-08",
@@ -385,7 +438,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 145.5,
       "reserves": 2590.8,
       "dollarIndex": 107.47,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-07-15",
@@ -398,7 +452,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 103.2,
       "reserves": 2590.8,
       "dollarIndex": 108.01,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-07-22",
@@ -411,7 +466,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 112.7,
       "reserves": 2590.8,
       "dollarIndex": 108.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-07-29",
@@ -424,7 +480,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 86.4,
       "reserves": 2590.8,
       "dollarIndex": 108.6,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-08-05",
@@ -437,7 +494,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 86.9,
       "reserves": 2608.3,
       "dollarIndex": 109.84,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-08-12",
@@ -450,7 +508,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 64.4,
       "reserves": 2608.3,
       "dollarIndex": 109.47,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-08-19",
@@ -463,7 +522,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 84.4,
       "reserves": 2608.3,
       "dollarIndex": 110.43,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-08-26",
@@ -476,7 +536,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 68.7,
       "reserves": 2608.3,
       "dollarIndex": 110.58,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-09-02",
@@ -489,7 +550,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 70.3,
       "reserves": 2644,
       "dollarIndex": 110.8,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-09-09",
@@ -502,7 +564,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 68.1,
       "reserves": 2644,
       "dollarIndex": 110.92,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-09-16",
@@ -515,7 +578,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 82.2,
       "reserves": 2644,
       "dollarIndex": 110.1,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-09-23",
@@ -528,7 +592,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 144.3,
       "reserves": 2644,
       "dollarIndex": 111.63,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-09-30",
@@ -541,7 +606,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 199.6,
       "reserves": 2644,
       "dollarIndex": 111.33,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-10-07",
@@ -554,7 +620,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 115.4,
       "reserves": 2668.2,
       "dollarIndex": 109.82,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-10-14",
@@ -567,7 +634,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 90.2,
       "reserves": 2668.2,
       "dollarIndex": 109.12,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-10-21",
@@ -580,7 +648,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 151.1,
       "reserves": 2668.2,
       "dollarIndex": 109.77,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-10-28",
@@ -593,7 +662,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 155.3,
       "reserves": 2668.2,
       "dollarIndex": 110.23,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-11-04",
@@ -606,7 +676,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 107.4,
       "reserves": 2602.1,
       "dollarIndex": 110.71,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-11-11",
@@ -619,7 +690,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 83.1,
       "reserves": 2602.1,
       "dollarIndex": 111.99,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-11-18",
@@ -632,7 +704,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 122,
       "reserves": 2602.1,
       "dollarIndex": 112.37,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-11-25",
@@ -645,7 +718,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 100.2,
       "reserves": 2602.1,
       "dollarIndex": 111.89,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-12-02",
@@ -658,7 +732,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 84.2,
       "reserves": 2419.8,
       "dollarIndex": 112.37,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-12-09",
@@ -671,7 +746,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 88,
       "reserves": 2419.8,
       "dollarIndex": 112.19,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-12-16",
@@ -684,7 +760,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 102,
       "reserves": 2419.8,
       "dollarIndex": 112.99,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-12-23",
@@ -697,7 +774,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 178.3,
       "reserves": 2419.8,
       "dollarIndex": 113.18,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2015-12-30",
@@ -710,7 +788,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 277.4,
       "reserves": 2419.8,
       "dollarIndex": 113.47,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-01-06",
@@ -723,7 +802,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 126.6,
       "reserves": 2376.1,
       "dollarIndex": 114.62,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-01-13",
@@ -736,7 +816,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 84.4,
       "reserves": 2376.1,
       "dollarIndex": 115.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-01-20",
@@ -749,7 +830,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 106.6,
       "reserves": 2376.1,
       "dollarIndex": 116.35,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-01-27",
@@ -762,7 +844,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 89.3,
       "reserves": 2376.1,
       "dollarIndex": 115.51,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-02-03",
@@ -775,7 +858,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 62.5,
       "reserves": 2448.8,
       "dollarIndex": 114.61,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-02-10",
@@ -788,7 +872,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 48,
       "reserves": 2448.8,
       "dollarIndex": 114.29,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-02-17",
@@ -801,7 +886,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 52.1,
       "reserves": 2448.8,
       "dollarIndex": 113.86,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-02-24",
@@ -814,7 +900,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 41.1,
       "reserves": 2448.8,
       "dollarIndex": 114.17,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-03-02",
@@ -827,7 +914,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 44.5,
       "reserves": 2460.4,
       "dollarIndex": 113.8,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-03-09",
@@ -840,7 +928,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 47.3,
       "reserves": 2460.4,
       "dollarIndex": 112.43,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-03-16",
@@ -853,7 +942,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 48.4,
       "reserves": 2460.4,
       "dollarIndex": 112.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-03-23",
@@ -866,7 +956,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 70.1,
       "reserves": 2460.4,
       "dollarIndex": 111.55,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-03-30",
@@ -879,7 +970,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 127.1,
       "reserves": 2460.4,
       "dollarIndex": 110.23,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-04-06",
@@ -892,7 +984,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 27.5,
       "reserves": 2427.7,
       "dollarIndex": 110.53,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-04-13",
@@ -905,7 +998,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 16.6,
       "reserves": 2427.7,
       "dollarIndex": 110.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-04-20",
@@ -918,7 +1012,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 32,
       "reserves": 2427.7,
       "dollarIndex": 109.39,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-04-27",
@@ -931,7 +1026,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 31.4,
       "reserves": 2427.7,
       "dollarIndex": 109.85,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-05-04",
@@ -944,7 +1040,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 35.6,
       "reserves": 2384.1,
       "dollarIndex": 110,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-05-11",
@@ -957,7 +1054,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 31.5,
       "reserves": 2384.1,
       "dollarIndex": 110.28,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-05-18",
@@ -970,7 +1068,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 63.9,
       "reserves": 2384.1,
       "dollarIndex": 111.5,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-05-25",
@@ -983,7 +1082,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 65.8,
       "reserves": 2384.1,
       "dollarIndex": 112.2,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-06-01",
@@ -996,7 +1096,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 61.2,
       "reserves": 2367,
       "dollarIndex": 112.46,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-06-08",
@@ -1009,7 +1110,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 41.4,
       "reserves": 2367,
       "dollarIndex": 110.19,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-06-15",
@@ -1022,7 +1124,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 28.3,
       "reserves": 2367,
       "dollarIndex": 111.77,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-06-22",
@@ -1035,7 +1138,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 90.4,
       "reserves": 2367,
       "dollarIndex": 110.77,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-06-29",
@@ -1048,7 +1152,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 143.2,
       "reserves": 2367,
       "dollarIndex": 111.86,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-07-06",
@@ -1061,7 +1166,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 83.4,
       "reserves": 2309.7,
       "dollarIndex": 112.54,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-07-13",
@@ -1074,7 +1180,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 48.4,
       "reserves": 2309.7,
       "dollarIndex": 112.03,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-07-20",
@@ -1087,7 +1194,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 79.4,
       "reserves": 2309.7,
       "dollarIndex": 112.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-07-27",
@@ -1100,7 +1208,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 67.7,
       "reserves": 2309.7,
       "dollarIndex": 113.22,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-08-03",
@@ -1113,7 +1222,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 68.1,
       "reserves": 2352.3,
       "dollarIndex": 111.94,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-08-10",
@@ -1126,7 +1236,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 80.2,
       "reserves": 2352.3,
       "dollarIndex": 111.32,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-08-17",
@@ -1139,7 +1250,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 81.3,
       "reserves": 2352.3,
       "dollarIndex": 110.95,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-08-24",
@@ -1152,7 +1264,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 95.3,
       "reserves": 2352.3,
       "dollarIndex": 111.3,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-08-31",
@@ -1165,7 +1278,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 171.4,
       "reserves": 2352.3,
       "dollarIndex": 112.4,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-09-07",
@@ -1178,7 +1292,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 79.1,
       "reserves": 2265.3,
       "dollarIndex": 110.97,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-09-14",
@@ -1191,7 +1306,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 64.5,
       "reserves": 2265.3,
       "dollarIndex": 112.47,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-09-21",
@@ -1204,7 +1320,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 176.8,
       "reserves": 2265.3,
       "dollarIndex": 112.98,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-09-28",
@@ -1217,7 +1334,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 272.3,
       "reserves": 2265.3,
       "dollarIndex": 112.63,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-10-05",
@@ -1230,7 +1348,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 298,
       "reserves": 2095.1,
       "dollarIndex": 112.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-10-12",
@@ -1243,7 +1362,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 188.7,
       "reserves": 2095.1,
       "dollarIndex": 113.74,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-10-19",
@@ -1256,7 +1376,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 191.8,
       "reserves": 2095.1,
       "dollarIndex": 113.05,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-10-26",
@@ -1269,7 +1390,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 142.1,
       "reserves": 2095.1,
       "dollarIndex": 113.81,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-11-02",
@@ -1282,7 +1404,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 176.2,
       "reserves": 2140.3,
       "dollarIndex": 113.92,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-11-09",
@@ -1295,7 +1418,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 131,
       "reserves": 2140.3,
       "dollarIndex": 114.7,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-11-16",
@@ -1308,7 +1432,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 116,
       "reserves": 2140.3,
       "dollarIndex": 116.81,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-11-23",
@@ -1321,7 +1446,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 119.4,
       "reserves": 2140.3,
       "dollarIndex": 118.04,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-11-30",
@@ -1334,7 +1460,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 208.5,
       "reserves": 2140.3,
       "dollarIndex": 117.76,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-12-07",
@@ -1347,7 +1474,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 185.8,
       "reserves": 2031,
       "dollarIndex": 116.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-12-14",
@@ -1360,7 +1488,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 169.6,
       "reserves": 2031,
       "dollarIndex": 116.73,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-12-21",
@@ -1373,7 +1502,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 307.5,
       "reserves": 2031,
       "dollarIndex": 118.58,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2016-12-28",
@@ -1386,7 +1516,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 323.9,
       "reserves": 2031,
       "dollarIndex": 119.23,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-01-04",
@@ -1399,7 +1530,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 266.5,
       "reserves": 2092.8,
       "dollarIndex": 118.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-01-11",
@@ -1412,7 +1544,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 158.8,
       "reserves": 2092.8,
       "dollarIndex": 119.02,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-01-18",
@@ -1425,7 +1558,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 130.1,
       "reserves": 2092.8,
       "dollarIndex": 117.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-01-25",
@@ -1438,7 +1572,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 108.4,
       "reserves": 2092.8,
       "dollarIndex": 116.94,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-02-01",
@@ -1451,7 +1586,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 133.7,
       "reserves": 2238,
       "dollarIndex": 116.39,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-02-08",
@@ -1464,7 +1600,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 122.9,
       "reserves": 2238,
       "dollarIndex": 116.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-02-15",
@@ -1477,7 +1614,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 105.1,
       "reserves": 2238,
       "dollarIndex": 116.22,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-02-22",
@@ -1490,7 +1628,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 177.8,
       "reserves": 2238,
       "dollarIndex": 116.21,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-03-01",
@@ -1503,7 +1642,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 156,
       "reserves": 2326.3,
       "dollarIndex": 116.44,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-03-08",
@@ -1516,7 +1656,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 212.1,
       "reserves": 2326.3,
       "dollarIndex": 116.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-03-15",
@@ -1529,7 +1670,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 226.5,
       "reserves": 2326.3,
       "dollarIndex": 116.36,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-03-22",
@@ -1542,7 +1684,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 251,
       "reserves": 2326.3,
       "dollarIndex": 114.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-03-29",
@@ -1555,7 +1698,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 260.4,
       "reserves": 2326.3,
       "dollarIndex": 114.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-04-05",
@@ -1568,7 +1712,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 174.6,
       "reserves": 2281.4,
       "dollarIndex": 114.95,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-04-12",
@@ -1581,7 +1726,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 105.5,
       "reserves": 2281.4,
       "dollarIndex": 114.92,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-04-19",
@@ -1594,7 +1740,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 116.6,
       "reserves": 2281.4,
       "dollarIndex": 114.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-04-26",
@@ -1607,7 +1754,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 122.3,
       "reserves": 2281.4,
       "dollarIndex": 114.95,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-05-03",
@@ -1620,7 +1768,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 186.7,
       "reserves": 2225.8,
       "dollarIndex": 114.66,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-05-10",
@@ -1633,7 +1782,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 187.3,
       "reserves": 2225.8,
       "dollarIndex": 115.11,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-05-17",
@@ -1646,7 +1796,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 167.2,
       "reserves": 2225.8,
       "dollarIndex": 113.75,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-05-24",
@@ -1659,7 +1810,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 184.9,
       "reserves": 2225.8,
       "dollarIndex": 113.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-05-31",
@@ -1672,7 +1824,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 256.2,
       "reserves": 2225.8,
       "dollarIndex": 113.3,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-06-07",
@@ -1685,7 +1838,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 165.1,
       "reserves": 2206.5,
       "dollarIndex": 112.82,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-06-14",
@@ -1698,7 +1852,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 163.1,
       "reserves": 2206.5,
       "dollarIndex": 112.07,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-06-21",
@@ -1711,7 +1866,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 198.8,
       "reserves": 2206.5,
       "dollarIndex": 113.33,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-06-28",
@@ -1724,7 +1880,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 263.7,
       "reserves": 2206.5,
       "dollarIndex": 112.07,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-07-05",
@@ -1737,7 +1894,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 240,
       "reserves": 2233.3,
       "dollarIndex": 112.65,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-07-12",
@@ -1750,7 +1908,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 179.2,
       "reserves": 2233.3,
       "dollarIndex": 111.59,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-07-19",
@@ -1763,7 +1922,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 144.7,
       "reserves": 2233.3,
       "dollarIndex": 110.43,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-07-26",
@@ -1776,7 +1936,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 103.3,
       "reserves": 2233.3,
       "dollarIndex": 110.38,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-08-02",
@@ -1789,7 +1950,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 119.3,
       "reserves": 2344,
       "dollarIndex": 109.75,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-08-09",
@@ -1802,7 +1964,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 104,
       "reserves": 2344,
       "dollarIndex": 110.37,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-08-16",
@@ -1815,7 +1978,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 92.8,
       "reserves": 2344,
       "dollarIndex": 110.44,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-08-23",
@@ -1828,7 +1992,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 169.8,
       "reserves": 2344,
       "dollarIndex": 109.81,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-08-30",
@@ -1841,7 +2006,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 146.1,
       "reserves": 2344,
       "dollarIndex": 109.41,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-09-06",
@@ -1854,7 +2020,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 145.1,
       "reserves": 2295.7,
       "dollarIndex": 108.49,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-09-13",
@@ -1867,7 +2034,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 125.7,
       "reserves": 2295.7,
       "dollarIndex": 108.66,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-09-20",
@@ -1880,7 +2048,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 168,
       "reserves": 2295.7,
       "dollarIndex": 108.43,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-09-27",
@@ -1893,7 +2062,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 220.1,
       "reserves": 2295.7,
       "dollarIndex": 110.07,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-10-04",
@@ -1906,7 +2076,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 178.7,
       "reserves": 2245.7,
       "dollarIndex": 110.24,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-10-11",
@@ -1919,7 +2090,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 129.8,
       "reserves": 2245.7,
       "dollarIndex": 110.3,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-10-18",
@@ -1932,7 +2104,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 121.5,
       "reserves": 2245.7,
       "dollarIndex": 110.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-10-25",
@@ -1945,7 +2118,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 112.1,
       "reserves": 2245.7,
       "dollarIndex": 111.39,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-11-01",
@@ -1958,7 +2132,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 87.2,
       "reserves": 2314.5,
       "dollarIndex": 111.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-11-08",
@@ -1971,7 +2146,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 74.5,
       "reserves": 2314.5,
       "dollarIndex": 111.69,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-11-15",
@@ -1984,7 +2160,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 35,
       "reserves": 2314.5,
       "dollarIndex": 111.48,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-11-22",
@@ -1997,7 +2174,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 51.6,
       "reserves": 2314.5,
       "dollarIndex": 110.56,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-11-29",
@@ -2010,7 +2188,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 67,
       "reserves": 2314.5,
       "dollarIndex": 110.33,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-12-06",
@@ -2023,7 +2202,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 76.4,
       "reserves": 2244.3,
       "dollarIndex": 110.87,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-12-13",
@@ -2036,7 +2216,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 143.4,
       "reserves": 2244.3,
       "dollarIndex": 111.28,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-12-20",
@@ -2049,7 +2230,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 127.6,
       "reserves": 2244.3,
       "dollarIndex": 110.84,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2017-12-27",
@@ -2062,7 +2244,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 147.7,
       "reserves": 2244.3,
       "dollarIndex": 110.86,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-01-03",
@@ -2075,7 +2258,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 131.6,
       "reserves": 2214.6,
       "dollarIndex": 109.68,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-01-10",
@@ -2088,7 +2272,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 58,
       "reserves": 2214.6,
       "dollarIndex": 109.63,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-01-17",
@@ -2101,7 +2286,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 20.5,
       "reserves": 2214.6,
       "dollarIndex": 108.15,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-01-24",
@@ -2114,7 +2300,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 36.4,
       "reserves": 2214.6,
       "dollarIndex": 107.08,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-01-31",
@@ -2127,7 +2314,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 65.8,
       "reserves": 2214.6,
       "dollarIndex": 106.77,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-02-07",
@@ -2140,7 +2328,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 48.1,
       "reserves": 2238.8,
       "dollarIndex": 107.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-02-14",
@@ -2153,7 +2342,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 38.5,
       "reserves": 2238.8,
       "dollarIndex": 107.47,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-02-21",
@@ -2166,7 +2356,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 45.2,
       "reserves": 2238.8,
       "dollarIndex": 107.87,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-02-28",
@@ -2179,7 +2370,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 44.5,
       "reserves": 2238.8,
       "dollarIndex": 108.39,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-03-07",
@@ -2192,7 +2384,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 14.3,
       "reserves": 2167,
       "dollarIndex": 108.09,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-03-14",
@@ -2205,7 +2398,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5,
       "reserves": 2167,
       "dollarIndex": 107.86,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-03-21",
@@ -2218,7 +2412,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 20.6,
       "reserves": 2167,
       "dollarIndex": 108.5,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-03-28",
@@ -2231,7 +2426,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 17.9,
       "reserves": 2167,
       "dollarIndex": 107.57,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-04-04",
@@ -2244,7 +2440,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.6,
       "reserves": 2086.2,
       "dollarIndex": 107.64,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-04-11",
@@ -2257,7 +2454,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.4,
       "reserves": 2086.2,
       "dollarIndex": 107.12,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-04-18",
@@ -2270,7 +2468,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 14,
       "reserves": 2086.2,
       "dollarIndex": 107.11,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-04-25",
@@ -2283,7 +2482,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.6,
       "reserves": 2086.2,
       "dollarIndex": 109.34,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-05-02",
@@ -2296,7 +2496,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 6.5,
       "reserves": 2022.5,
       "dollarIndex": 110.16,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-05-09",
@@ -2309,7 +2510,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.7,
       "reserves": 2022.5,
       "dollarIndex": 110.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-05-16",
@@ -2322,7 +2524,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.5,
       "reserves": 2022.5,
       "dollarIndex": 111.31,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-05-23",
@@ -2335,7 +2538,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.9,
       "reserves": 2022.5,
       "dollarIndex": 111.69,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-05-30",
@@ -2348,7 +2552,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.9,
       "reserves": 2022.5,
       "dollarIndex": 111.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-06-06",
@@ -2361,7 +2566,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 16.8,
       "reserves": 1988.2,
       "dollarIndex": 111.75,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-06-13",
@@ -2374,7 +2580,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3,
       "reserves": 1988.2,
       "dollarIndex": 112.26,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-06-20",
@@ -2387,7 +2594,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.3,
       "reserves": 1988.2,
       "dollarIndex": 113.48,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-06-27",
@@ -2400,7 +2608,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 20.7,
       "reserves": 1988.2,
       "dollarIndex": 113.9,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-07-04",
@@ -2413,7 +2622,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.9,
       "reserves": 1949.8,
       "dollarIndex": 113.32,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-07-11",
@@ -2426,7 +2636,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.2,
       "reserves": 1949.8,
       "dollarIndex": 112.86,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-07-18",
@@ -2439,7 +2650,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 6,
       "reserves": 1949.8,
       "dollarIndex": 113.33,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-07-25",
@@ -2452,7 +2664,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.7,
       "reserves": 1949.8,
       "dollarIndex": 112.92,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-08-01",
@@ -2465,7 +2678,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.8,
       "reserves": 1911.2,
       "dollarIndex": 112.89,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-08-08",
@@ -2478,7 +2692,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.7,
       "reserves": 1911.2,
       "dollarIndex": 113.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-08-15",
@@ -2491,7 +2706,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.3,
       "reserves": 1911.2,
       "dollarIndex": 115.15,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-08-22",
@@ -2504,7 +2720,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.1,
       "reserves": 1911.2,
       "dollarIndex": 113.66,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-08-29",
@@ -2517,7 +2734,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.8,
       "reserves": 1911.2,
       "dollarIndex": 113.65,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-09-05",
@@ -2530,7 +2748,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1873.9,
       "dollarIndex": 114.75,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-09-12",
@@ -2543,7 +2762,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.3,
       "reserves": 1873.9,
       "dollarIndex": 114.22,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-09-19",
@@ -2556,7 +2776,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 8.9,
       "reserves": 1873.9,
       "dollarIndex": 113.65,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-09-26",
@@ -2569,7 +2790,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5.6,
       "reserves": 1873.9,
       "dollarIndex": 113.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-10-03",
@@ -2582,7 +2804,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3,
       "reserves": 1830,
       "dollarIndex": 114.16,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-10-10",
@@ -2595,7 +2818,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.4,
       "reserves": 1830,
       "dollarIndex": 114.61,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-10-17",
@@ -2608,7 +2832,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.2,
       "reserves": 1830,
       "dollarIndex": 114.18,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-10-24",
@@ -2621,7 +2846,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 6.4,
       "reserves": 1830,
       "dollarIndex": 115.38,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-10-31",
@@ -2634,7 +2860,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.8,
       "reserves": 1830,
       "dollarIndex": 116.53,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-11-07",
@@ -2647,7 +2874,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.9,
       "reserves": 1775.3,
       "dollarIndex": 115.25,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-11-14",
@@ -2660,7 +2888,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.7,
       "reserves": 1775.3,
       "dollarIndex": 116.5,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-11-21",
@@ -2673,7 +2902,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 16.2,
       "reserves": 1775.3,
       "dollarIndex": 116.09,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-11-28",
@@ -2686,7 +2916,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.5,
       "reserves": 1775.3,
       "dollarIndex": 116.83,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-12-05",
@@ -2699,7 +2930,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.2,
       "reserves": 1691.4,
       "dollarIndex": 116,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-12-12",
@@ -2712,7 +2944,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.5,
       "reserves": 1691.4,
       "dollarIndex": 116.22,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-12-19",
@@ -2725,7 +2958,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 6,
       "reserves": 1691.4,
       "dollarIndex": 116.07,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2018-12-26",
@@ -2738,7 +2972,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1,
       "reserves": 1691.4,
       "dollarIndex": 116.12,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-01-02",
@@ -2751,7 +2986,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 19.5,
       "reserves": 1639,
       "dollarIndex": 115.77,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-01-09",
@@ -2764,7 +3000,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.5,
       "reserves": 1639,
       "dollarIndex": 114.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-01-16",
@@ -2777,7 +3014,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.3,
       "reserves": 1639,
       "dollarIndex": 114.14,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-01-23",
@@ -2790,7 +3028,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 11.4,
       "reserves": 1639,
       "dollarIndex": 114.58,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-01-30",
@@ -2803,7 +3042,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1,
       "reserves": 1639,
       "dollarIndex": 114.07,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-02-06",
@@ -2816,7 +3056,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.9,
       "reserves": 1645.2,
       "dollarIndex": 114.23,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-02-13",
@@ -2829,7 +3070,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.7,
       "reserves": 1645.2,
       "dollarIndex": 114.94,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-02-20",
@@ -2842,7 +3084,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.3,
       "reserves": 1645.2,
       "dollarIndex": 114.57,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-02-27",
@@ -2855,7 +3098,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.9,
       "reserves": 1645.2,
       "dollarIndex": 114.04,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-03-06",
@@ -2868,7 +3112,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.1,
       "reserves": 1661.3,
       "dollarIndex": 114.97,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-03-13",
@@ -2881,7 +3126,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1661.3,
       "dollarIndex": 114.74,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-03-20",
@@ -2894,7 +3140,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.6,
       "reserves": 1661.3,
       "dollarIndex": 114.15,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-03-27",
@@ -2907,7 +3154,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.2,
       "reserves": 1661.3,
       "dollarIndex": 115.12,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-04-03",
@@ -2920,7 +3168,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1559.5,
       "dollarIndex": 114.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-04-10",
@@ -2933,7 +3182,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.7,
       "reserves": 1559.5,
       "dollarIndex": 114.43,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-04-17",
@@ -2946,7 +3196,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1559.5,
       "dollarIndex": 114.51,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-04-24",
@@ -2959,7 +3210,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 9.5,
       "reserves": 1559.5,
       "dollarIndex": 115.42,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-05-01",
@@ -2972,7 +3224,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1511.3,
       "dollarIndex": 115,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-05-08",
@@ -2985,7 +3238,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1511.3,
       "dollarIndex": 115.52,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-05-15",
@@ -2998,7 +3252,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.5,
       "reserves": 1511.3,
       "dollarIndex": 115.86,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-05-22",
@@ -3011,7 +3266,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.8,
       "reserves": 1511.3,
       "dollarIndex": 116.24,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-05-29",
@@ -3024,7 +3280,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.2,
       "reserves": 1511.3,
       "dollarIndex": 116.55,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-06-05",
@@ -3037,7 +3294,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.3,
       "reserves": 1535.9,
       "dollarIndex": 116.03,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-06-12",
@@ -3050,7 +3308,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.7,
       "reserves": 1535.9,
       "dollarIndex": 115.44,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-06-19",
@@ -3063,7 +3322,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 22.4,
       "reserves": 1535.9,
       "dollarIndex": 115.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-06-26",
@@ -3076,7 +3336,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 7.8,
       "reserves": 1535.9,
       "dollarIndex": 114.56,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-07-03",
@@ -3089,7 +3350,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 6.8,
       "reserves": 1513.5,
       "dollarIndex": 114.81,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-07-10",
@@ -3102,7 +3364,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 6.3,
       "reserves": 1513.5,
       "dollarIndex": 115.09,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-07-17",
@@ -3115,7 +3378,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2,
       "reserves": 1513.5,
       "dollarIndex": 114.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-07-24",
@@ -3128,7 +3392,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 8.3,
       "reserves": 1513.5,
       "dollarIndex": 115.24,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-07-31",
@@ -3141,7 +3406,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 7.4,
       "reserves": 1513.5,
       "dollarIndex": 115.49,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-08-07",
@@ -3154,7 +3420,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.6,
       "reserves": 1520.9,
       "dollarIndex": 116.8,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-08-14",
@@ -3167,7 +3434,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.7,
       "reserves": 1520.9,
       "dollarIndex": 117.09,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-08-21",
@@ -3180,7 +3448,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 15.2,
       "reserves": 1520.9,
       "dollarIndex": 117.18,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-08-28",
@@ -3193,7 +3462,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.3,
       "reserves": 1520.9,
       "dollarIndex": 117.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-09-04",
@@ -3206,7 +3476,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.4,
       "reserves": 1439.8,
       "dollarIndex": 117.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-09-11",
@@ -3219,7 +3490,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.6,
       "reserves": 1439.8,
       "dollarIndex": 117.31,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-09-18",
@@ -3232,7 +3504,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 18.9,
       "reserves": 1439.8,
       "dollarIndex": 116.98,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-09-25",
@@ -3245,7 +3518,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 1439.8,
       "dollarIndex": 117.65,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-10-02",
@@ -3258,7 +3532,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.1,
       "reserves": 1481.5,
       "dollarIndex": 117.97,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-10-09",
@@ -3271,7 +3546,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.5,
       "reserves": 1481.5,
       "dollarIndex": 117.68,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-10-16",
@@ -3284,7 +3560,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.8,
       "reserves": 1481.5,
       "dollarIndex": 116.64,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-10-23",
@@ -3297,7 +3574,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 18.3,
       "reserves": 1481.5,
       "dollarIndex": 116.06,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-10-30",
@@ -3310,7 +3588,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.2,
       "reserves": 1481.5,
       "dollarIndex": 116.16,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-11-06",
@@ -3323,7 +3602,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.6,
       "reserves": 1529.3,
       "dollarIndex": 116.1,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-11-13",
@@ -3336,7 +3616,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.8,
       "reserves": 1529.3,
       "dollarIndex": 116.84,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-11-20",
@@ -3349,7 +3630,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 26,
       "reserves": 1529.3,
       "dollarIndex": 116.83,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-11-27",
@@ -3362,7 +3644,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.5,
       "reserves": 1529.3,
       "dollarIndex": 117.13,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-12-04",
@@ -3375,7 +3658,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 1630.1,
       "dollarIndex": 116.69,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-12-11",
@@ -3388,7 +3672,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.6,
       "reserves": 1630.1,
       "dollarIndex": 116.15,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-12-18",
@@ -3401,7 +3686,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 13.4,
       "reserves": 1630.1,
       "dollarIndex": 115.66,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2019-12-25",
@@ -3414,7 +3700,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.4,
       "reserves": 1630.1,
       "dollarIndex": 115.81,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-01-01",
@@ -3427,7 +3714,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 64.1,
       "reserves": 1645.4,
       "dollarIndex": 114.67,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-01-08",
@@ -3440,7 +3728,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.9,
       "reserves": 1645.4,
       "dollarIndex": 115.13,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-01-15",
@@ -3453,7 +3742,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.7,
       "reserves": 1645.4,
       "dollarIndex": 114.95,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-01-22",
@@ -3466,7 +3756,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 15.6,
       "reserves": 1645.4,
       "dollarIndex": 115.23,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-01-29",
@@ -3479,7 +3770,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.3,
       "reserves": 1645.4,
       "dollarIndex": 115.7,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-02-05",
@@ -3492,7 +3784,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.1,
       "reserves": 1657,
       "dollarIndex": 116.01,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-02-12",
@@ -3505,7 +3798,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.3,
       "reserves": 1657,
       "dollarIndex": 116.28,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-02-19",
@@ -3518,7 +3812,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 1657,
       "dollarIndex": 116.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-02-26",
@@ -3531,7 +3826,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.3,
       "reserves": 1657,
       "dollarIndex": 117.41,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-03-04",
@@ -3544,7 +3840,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5,
       "reserves": 2045.1,
       "dollarIndex": 116.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-03-11",
@@ -3557,7 +3854,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.3,
       "reserves": 2045.1,
       "dollarIndex": 118.25,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-03-18",
@@ -3570,7 +3868,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.5,
       "reserves": 2045.1,
       "dollarIndex": 124.16,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-03-25",
@@ -3583,7 +3882,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 97.4,
       "reserves": 2045.1,
       "dollarIndex": 124.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-04-01",
@@ -3596,7 +3896,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 207.8,
       "reserves": 2953.6,
       "dollarIndex": 123.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-04-08",
@@ -3609,7 +3910,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 53.5,
       "reserves": 2953.6,
       "dollarIndex": 123.22,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-04-15",
@@ -3622,7 +3924,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.1,
       "reserves": 2953.6,
       "dollarIndex": 123.08,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-04-22",
@@ -3635,7 +3938,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 10.8,
       "reserves": 2953.6,
       "dollarIndex": 123.93,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-04-29",
@@ -3648,7 +3952,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.4,
       "reserves": 2953.6,
       "dollarIndex": 122.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-05-06",
@@ -3661,7 +3966,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.2,
       "reserves": 3217.6,
       "dollarIndex": 123.61,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-05-13",
@@ -3674,7 +3980,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 13.8,
       "reserves": 3217.6,
       "dollarIndex": 123.54,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-05-20",
@@ -3687,7 +3994,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 9.7,
       "reserves": 3217.6,
       "dollarIndex": 122.1,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-05-27",
@@ -3700,7 +4008,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.3,
       "reserves": 3217.6,
       "dollarIndex": 121.57,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-06-03",
@@ -3713,7 +4022,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 3043.6,
       "dollarIndex": 119.26,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-06-10",
@@ -3726,7 +4036,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 3043.6,
       "dollarIndex": 118.52,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-06-17",
@@ -3739,7 +4050,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 3043.6,
       "dollarIndex": 119.91,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-06-24",
@@ -3752,7 +4064,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 3043.6,
       "dollarIndex": 119.97,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-07-01",
@@ -3765,7 +4078,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2718.5,
       "dollarIndex": 120.08,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-07-08",
@@ -3778,7 +4092,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2718.5,
       "dollarIndex": 119.55,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-07-15",
@@ -3791,7 +4106,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2718.5,
       "dollarIndex": 119.03,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-07-22",
@@ -3804,7 +4120,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2718.5,
       "dollarIndex": 118.13,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-07-29",
@@ -3817,7 +4134,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2718.5,
       "dollarIndex": 117.21,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-08-05",
@@ -3830,7 +4148,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 116.87,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-08-12",
@@ -3843,7 +4162,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 2799.7,
       "dollarIndex": 117.26,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-08-19",
@@ -3856,7 +4176,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 2799.7,
       "dollarIndex": 116.57,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-08-26",
@@ -3869,7 +4190,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 116.62,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-09-02",
@@ -3882,7 +4204,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 116.03,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-09-09",
@@ -3895,7 +4218,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 116.13,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-09-16",
@@ -3908,7 +4232,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 2799.7,
       "dollarIndex": 115.35,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-09-23",
@@ -3921,7 +4246,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 117.25,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-09-30",
@@ -3934,7 +4260,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.8,
       "reserves": 2799.7,
       "dollarIndex": 116.95,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-10-07",
@@ -3947,7 +4274,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 116.34,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-10-14",
@@ -3960,7 +4288,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 115.69,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-10-21",
@@ -3973,7 +4302,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 114.91,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-10-28",
@@ -3986,7 +4316,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 115.8,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-11-04",
@@ -3999,7 +4330,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 115.17,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-11-11",
@@ -4012,7 +4344,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 114.08,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-11-18",
@@ -4025,7 +4358,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 2799.7,
       "dollarIndex": 113.46,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-11-25",
@@ -4038,7 +4372,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 113.18,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-12-02",
@@ -4051,7 +4386,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 112.61,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-12-09",
@@ -4064,7 +4400,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 112.03,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-12-16",
@@ -4077,7 +4414,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 111.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-12-23",
@@ -4090,7 +4428,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.9,
       "reserves": 2799.7,
       "dollarIndex": 111.98,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2020-12-30",
@@ -4103,7 +4442,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.7,
       "reserves": 2799.7,
       "dollarIndex": 111.31,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-01-06",
@@ -4116,7 +4456,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 110.85,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-01-13",
@@ -4129,7 +4470,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 111.36,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-01-20",
@@ -4142,7 +4484,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.8,
       "reserves": 2799.7,
       "dollarIndex": 111.45,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-01-27",
@@ -4155,7 +4498,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.2,
       "reserves": 2799.7,
       "dollarIndex": 112.08,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-02-03",
@@ -4168,7 +4512,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.2,
       "reserves": 2799.7,
       "dollarIndex": 112.26,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-02-10",
@@ -4181,7 +4526,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 111.58,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-02-17",
@@ -4194,7 +4540,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 2799.7,
       "dollarIndex": 112.02,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-02-24",
@@ -4207,7 +4554,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 111.72,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-03-03",
@@ -4220,7 +4568,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.5,
       "reserves": 2799.7,
       "dollarIndex": 112.76,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-03-10",
@@ -4233,7 +4582,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.1,
       "reserves": 2799.7,
       "dollarIndex": 113.59,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-03-17",
@@ -4246,7 +4596,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0,
       "reserves": 2799.7,
       "dollarIndex": 113.16,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-03-24",
@@ -4259,7 +4610,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 21.9,
       "reserves": 2799.7,
       "dollarIndex": 113.66,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-03-31",
@@ -4272,7 +4624,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 134.3,
       "reserves": 2799.7,
       "dollarIndex": 113.82,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-04-07",
@@ -4285,7 +4638,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 35,
       "reserves": 2799.7,
       "dollarIndex": 113.24,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-04-14",
@@ -4298,7 +4652,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 50.9,
       "reserves": 2799.7,
       "dollarIndex": 112.78,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-04-21",
@@ -4311,7 +4666,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 81.3,
       "reserves": 2799.7,
       "dollarIndex": 112.18,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-04-28",
@@ -4324,7 +4680,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 166.7,
       "reserves": 2799.7,
       "dollarIndex": 111.79,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-05-05",
@@ -4337,7 +4694,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 162.8,
       "reserves": 2799.7,
       "dollarIndex": 112.15,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-05-12",
@@ -4350,7 +4708,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 209.3,
       "reserves": 2799.7,
       "dollarIndex": 111.56,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-05-19",
@@ -4363,7 +4722,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 294,
       "reserves": 2799.7,
       "dollarIndex": 110.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-05-26",
@@ -4376,7 +4736,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 450.3,
       "reserves": 2799.7,
       "dollarIndex": 110.87,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-06-02",
@@ -4389,7 +4750,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 438.8,
       "reserves": 2799.7,
       "dollarIndex": 110.58,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-06-09",
@@ -4402,7 +4764,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 502.9,
       "reserves": 2799.7,
       "dollarIndex": 110.57,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-06-16",
@@ -4415,7 +4778,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 520.9,
       "reserves": 2799.7,
       "dollarIndex": 111.12,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-06-23",
@@ -4428,7 +4792,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 813.6,
       "reserves": 2799.7,
       "dollarIndex": 112.38,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-06-30",
@@ -4441,7 +4806,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 991.9,
       "reserves": 2799.7,
       "dollarIndex": 112.55,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-07-07",
@@ -4454,7 +4820,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 785.7,
       "reserves": 2799.7,
       "dollarIndex": 113.1,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-07-14",
@@ -4467,7 +4834,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 860,
       "reserves": 2799.7,
       "dollarIndex": 112.88,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-07-21",
@@ -4480,7 +4848,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 886.2,
       "reserves": 2799.7,
       "dollarIndex": 113.39,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-07-28",
@@ -4493,7 +4862,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 965.2,
       "reserves": 2799.7,
       "dollarIndex": 113.18,
-      "sofrIorb": null
+      "sofrIorb": null,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-08-04",
@@ -4506,7 +4876,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 931.8,
       "reserves": 2799.7,
       "dollarIndex": 112.9,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-08-11",
@@ -4519,7 +4890,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1000.5,
       "reserves": 2799.7,
       "dollarIndex": 113.28,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-08-18",
@@ -4532,7 +4904,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1115.7,
       "reserves": 2799.7,
       "dollarIndex": 113.7,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-08-25",
@@ -4545,7 +4918,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1147.1,
       "reserves": 2799.7,
       "dollarIndex": 113.63,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-09-01",
@@ -4558,7 +4932,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1084.1,
       "reserves": 2799.7,
       "dollarIndex": 112.87,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-09-08",
@@ -4571,7 +4946,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1115.2,
       "reserves": 2799.7,
       "dollarIndex": 113.23,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-09-15",
@@ -4584,7 +4960,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1081.3,
       "reserves": 2799.7,
       "dollarIndex": 112.98,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-09-22",
@@ -4597,7 +4974,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1283.3,
       "reserves": 2799.7,
       "dollarIndex": 113.62,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-09-29",
@@ -4610,7 +4988,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1415.8,
       "reserves": 2799.7,
       "dollarIndex": 114.71,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-10-06",
@@ -4623,7 +5002,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1451.2,
       "reserves": 2799.7,
       "dollarIndex": 114.72,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-10-13",
@@ -4636,7 +5016,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1364.7,
       "reserves": 2799.7,
       "dollarIndex": 114.47,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-10-20",
@@ -4649,7 +5030,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1494,
       "reserves": 2799.7,
       "dollarIndex": 113.51,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-10-27",
@@ -4662,7 +5044,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1433.4,
       "reserves": 2799.7,
       "dollarIndex": 113.62,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-11-03",
@@ -4675,7 +5058,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1344,
       "reserves": 2799.7,
       "dollarIndex": 114.36,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-11-10",
@@ -4688,7 +5072,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1448.6,
       "reserves": 2799.7,
       "dollarIndex": 114.15,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-11-17",
@@ -4701,7 +5086,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1520,
       "reserves": 2799.7,
       "dollarIndex": 115.03,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-11-24",
@@ -4714,7 +5100,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1452.9,
       "reserves": 2799.7,
       "dollarIndex": 116.27,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-12-01",
@@ -4727,7 +5114,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1427.3,
       "reserves": 2799.7,
       "dollarIndex": 115.89,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-12-08",
@@ -4740,7 +5128,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1484.2,
       "reserves": 2799.7,
       "dollarIndex": 115.44,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-12-15",
@@ -4753,7 +5142,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1621.1,
       "reserves": 2799.7,
       "dollarIndex": 116.42,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-12-22",
@@ -4766,7 +5156,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1699.3,
       "reserves": 2799.7,
       "dollarIndex": 115.75,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2021-12-29",
@@ -4779,7 +5170,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1642.5,
       "reserves": 2799.7,
       "dollarIndex": 115.37,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-01-05",
@@ -4792,7 +5184,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1492.8,
       "reserves": 2799.7,
       "dollarIndex": 115.14,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-01-12",
@@ -4805,7 +5198,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1537,
       "reserves": 2799.7,
       "dollarIndex": 114.36,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-01-19",
@@ -4818,7 +5212,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1656.6,
       "reserves": 2799.7,
       "dollarIndex": 114.61,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-01-26",
@@ -4831,7 +5226,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1613,
       "reserves": 2799.7,
       "dollarIndex": 115.09,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-02-02",
@@ -4844,7 +5240,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1626.9,
       "reserves": 2799.7,
       "dollarIndex": 115.15,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-02-09",
@@ -4857,7 +5254,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1653.2,
       "reserves": 2799.7,
       "dollarIndex": 114.82,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-02-16",
@@ -4870,7 +5268,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1644.1,
       "reserves": 2799.7,
       "dollarIndex": 114.69,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-02-23",
@@ -4883,7 +5282,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1738.3,
       "reserves": 2799.7,
       "dollarIndex": 114.67,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-03-02",
@@ -4896,7 +5296,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1526.2,
       "reserves": 2799.7,
       "dollarIndex": 115.76,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-03-09",
@@ -4909,7 +5310,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1542.5,
       "reserves": 2799.7,
       "dollarIndex": 116.6,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-03-16",
@@ -4922,7 +5324,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1613.6,
       "reserves": 2799.7,
       "dollarIndex": 116.81,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-03-23",
@@ -4935,7 +5338,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1803.2,
       "reserves": 2799.7,
       "dollarIndex": 116,
-      "sofrIorb": -0.13
+      "sofrIorb": -0.13,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-03-30",
@@ -4948,7 +5352,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1785.9,
       "reserves": 2799.7,
       "dollarIndex": 115.08,
-      "sofrIorb": -0.13
+      "sofrIorb": -0.13,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-04-06",
@@ -4961,7 +5366,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1731.5,
       "reserves": 2799.7,
       "dollarIndex": 116,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-04-13",
@@ -4974,7 +5380,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1815.6,
       "reserves": 2799.7,
       "dollarIndex": 116.28,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-04-20",
@@ -4987,7 +5394,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1866.6,
       "reserves": 2799.7,
       "dollarIndex": 116.73,
-      "sofrIorb": -0.13
+      "sofrIorb": -0.13,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-04-27",
@@ -5000,7 +5408,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1803.2,
       "reserves": 2799.7,
       "dollarIndex": 119.47,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-05-04",
@@ -5013,7 +5422,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1815.7,
       "reserves": 2799.7,
       "dollarIndex": 119.56,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-05-11",
@@ -5026,7 +5436,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1876.1,
       "reserves": 2799.7,
       "dollarIndex": 120.39,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-05-18",
@@ -5039,7 +5450,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1973.4,
       "reserves": 2799.7,
       "dollarIndex": 120.03,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-05-25",
@@ -5052,7 +5464,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1995.8,
       "reserves": 2799.7,
       "dollarIndex": 118.96,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-06-01",
@@ -5065,7 +5478,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1965,
       "reserves": 2799.7,
       "dollarIndex": 118.7,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-06-08",
@@ -5078,7 +5492,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2140.3,
       "reserves": 2799.7,
       "dollarIndex": 118.4,
-      "sofrIorb": -0.14
+      "sofrIorb": -0.14,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-06-15",
@@ -5091,7 +5506,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2162.9,
       "reserves": 2799.7,
       "dollarIndex": 121.64,
-      "sofrIorb": -0.2
+      "sofrIorb": -0.2,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-06-22",
@@ -5104,7 +5520,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2259.5,
       "reserves": 2799.7,
       "dollarIndex": 120.52,
-      "sofrIorb": -0.2
+      "sofrIorb": -0.2,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-06-29",
@@ -5117,7 +5534,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2227,
       "reserves": 2799.7,
       "dollarIndex": 120.96,
-      "sofrIorb": -0.14
+      "sofrIorb": -0.14,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-07-06",
@@ -5130,7 +5548,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2168,
       "reserves": 2799.7,
       "dollarIndex": 123.01,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-07-13",
@@ -5143,7 +5562,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2155.3,
       "reserves": 2799.7,
       "dollarIndex": 123.28,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-07-20",
@@ -5156,7 +5576,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2240.2,
       "reserves": 2799.7,
       "dollarIndex": 122.6,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-07-27",
@@ -5169,7 +5590,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2189,
       "reserves": 2799.7,
       "dollarIndex": 122.82,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-08-03",
@@ -5182,7 +5604,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2182.2,
       "reserves": 2799.7,
       "dollarIndex": 122.39,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-08-10",
@@ -5195,7 +5618,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2177.6,
       "reserves": 2799.7,
       "dollarIndex": 120.75,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-08-17",
@@ -5208,7 +5632,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2199.6,
       "reserves": 2799.7,
       "dollarIndex": 122.07,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-08-24",
@@ -5221,7 +5646,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2237.1,
       "reserves": 2799.7,
       "dollarIndex": 123.11,
-      "sofrIorb": -0.13
+      "sofrIorb": -0.13,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-08-31",
@@ -5234,7 +5660,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2251,
       "reserves": 2799.7,
       "dollarIndex": 123.53,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-09-07",
@@ -5247,7 +5674,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2207,
       "reserves": 2799.7,
       "dollarIndex": 124.84,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-09-14",
@@ -5260,7 +5688,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2225.6,
       "reserves": 2799.7,
       "dollarIndex": 124.45,
-      "sofrIorb": -0.13
+      "sofrIorb": -0.13,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-09-21",
@@ -5273,7 +5702,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2315.9,
       "reserves": 2799.7,
       "dollarIndex": 125.74,
-      "sofrIorb": -0.15
+      "sofrIorb": -0.15,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-09-28",
@@ -5286,7 +5716,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2366.8,
       "reserves": 2799.7,
       "dollarIndex": 128.09,
-      "sofrIorb": -0.17
+      "sofrIorb": -0.17,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-10-05",
@@ -5299,7 +5730,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2230.8,
       "reserves": 2799.7,
       "dollarIndex": 126.86,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-10-12",
@@ -5312,7 +5744,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2247.2,
       "reserves": 2799.7,
       "dollarIndex": 128.15,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-10-19",
@@ -5325,7 +5758,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2241.8,
       "reserves": 2799.7,
       "dollarIndex": 128.4,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-10-26",
@@ -5338,7 +5772,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2186.9,
       "reserves": 2799.7,
       "dollarIndex": 126.47,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-11-02",
@@ -5351,7 +5786,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2229.9,
       "reserves": 2799.7,
       "dollarIndex": 127.31,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-11-09",
@@ -5364,7 +5800,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2237.8,
       "reserves": 2799.7,
       "dollarIndex": 125.99,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-11-16",
@@ -5377,7 +5814,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2099.1,
       "reserves": 2799.7,
       "dollarIndex": 123.28,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-11-23",
@@ -5390,7 +5828,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2069.2,
       "reserves": 2799.7,
       "dollarIndex": 123.76,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-11-30",
@@ -5403,7 +5842,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2115.9,
       "reserves": 2799.7,
       "dollarIndex": 123.52,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-12-07",
@@ -5416,7 +5856,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2151.5,
       "reserves": 2799.7,
       "dollarIndex": 122.76,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-12-14",
@@ -5429,7 +5870,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2192.9,
       "reserves": 2799.7,
       "dollarIndex": 121.82,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-12-21",
@@ -5442,7 +5884,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2207,
       "reserves": 2799.7,
       "dollarIndex": 122.28,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2022-12-28",
@@ -5455,7 +5898,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2293,
       "reserves": 2799.7,
       "dollarIndex": 122.01,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-01-04",
@@ -5468,7 +5912,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2229.5,
       "reserves": 2799.7,
       "dollarIndex": 121.5,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-01-11",
@@ -5481,7 +5926,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2199.2,
       "reserves": 2799.7,
       "dollarIndex": 120.16,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-01-18",
@@ -5494,7 +5940,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2131.7,
       "reserves": 2799.7,
       "dollarIndex": 119.08,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-01-25",
@@ -5507,7 +5954,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2031.6,
       "reserves": 2799.7,
       "dollarIndex": 118.97,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-02-01",
@@ -5520,7 +5968,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2038.3,
       "reserves": 2799.7,
       "dollarIndex": 118.63,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-02-08",
@@ -5533,7 +5982,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2059.6,
       "reserves": 2799.7,
       "dollarIndex": 120.14,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-02-15",
@@ -5546,7 +5996,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2012,
       "reserves": 2799.7,
       "dollarIndex": 120.46,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-02-22",
@@ -5559,7 +6010,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2113.8,
       "reserves": 2799.7,
       "dollarIndex": 120.84,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-03-01",
@@ -5572,7 +6024,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2133.9,
       "reserves": 2799.7,
       "dollarIndex": 120.63,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-03-08",
@@ -5585,7 +6038,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2193.2,
       "reserves": 2799.7,
       "dollarIndex": 121.45,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-03-15",
@@ -5598,7 +6052,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2055.8,
       "reserves": 2799.7,
       "dollarIndex": 122.11,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-03-22",
@@ -5611,7 +6066,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2279.6,
       "reserves": 2799.7,
       "dollarIndex": 120.62,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-03-29",
@@ -5624,7 +6080,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2264.9,
       "reserves": 2799.7,
       "dollarIndex": 119.73,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-04-05",
@@ -5637,7 +6094,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2243,
       "reserves": 2799.7,
       "dollarIndex": 119.3,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-04-12",
@@ -5650,7 +6108,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2303.9,
       "reserves": 2799.7,
       "dollarIndex": 119,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-04-19",
@@ -5663,7 +6122,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2294.7,
       "reserves": 2799.7,
       "dollarIndex": 119.3,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-04-26",
@@ -5676,7 +6136,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2279.6,
       "reserves": 2799.7,
       "dollarIndex": 119.32,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-05-03",
@@ -5689,7 +6150,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2258.2,
       "reserves": 2799.7,
       "dollarIndex": 119.12,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-05-10",
@@ -5702,7 +6164,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2233.1,
       "reserves": 2799.7,
       "dollarIndex": 118.59,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-05-17",
@@ -5715,7 +6178,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2213.7,
       "reserves": 2799.7,
       "dollarIndex": 119.61,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-05-24",
@@ -5728,7 +6192,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2250.7,
       "reserves": 2799.7,
       "dollarIndex": 120.48,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-05-31",
@@ -5741,7 +6206,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2254.9,
       "reserves": 2799.7,
       "dollarIndex": 120.97,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-06-07",
@@ -5754,7 +6220,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2161.6,
       "reserves": 2799.7,
       "dollarIndex": 119.86,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-06-14",
@@ -5767,7 +6234,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2109.1,
       "reserves": 2799.7,
       "dollarIndex": 118.78,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-06-21",
@@ -5780,7 +6248,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2037.1,
       "reserves": 2799.7,
       "dollarIndex": 118.73,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-06-28",
@@ -5793,7 +6262,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1945.2,
       "reserves": 2799.7,
       "dollarIndex": 119.34,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-07-05",
@@ -5806,7 +6276,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1867.1,
       "reserves": 2799.7,
       "dollarIndex": 119.35,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-07-12",
@@ -5819,7 +6290,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1820.1,
       "reserves": 2799.7,
       "dollarIndex": 117.64,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-07-19",
@@ -5832,7 +6304,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1732.8,
       "reserves": 2799.7,
       "dollarIndex": 117.35,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-07-26",
@@ -5845,7 +6318,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1749.7,
       "reserves": 2799.7,
       "dollarIndex": 117.76,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-08-02",
@@ -5858,7 +6332,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1770.2,
       "reserves": 2799.7,
       "dollarIndex": 119.13,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-08-09",
@@ -5871,7 +6346,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1796.5,
       "reserves": 2799.7,
       "dollarIndex": 119.48,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-08-16",
@@ -5884,7 +6360,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1796.7,
       "reserves": 2799.7,
       "dollarIndex": 120.36,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-08-23",
@@ -5897,7 +6374,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1816.5,
       "reserves": 2799.7,
       "dollarIndex": 120.03,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-08-30",
@@ -5910,7 +6388,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1696.8,
       "reserves": 2799.7,
       "dollarIndex": 119.79,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-09-06",
@@ -5923,7 +6402,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1606.2,
       "reserves": 2799.7,
       "dollarIndex": 121.87,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-09-13",
@@ -5936,7 +6416,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1546.2,
       "reserves": 2799.7,
       "dollarIndex": 121.05,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-09-20",
@@ -5949,7 +6430,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1487,
       "reserves": 2799.7,
       "dollarIndex": 120.96,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-09-27",
@@ -5962,7 +6444,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1442.8,
       "reserves": 2799.7,
       "dollarIndex": 122.99,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-10-04",
@@ -5975,7 +6458,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1342,
       "reserves": 2799.7,
       "dollarIndex": 123.59,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-10-11",
@@ -5988,7 +6472,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1239.4,
       "reserves": 2799.7,
       "dollarIndex": 122.77,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-10-18",
@@ -6001,7 +6486,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1150.8,
       "reserves": 2799.7,
       "dollarIndex": 123.81,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-10-25",
@@ -6014,7 +6500,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1100.6,
       "reserves": 2799.7,
       "dollarIndex": 123.79,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-11-01",
@@ -6027,7 +6514,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1079.5,
       "reserves": 2799.7,
       "dollarIndex": 123.79,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-11-08",
@@ -6040,7 +6528,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1024.5,
       "reserves": 2799.7,
       "dollarIndex": 122.09,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-11-15",
@@ -6053,7 +6542,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 944.2,
       "reserves": 2799.7,
       "dollarIndex": 121.07,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-11-22",
@@ -6066,7 +6556,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 931.6,
       "reserves": 2799.7,
       "dollarIndex": 120.68,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-11-29",
@@ -6079,7 +6570,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 914.2,
       "reserves": 2799.7,
       "dollarIndex": 119.82,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-12-06",
@@ -6092,7 +6584,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 846.5,
       "reserves": 2799.7,
       "dollarIndex": 120.53,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-12-13",
@@ -6105,7 +6598,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 823.3,
       "reserves": 2799.7,
       "dollarIndex": 121.16,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-12-20",
@@ -6118,7 +6612,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 779.1,
       "reserves": 2799.7,
       "dollarIndex": 119.54,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2023-12-27",
@@ -6131,7 +6626,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 818.9,
       "reserves": 2799.7,
       "dollarIndex": 118.47,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-01-03",
@@ -6144,7 +6640,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 719.9,
       "reserves": 2799.7,
       "dollarIndex": 119.7,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-01-10",
@@ -6157,7 +6654,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 680,
       "reserves": 2799.7,
       "dollarIndex": 119.76,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-01-17",
@@ -6170,7 +6668,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 590.2,
       "reserves": 2799.7,
       "dollarIndex": 121.04,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-01-24",
@@ -6183,7 +6682,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 639.6,
       "reserves": 2799.7,
       "dollarIndex": 120.49,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-01-31",
@@ -6196,7 +6696,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 615.4,
       "reserves": 2799.7,
       "dollarIndex": 120.43,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-02-07",
@@ -6209,7 +6710,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 553.1,
       "reserves": 2799.7,
       "dollarIndex": 120.9,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-02-14",
@@ -6222,7 +6724,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 575.3,
       "reserves": 2799.7,
       "dollarIndex": 121.4,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-02-21",
@@ -6235,7 +6738,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 574.9,
       "reserves": 2799.7,
       "dollarIndex": 121.04,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-02-28",
@@ -6248,7 +6752,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 569.9,
       "reserves": 2799.7,
       "dollarIndex": 121.13,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-03-06",
@@ -6261,7 +6766,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 456.8,
       "reserves": 2799.7,
       "dollarIndex": 120.46,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-03-13",
@@ -6274,7 +6780,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 521.7,
       "reserves": 2799.7,
       "dollarIndex": 119.96,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-03-20",
@@ -6287,7 +6794,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 496.2,
       "reserves": 2799.7,
       "dollarIndex": 120.93,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-03-27",
@@ -6300,7 +6808,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 518.4,
       "reserves": 2799.7,
       "dollarIndex": 121.01,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-04-03",
@@ -6313,7 +6822,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 436.6,
       "reserves": 2799.7,
       "dollarIndex": 121.02,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-04-10",
@@ -6326,7 +6836,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 445.8,
       "reserves": 2799.7,
       "dollarIndex": 121.57,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-04-17",
@@ -6339,7 +6850,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 440.5,
       "reserves": 2799.7,
       "dollarIndex": 123.02,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-04-24",
@@ -6352,7 +6864,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 441.2,
       "reserves": 2799.7,
       "dollarIndex": 122.89,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-05-01",
@@ -6365,7 +6878,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 438.1,
       "reserves": 2799.7,
       "dollarIndex": 123.02,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-05-08",
@@ -6378,7 +6892,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 493.4,
       "reserves": 2799.7,
       "dollarIndex": 122.19,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-05-15",
@@ -6391,7 +6906,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 443.8,
       "reserves": 2799.7,
       "dollarIndex": 121.35,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-05-22",
@@ -6404,7 +6920,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 496.4,
       "reserves": 2799.7,
       "dollarIndex": 121.55,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-05-29",
@@ -6417,7 +6934,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 459.3,
       "reserves": 2799.7,
       "dollarIndex": 122.16,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-06-05",
@@ -6430,7 +6948,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 371.8,
       "reserves": 2799.7,
       "dollarIndex": 122.53,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-06-12",
@@ -6443,7 +6962,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 447.6,
       "reserves": 2799.7,
       "dollarIndex": 123.83,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-06-19",
@@ -6456,7 +6976,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 375.5,
       "reserves": 2799.7,
       "dollarIndex": 123.98,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-06-26",
@@ -6469,7 +6990,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 490.2,
       "reserves": 2799.7,
       "dollarIndex": 124.26,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-07-03",
@@ -6482,7 +7004,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 425.9,
       "reserves": 2799.7,
       "dollarIndex": 123.78,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-07-10",
@@ -6495,7 +7018,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 422.1,
       "reserves": 2799.7,
       "dollarIndex": 123.19,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-07-17",
@@ -6508,7 +7032,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 399.4,
       "reserves": 2799.7,
       "dollarIndex": 122.52,
-      "sofrIorb": -0.05
+      "sofrIorb": -0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-07-24",
@@ -6521,7 +7046,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 399.1,
       "reserves": 2799.7,
       "dollarIndex": 123.56,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-07-31",
@@ -6534,7 +7060,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 413.2,
       "reserves": 2799.7,
       "dollarIndex": 123.64,
-      "sofrIorb": -0.02
+      "sofrIorb": -0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-08-07",
@@ -6547,7 +7074,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 286.7,
       "reserves": 2799.7,
       "dollarIndex": 123.57,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-08-14",
@@ -6560,7 +7088,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 328.5,
       "reserves": 2799.7,
       "dollarIndex": 122.43,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-08-21",
@@ -6573,7 +7102,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 321.3,
       "reserves": 2799.7,
       "dollarIndex": 121.85,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-08-28",
@@ -6586,7 +7116,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 388.9,
       "reserves": 2799.7,
       "dollarIndex": 121.89,
-      "sofrIorb": -0.05
+      "sofrIorb": -0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-09-04",
@@ -6599,7 +7130,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 337.3,
       "reserves": 2799.7,
       "dollarIndex": 122.51,
-      "sofrIorb": -0.05
+      "sofrIorb": -0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-09-11",
@@ -6612,7 +7144,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 279.2,
       "reserves": 2799.7,
       "dollarIndex": 122.78,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-09-18",
@@ -6625,7 +7158,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 305.8,
       "reserves": 2799.7,
       "dollarIndex": 121.56,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-09-25",
@@ -6638,7 +7172,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 416.2,
       "reserves": 2799.7,
       "dollarIndex": 121.44,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-10-02",
@@ -6651,7 +7186,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 383.4,
       "reserves": 2799.7,
       "dollarIndex": 121.57,
-      "sofrIorb": 0.02
+      "sofrIorb": 0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-10-09",
@@ -6664,7 +7200,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 343.4,
       "reserves": 2799.7,
       "dollarIndex": 122.88,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-10-16",
@@ -6677,7 +7214,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 272,
       "reserves": 2799.7,
       "dollarIndex": 123.92,
-      "sofrIorb": -0.04
+      "sofrIorb": -0.04,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-10-23",
@@ -6690,7 +7228,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 270.8,
       "reserves": 2799.7,
       "dollarIndex": 124.69,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-10-30",
@@ -6703,7 +7242,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 228.9,
       "reserves": 2799.7,
       "dollarIndex": 124.82,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-11-06",
@@ -6716,7 +7256,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 177.9,
       "reserves": 2799.7,
       "dollarIndex": 125.7,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-11-13",
@@ -6729,7 +7270,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 238.1,
       "reserves": 2799.7,
       "dollarIndex": 126.96,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-11-20",
@@ -6742,7 +7284,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 217.8,
       "reserves": 2799.7,
       "dollarIndex": 126.88,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-11-27",
@@ -6755,7 +7298,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 169.8,
       "reserves": 2799.7,
       "dollarIndex": 126.82,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-12-04",
@@ -6768,7 +7312,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 162.9,
       "reserves": 2799.7,
       "dollarIndex": 126.76,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-12-11",
@@ -6781,7 +7326,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 180.1,
       "reserves": 2799.7,
       "dollarIndex": 126.85,
-      "sofrIorb": -0.03
+      "sofrIorb": -0.03,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-12-18",
@@ -6794,7 +7340,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 131.7,
       "reserves": 2799.7,
       "dollarIndex": 127.64,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2024-12-25",
@@ -6807,7 +7354,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 181,
       "reserves": 2799.7,
       "dollarIndex": 128.34,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-01-01",
@@ -6820,7 +7368,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 473.5,
       "reserves": 2799.7,
       "dollarIndex": 129.28,
-      "sofrIorb": 0.09
+      "sofrIorb": 0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-01-08",
@@ -6833,7 +7382,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 185.1,
       "reserves": 2799.7,
       "dollarIndex": 129.08,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-01-15",
@@ -6846,7 +7396,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 120,
       "reserves": 2799.7,
       "dollarIndex": 129.21,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-01-22",
@@ -6859,7 +7410,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 124,
       "reserves": 2799.7,
       "dollarIndex": 128.34,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-01-29",
@@ -6872,7 +7424,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 121.8,
       "reserves": 2799.7,
       "dollarIndex": 128.34,
-      "sofrIorb": -0.05
+      "sofrIorb": -0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-02-05",
@@ -6885,7 +7438,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 78.8,
       "reserves": 2799.7,
       "dollarIndex": 127.98,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-02-12",
@@ -6898,7 +7452,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 67.7,
       "reserves": 2799.7,
       "dollarIndex": 128.33,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-02-19",
@@ -6911,7 +7466,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 73.2,
       "reserves": 2799.7,
       "dollarIndex": 127.73,
-      "sofrIorb": -0.05
+      "sofrIorb": -0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-02-26",
@@ -6924,7 +7480,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 126.1,
       "reserves": 2799.7,
       "dollarIndex": 127.28,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-03-05",
@@ -6937,7 +7494,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 139.5,
       "reserves": 2799.7,
       "dollarIndex": 126.5,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-03-12",
@@ -6950,7 +7508,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 131.1,
       "reserves": 2799.7,
       "dollarIndex": 125.87,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-03-19",
@@ -6963,7 +7522,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 193.4,
       "reserves": 2799.7,
       "dollarIndex": 125.8,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-03-26",
@@ -6976,7 +7536,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 241.4,
       "reserves": 2799.7,
       "dollarIndex": 126.24,
-      "sofrIorb": -0.05
+      "sofrIorb": -0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-04-02",
@@ -6989,7 +7550,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 233.5,
       "reserves": 2799.7,
       "dollarIndex": 126.38,
-      "sofrIorb": -0.03
+      "sofrIorb": -0.03,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-04-09",
@@ -7002,7 +7564,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 168.1,
       "reserves": 2799.7,
       "dollarIndex": 126.63,
-      "sofrIorb": 0.02
+      "sofrIorb": 0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-04-16",
@@ -7015,7 +7578,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 54.8,
       "reserves": 2799.7,
       "dollarIndex": 123.27,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-04-23",
@@ -7028,7 +7592,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 171.8,
       "reserves": 2799.7,
       "dollarIndex": 123.03,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-04-30",
@@ -7041,7 +7606,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 250.6,
       "reserves": 2799.7,
       "dollarIndex": 122.59,
-      "sofrIorb": 0.01
+      "sofrIorb": 0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-05-07",
@@ -7054,7 +7620,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 154.9,
       "reserves": 2799.7,
       "dollarIndex": 122.12,
-      "sofrIorb": -0.1
+      "sofrIorb": -0.1,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-05-14",
@@ -7067,7 +7634,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 165,
       "reserves": 2799.7,
       "dollarIndex": 122.67,
-      "sofrIorb": -0.11
+      "sofrIorb": -0.11,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-05-21",
@@ -7080,7 +7648,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 162.8,
       "reserves": 2799.7,
       "dollarIndex": 121.75,
-      "sofrIorb": -0.14
+      "sofrIorb": -0.14,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-05-28",
@@ -7093,7 +7662,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 173.6,
       "reserves": 2799.7,
       "dollarIndex": 121.99,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-06-04",
@@ -7106,7 +7676,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 168.9,
       "reserves": 2799.7,
       "dollarIndex": 121.05,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-06-11",
@@ -7119,7 +7690,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 204.6,
       "reserves": 2799.7,
       "dollarIndex": 120.59,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-06-18",
@@ -7132,7 +7704,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 205.1,
       "reserves": 2799.7,
       "dollarIndex": 120.73,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-06-25",
@@ -7145,7 +7718,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 210.9,
       "reserves": 2799.7,
       "dollarIndex": 120.33,
-      "sofrIorb": -0.04
+      "sofrIorb": -0.04,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-07-02",
@@ -7158,7 +7732,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 237.3,
       "reserves": 2799.7,
       "dollarIndex": 119.3,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-07-09",
@@ -7171,7 +7746,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 227.3,
       "reserves": 2799.7,
       "dollarIndex": 119.73,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-07-16",
@@ -7184,7 +7760,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 197.1,
       "reserves": 2799.7,
       "dollarIndex": 120.42,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-07-23",
@@ -7197,7 +7774,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 189.6,
       "reserves": 2799.7,
       "dollarIndex": 119.57,
-      "sofrIorb": -0.12
+      "sofrIorb": -0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-07-30",
@@ -7210,7 +7788,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 155.5,
       "reserves": 2799.7,
       "dollarIndex": 121.4,
-      "sofrIorb": -0.08
+      "sofrIorb": -0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-08-06",
@@ -7223,7 +7802,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 92,
       "reserves": 2799.7,
       "dollarIndex": 120.51,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-08-13",
@@ -7236,7 +7816,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 57.2,
       "reserves": 2799.7,
       "dollarIndex": 120.13,
-      "sofrIorb": -0.07
+      "sofrIorb": -0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-08-20",
@@ -7249,7 +7830,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 35,
       "reserves": 2799.7,
       "dollarIndex": 120.78,
-      "sofrIorb": -0.09
+      "sofrIorb": -0.09,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-08-27",
@@ -7262,7 +7844,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 34.7,
       "reserves": 2799.7,
       "dollarIndex": 120.73,
-      "sofrIorb": -0.04
+      "sofrIorb": -0.04,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-09-03",
@@ -7275,7 +7858,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 17.9,
       "reserves": 2799.7,
       "dollarIndex": 120.51,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-09-10",
@@ -7288,7 +7872,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 29.4,
       "reserves": 2799.7,
       "dollarIndex": 120.12,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-09-17",
@@ -7301,7 +7886,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 14,
       "reserves": 2799.7,
       "dollarIndex": 119.16,
-      "sofrIorb": -0.02
+      "sofrIorb": -0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-09-24",
@@ -7314,7 +7900,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 29.2,
       "reserves": 2799.7,
       "dollarIndex": 120.17,
-      "sofrIorb": -0.02
+      "sofrIorb": -0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-10-01",
@@ -7327,7 +7914,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 10.2,
       "reserves": 2799.7,
       "dollarIndex": 120.15,
-      "sofrIorb": 0.05
+      "sofrIorb": 0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-10-08",
@@ -7340,7 +7928,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5.2,
       "reserves": 2799.7,
       "dollarIndex": 120.78,
-      "sofrIorb": -0.03
+      "sofrIorb": -0.03,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-10-15",
@@ -7353,7 +7942,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5.5,
       "reserves": 2799.7,
       "dollarIndex": 120.86,
-      "sofrIorb": 0.14
+      "sofrIorb": 0.14,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-10-22",
@@ -7366,7 +7956,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4,
       "reserves": 2799.7,
       "dollarIndex": 120.9,
-      "sofrIorb": 0.06
+      "sofrIorb": 0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-10-29",
@@ -7379,7 +7970,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 19.5,
       "reserves": 2799.7,
       "dollarIndex": 120.53,
-      "sofrIorb": 0.12
+      "sofrIorb": 0.12,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-11-05",
@@ -7392,7 +7984,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 12.8,
       "reserves": 2799.7,
       "dollarIndex": 121.85,
-      "sofrIorb": 0.01
+      "sofrIorb": 0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-11-12",
@@ -7405,7 +7998,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5.9,
       "reserves": 2799.7,
       "dollarIndex": 121.05,
-      "sofrIorb": 0.08
+      "sofrIorb": 0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-11-19",
@@ -7418,7 +8012,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.1,
       "reserves": 2799.7,
       "dollarIndex": 121.5,
-      "sofrIorb": 0.01
+      "sofrIorb": 0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-11-26",
@@ -7431,7 +8026,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.2,
       "reserves": 2799.7,
       "dollarIndex": 121.24,
-      "sofrIorb": 0.15
+      "sofrIorb": 0.15,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-12-03",
@@ -7444,7 +8040,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.5,
       "reserves": 2799.7,
       "dollarIndex": 120.73,
-      "sofrIorb": 0.05
+      "sofrIorb": 0.05,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-12-10",
@@ -7457,7 +8054,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 5,
       "reserves": 2799.7,
       "dollarIndex": 120.68,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-12-17",
@@ -7470,7 +8068,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 10.4,
       "reserves": 2799.7,
       "dollarIndex": 120.16,
-      "sofrIorb": 0.04
+      "sofrIorb": 0.04,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-12-24",
@@ -7483,7 +8082,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.8,
       "reserves": 2799.7,
       "dollarIndex": 119.44,
-      "sofrIorb": 0.01
+      "sofrIorb": 0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2025-12-31",
@@ -7496,7 +8096,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 106,
       "reserves": 2799.7,
       "dollarIndex": 119.75,
-      "sofrIorb": 0.22
+      "sofrIorb": 0.22,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-01-07",
@@ -7509,7 +8110,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 4.6,
       "reserves": 2799.7,
       "dollarIndex": 119.87,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-01-14",
@@ -7522,7 +8124,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.2,
       "reserves": 2799.7,
       "dollarIndex": 119.95,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-01-21",
@@ -7535,7 +8138,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.3,
       "reserves": 2799.7,
       "dollarIndex": 119.34,
-      "sofrIorb": -0.02
+      "sofrIorb": -0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-01-28",
@@ -7548,7 +8152,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.1,
       "reserves": 2799.7,
       "dollarIndex": 117.51,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-02-04",
@@ -7561,7 +8166,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.4,
       "reserves": 2799.7,
       "dollarIndex": 118.26,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-02-11",
@@ -7574,7 +8180,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1,
       "reserves": 2799.7,
       "dollarIndex": 117.46,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-02-18",
@@ -7587,7 +8194,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.9,
       "reserves": 2799.7,
       "dollarIndex": 117.84,
-      "sofrIorb": 0.08
+      "sofrIorb": 0.08,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-02-25",
@@ -7600,7 +8208,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.2,
       "reserves": 2799.7,
       "dollarIndex": 117.77,
-      "sofrIorb": 0.02
+      "sofrIorb": 0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-03-04",
@@ -7613,7 +8222,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.9,
       "reserves": 2799.7,
       "dollarIndex": 119.07,
-      "sofrIorb": 0.02
+      "sofrIorb": 0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-03-11",
@@ -7626,7 +8236,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.6,
       "reserves": 2799.7,
       "dollarIndex": 119.29,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-03-18",
@@ -7639,7 +8250,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.7,
       "reserves": 2799.7,
       "dollarIndex": 119.93,
-      "sofrIorb": -0.03
+      "sofrIorb": -0.03,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-03-25",
@@ -7652,7 +8264,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.8,
       "reserves": 2799.7,
       "dollarIndex": 120.13,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-04-01",
@@ -7665,7 +8278,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 2.1,
       "reserves": 2799.7,
       "dollarIndex": 120.12,
-      "sofrIorb": 0
+      "sofrIorb": 0,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-04-08",
@@ -7678,7 +8292,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.2,
       "reserves": 2799.7,
       "dollarIndex": 119.06,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-04-15",
@@ -7691,7 +8306,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.2,
       "reserves": 2799.7,
       "dollarIndex": 118.36,
-      "sofrIorb": 0.07
+      "sofrIorb": 0.07,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-04-22",
@@ -7704,7 +8320,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.5,
       "reserves": 2799.7,
       "dollarIndex": 118.6,
-      "sofrIorb": -0.01
+      "sofrIorb": -0.01,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-04-29",
@@ -7717,7 +8334,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 0.7,
       "reserves": 2799.7,
       "dollarIndex": 119.1,
-      "sofrIorb": -0.02
+      "sofrIorb": -0.02,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-05-06",
@@ -7730,7 +8348,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 1.6,
       "reserves": 2799.7,
       "dollarIndex": 118.1,
-      "sofrIorb": -0.04
+      "sofrIorb": -0.04,
+      "xeurbiBasis": null
     },
     {
       "date": "2026-05-13",
@@ -7743,7 +8362,8 @@ window.LIQUIDITY_PIPE_DATA = {
       "rrp": 3.7,
       "reserves": 2799.7,
       "dollarIndex": 118.04,
-      "sofrIorb": -0.06
+      "sofrIorb": -0.06,
+      "xeurbiBasis": null
     }
   ]
 };

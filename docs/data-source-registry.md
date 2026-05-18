@@ -13,6 +13,7 @@
 | 腾讯公开行情 | A股前复权日 K 烟囱测试 | 中 | 无 | 非官方正式数据源，字段较少 |
 | Yahoo Chart | 全球股票和指数行情样本 | 中 | 无 | 非官方正式数据源，适合烟囱测试和备份 |
 | 手工 Excel/CSV | 难以自动抓取或需要人工判断的数据 | 中 | 无 | 需要版本管理和口径说明 |
+| CME XEURBI | EUR/USD cross-currency basis，离岸美元融资压力 | 高 | OAuth entitlement | 官方 REST API 需要授权，不能网页抓取 |
 
 ## 已验证烟囱测试
 
@@ -57,6 +58,9 @@
 | 成交额 | AKShare / Tushare | 手工 | 日频 | A股流动性核心指标 |
 | 融资融券 | Tushare / AKShare | 手工 | 日频 | 需要权限验证 |
 | 北向/南向资金 | AKShare / Tushare | 手工 | 日频 | 接口稳定性需测试 |
+| Fed 资产负债表、TGA、RRP、准备金、SOFR、IORB、广义美元指数 | FRED 公开 CSV | 本地缓存 CSV | 日频任务，源数据按各自频率更新 | `scripts/build-liquidity-data.mjs` 默认联网刷新，失败后回退缓存 |
+| EUR/USD cross-currency basis | CME XEURBI Cross Currency API | CME DataMine / 手工 | 日频 | 需配置 `CME_OAUTH_TOKEN`；无授权时页面显示“需授权”，不使用 DXY 冒充基差 |
+| JPY/USD cross-currency basis | 待定 | Bloomberg JYBS3M / SDR 推导 | 日频 | 尚未找到稳定免授权公开日频源，保持显式缺口 |
 
 ## 深度报告模块
 
@@ -85,4 +89,5 @@
 - AKShare 数据字典：https://akshare.akfamily.xyz/data/index.html
 - Tushare 权限说明：https://tushare.pro/document/1?doc_id=108
 - FRED API 文档：https://fred.stlouisfed.org/docs/api/fred/fred/
+- CME EUR/USD Cross Currency Basis Index：https://www.cmegroup.com/market-data/cme-group-benchmark-administration/eur-usd-cross-currency-basis-index.html
 - BaoStock PyPI：https://pypi.org/project/baostock/
