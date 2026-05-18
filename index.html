@@ -1151,8 +1151,14 @@
     .liquidity-chart .axis { stroke: rgba(23,33,29,.22); stroke-width: 1; }
     .liquidity-chart .grid-line { stroke: rgba(23,33,29,.09); stroke-width: 1; }
     .liquidity-chart .score-line { fill: none; stroke: var(--teal); stroke-width: 3; }
-    .liquidity-chart .pressure-line { fill: none; stroke: var(--red); stroke-width: 2; stroke-dasharray: 5 5; }
     .liquidity-chart .net-area { fill: rgba(55,125,113,.11); }
+    .liquidity-chart .hover-line { stroke: rgba(23,33,29,.38); stroke-width: 1; stroke-dasharray: 4 4; }
+    .liquidity-chart .hover-dot { fill: var(--teal); stroke: #fffaf3; stroke-width: 2; }
+    .liquidity-chart .hover-box { fill: rgba(23,33,29,.94); }
+    .liquidity-chart .hover-text { fill: #fffaf3; font-size: 12px; }
+    .liquidity-chart .hover-layer { opacity: 0; pointer-events: none; }
+    .liquidity-chart.is-hovering .hover-layer { opacity: 1; }
+    .liquidity-chart .hover-capture { fill: transparent; cursor: crosshair; }
     .liquidity-latest {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2983,20 +2989,54 @@
         const index = chartRows.findIndex(r => r.date === row.date);
         return `<text x="${x(index)}" y="${height - 14}" text-anchor="middle">${row.date.slice(0, 4)}</text>`;
       }).join("");
+      const tooltipX = width - 224;
+      const tooltipY = 78;
 
       liquidityChart.innerHTML = `
         <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
         ${tickHtml}
         <path class="net-area" d="${netArea}"></path>
         <path class="score-line" d="${liquidityPath(chartRows, x, yScore, "score")}"></path>
-        <path class="pressure-line" d="${liquidityPath(chartRows, x, yScore, "pressure")}"></path>
         <line class="axis" x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}"></line>
         <line class="axis" x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
         ${yearHtml}
-        <text x="${width - 210}" y="28">绿色：流动性支持分数</text>
-        <text x="${width - 210}" y="46">红虚线：压力分数</text>
-        <text x="${width - 210}" y="64">浅绿面积：净流动性规模</text>
+        <text x="${width - 210}" y="28">Score line: liquidity support</text>
+        <text x="${width - 210}" y="46">Area: net liquidity scale</text>
+        <g class="hover-layer" id="liquidityHoverLayer">
+          <line class="hover-line" id="liquidityHoverLine" x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
+          <circle class="hover-dot" id="liquidityHoverDot" cx="${pad.left}" cy="${yScore(latest.score)}" r="5"></circle>
+          <rect class="hover-box" x="${tooltipX}" y="${tooltipY}" width="190" height="74"></rect>
+          <text class="hover-text" id="liquidityHoverDate" x="${tooltipX + 12}" y="${tooltipY + 22}"></text>
+          <text class="hover-text" id="liquidityHoverScore" x="${tooltipX + 12}" y="${tooltipY + 43}"></text>
+          <text class="hover-text" id="liquidityHoverNet" x="${tooltipX + 12}" y="${tooltipY + 64}"></text>
+        </g>
+        <rect class="hover-capture" id="liquidityHoverCapture" x="${pad.left}" y="${pad.top}" width="${width - pad.left - pad.right}" height="${height - pad.top - pad.bottom}"></rect>
       `;
+      const hoverCapture = document.getElementById("liquidityHoverCapture");
+      const hoverLine = document.getElementById("liquidityHoverLine");
+      const hoverDot = document.getElementById("liquidityHoverDot");
+      const hoverDate = document.getElementById("liquidityHoverDate");
+      const hoverScore = document.getElementById("liquidityHoverScore");
+      const hoverNet = document.getElementById("liquidityHoverNet");
+      const step = (width - pad.left - pad.right) / Math.max(1, chartRows.length - 1);
+      const updateHover = event => {
+        const rect = liquidityChart.getBoundingClientRect();
+        const px = (event.clientX - rect.left) * (width / rect.width);
+        const index = Math.max(0, Math.min(chartRows.length - 1, Math.round((px - pad.left) / step)));
+        const row = chartRows[index];
+        const cx = x(index);
+        const cy = yScore(row.score);
+        liquidityChart.classList.add("is-hovering");
+        hoverLine.setAttribute("x1", cx);
+        hoverLine.setAttribute("x2", cx);
+        hoverDot.setAttribute("cx", cx);
+        hoverDot.setAttribute("cy", cy);
+        hoverDate.textContent = row.date;
+        hoverScore.textContent = `Score ${row.score} · ${row.state}`;
+        hoverNet.textContent = `Net liquidity ${row.netLiquidity.toLocaleString()} bn`;
+      };
+      hoverCapture?.addEventListener("mousemove", updateHover);
+      hoverCapture?.addEventListener("mouseleave", () => liquidityChart.classList.remove("is-hovering"));
     }
 
     renderLiquidityData();
