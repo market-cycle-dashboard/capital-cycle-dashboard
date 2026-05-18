@@ -1302,6 +1302,94 @@
       border-color: rgba(23,33,29,.3);
     }
 
+    .recent-reports {
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .recent-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .recent-item {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 12px;
+      color: var(--ink);
+      text-decoration: none;
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .recent-item:hover {
+      border-color: rgba(23,33,29,.36);
+      background: rgba(255,250,240,.95);
+    }
+
+    .recent-item b {
+      font-size: 13px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .recent-meta {
+      color: var(--muted);
+      font-size: 11px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+
+    .report-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .copy-report-link {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 6px 10px;
+      font-size: 12px;
+      align-self: flex-start;
+    }
+
+    .copy-report-link:hover {
+      background: rgba(23,33,29,.06);
+      border-color: rgba(23,33,29,.3);
+    }
+
+    .copy-toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 80;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--paper-2);
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .company-snapshot {
       display: grid;
       grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
@@ -1422,6 +1510,7 @@
       .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .reports-thesis { grid-template-columns: 1fr; }
       .company-snapshot { grid-template-columns: 1fr; }
+      .recent-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 680px) {
       .report-grid { grid-template-columns: 1fr; }
@@ -1429,6 +1518,8 @@
       .snapshot-grid { grid-template-columns: 1fr; }
       .business-bar { grid-template-columns: 1fr; }
       .life-event { grid-template-columns: 1fr; gap: 4px; }
+      .recent-list { grid-template-columns: 1fr; }
+      .copy-toast { left: 12px; right: 12px; text-align: center; }
     }
 
     /* ── Full Markdown Report ── */
@@ -1715,6 +1806,14 @@
             </div>
           </section>
 
+          <section class="recent-reports panel">
+            <div class="section-head">
+              <h2>最近更新</h2>
+              <span>最新发布与复核的研究对象</span>
+            </div>
+            <div class="recent-list" id="reportRecentList"></div>
+          </section>
+
           <section class="panel">
             <div class="report-grid" id="reportGrid"></div>
           </section>
@@ -1723,6 +1822,7 @@
       </section>
     </div>
   </main>
+  <div class="copy-toast" id="copyToast">链接已复制</div>
 
   <script>
     const data = window.CAPITAL_CYCLE_DATA;
@@ -2586,6 +2686,52 @@
     const reportTypeFilter = document.getElementById("reportTypeFilter");
     const reportConfFilter = document.getElementById("reportConfFilter");
     const reportSearchInput = document.getElementById("reportSearch");
+    const reportRecentList = document.getElementById("reportRecentList");
+    const copyToast = document.getElementById("copyToast");
+
+    function reportUrl(reportId) {
+      const base = window.location.origin === "null"
+        ? window.location.href.split("#")[0]
+        : `${window.location.origin}${window.location.pathname}${window.location.search}`;
+      return `${base}#${encodeURIComponent(reportId)}`;
+    }
+
+    function showCopyToast(message = "链接已复制") {
+      if (!copyToast) return;
+      copyToast.textContent = message;
+      copyToast.classList.add("show");
+      clearTimeout(showCopyToast.timer);
+      showCopyToast.timer = setTimeout(() => copyToast.classList.remove("show"), 1600);
+    }
+
+    function copyReportLink(reportId) {
+      const url = reportUrl(reportId);
+      const fallbackCopy = () => {
+        const temp = document.createElement("textarea");
+        temp.value = url;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "fixed";
+        temp.style.opacity = "0";
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => showCopyToast()).catch(() => {
+          fallbackCopy();
+          showCopyToast();
+        });
+      } else {
+        fallbackCopy();
+        showCopyToast();
+      }
+    }
+
+    function renderReportActions(r) {
+      return `<div class="report-actions"><button class="copy-report-link" type="button" data-copy-report="${r.id}">复制链接</button></div>`;
+    }
 
     function getReportIdFromHash(hash = window.location.hash) {
       if (!hash || !hash.startsWith("#report-")) return null;
@@ -2658,6 +2804,7 @@
         <div class="report-tags">${(r.tags || []).map(t => `<span class="report-tag">${t}</span>`).join("")}</div>
         <div class="report-card-footer">
           <span class="report-confidence">置信度: ${r.confidence}</span>
+          <button class="copy-report-link" type="button" data-copy-report="${r.id}">复制链接</button>
           <span class="report-card-date">${r.author}</span>
         </div>
       </div>`;
@@ -2716,6 +2863,7 @@
           </div>
           <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
         </div>
+        ${renderReportActions(r)}
         ${hasFullMd ? '' : `<div class="report-evidence-box">
           <h4>核心结论</h4>
           <p>${r.conclusion}</p>
@@ -2750,6 +2898,7 @@
           </div>
           <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
         </div>
+        ${renderReportActions(r)}
         <div class="company-snapshot">
           <div class="snapshot-card">
             <h4>公司速览</h4>
@@ -2785,6 +2934,7 @@
           </div>
           <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
         </div>
+        ${renderReportActions(r)}
         <div class="report-evidence-box">
           <h4>生命线结论</h4>
           <p>${r.conclusion}</p>
@@ -2793,6 +2943,55 @@
         <div class="timeline-panel"><h4>公司生命脉络</h4><div class="life-timeline">${timelineHtml}</div></div>
         <div class="report-sections">${sectionsHtml}</div>
       </div>`;
+    }
+
+    function openReportById(reportId, mode = "push") {
+      const targetReport = reportsData.find(r => r.id === reportId && r.status === "published");
+      if (!targetReport) return;
+      reportState.expandedId = reportState.expandedId === reportId ? null : reportId;
+      setReportHash(reportState.expandedId, mode);
+      renderReports();
+      if (reportState.expandedId) {
+        const detailEl = document.getElementById("reportDetail-" + reportId);
+        if (detailEl) detailEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderRecentReports() {
+      if (!reportRecentList) return;
+      const recent = reportsData
+        .filter(r => r.status === "published")
+        .slice()
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 4);
+
+      reportRecentList.innerHTML = recent.map(r => `<div class="recent-item" role="button" tabindex="0" data-recent-report="${r.id}">
+        <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type] || r.type}</span>
+        <b>${r.title}</b>
+        <span class="recent-meta">${r.date} · ${r.author || ""}</span>
+        <button class="copy-report-link" type="button" data-copy-report="${r.id}">复制链接</button>
+      </div>`).join("");
+
+      reportRecentList.querySelectorAll("[data-recent-report]").forEach(item => {
+        const open = () => openReportById(item.dataset.recentReport);
+        item.addEventListener("click", open);
+        item.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+    }
+
+    function bindReportCopyButtons() {
+      document.querySelectorAll("[data-copy-report]").forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          copyReportLink(btn.dataset.copyReport);
+        });
+      });
     }
 
     function renderReports() {
@@ -2811,18 +3010,7 @@
 
       reportGrid.querySelectorAll(".report-card").forEach(card => {
         card.addEventListener("click", () => {
-          const id = card.dataset.reportId;
-          reportState.expandedId = reportState.expandedId === id ? null : id;
-          if (reportState.expandedId) {
-            setReportHash(id, "push");
-          } else {
-            setReportHash(null, "push");
-          }
-          renderReports();
-          if (reportState.expandedId) {
-            const detailEl = document.getElementById("reportDetail-" + id);
-            if (detailEl) detailEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          }
+          openReportById(card.dataset.reportId);
         });
       });
 
@@ -2834,6 +3022,8 @@
       document.getElementById("reportRecent").textContent = allPublished.filter(r => new Date(r.date) >= thirtyDaysAgo).length;
       const indSet = new Set(allPublished.map(r => r.industry).filter(Boolean));
       document.getElementById("reportIndustries").textContent = indSet.size;
+      renderRecentReports();
+      bindReportCopyButtons();
     }
 
     // Sidebar subnav type filter
