@@ -1,5 +1,5 @@
 window.LIQUIDITY_PIPE_DATA = {
-  "updatedAt": "2026-05-18",
+  "updatedAt": "2026-05-19",
   "source": "FRED public CSV",
   "model": {
     "name": "Dollar Liquidity Pipe Score",
@@ -59,7 +59,7 @@ window.LIQUIDITY_PIPE_DATA = {
     "tga": 838.6,
     "rrp": 3.7,
     "reserves": 2799.7,
-    "dollarIndex": 118.04,
+    "dollarIndex": 118.47,
     "sofrIorb": -0.06,
     "xeurbiBasis": null
   },
@@ -8362,7 +8362,7 @@ window.LIQUIDITY_PIPE_DATA = {
       "tga": 838.6,
       "rrp": 3.7,
       "reserves": 2799.7,
-      "dollarIndex": 118.04,
+      "dollarIndex": 118.47,
       "sofrIorb": -0.06,
       "xeurbiBasis": null
     }
