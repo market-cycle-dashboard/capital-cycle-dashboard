@@ -4,7 +4,7 @@
  * 后续可替换为从 data/manual/ 目录读取
  */
 window.REPORTS_DATA = {
-  updatedAt: "2026-05-20",
+  updatedAt: "2026-05-24",
   reports: [
     {
       id: "report-century-ge",
@@ -786,6 +786,53 @@ window.REPORTS_DATA = {
       linkedModules: [],
       linkedIndustryId: null,
       markdownFile: "reports/sri-trang-agro-deep-report.md"
+    },
+    {
+      id: "report-016",
+      type: "company",
+      title: "勇士煤业：Blue Creek 之后的低成本冶金煤现金机",
+      subtitle: "Warrior Met Coal × Blue Creek 投产 × 冶金煤周期与 EPV 买入纪律",
+      author: "NSC Research",
+      date: "2026-05-24",
+      tags: ["勇士煤业", "Warrior Met Coal", "HCC", "美股", "冶金煤", "周期股"],
+      company: "Warrior Met Coal",
+      industry: "冶金煤",
+      market: "美股",
+      status: "published",
+      confidence: "中高",
+      conclusion: "Warrior Met Coal 不是普通煤炭股，而是一个高度纯粹的美国冶金煤出口商。Blue Creek 于 2025 年 10 月提前投产，使公司从建设期吞现金进入产量、成本和自由现金流重新定价阶段；但 83.93 美元已经预支了相当一部分兑现，当前更像持有/等待煤价和成本验证，而不是保守价值投资里的舒服买点。",
+      keyEvidence: [
+        "2025 年收入 13.10 亿美元、净利润 5700 万美元，利润承压主要来自平均净售价从 207.32 美元/吨降至 146.20 美元/吨",
+        "2026Q1 收入 4.586 亿美元、净利润 7230 万美元，销量同比增 38.2%，产量同比增 55.2%，现金成本降至 106.02 美元/吨",
+        "Blue Creek 长壁开采 2025 年 10 月提前 8 个月启动，项目累计支出约 10.229 亿美元，预计无重大额外项目资本开支",
+        "与 AMR 对比，Warrior 规模更小但煤质和价格实现更强，弱煤价下仍盈利，低杠杆资产负债表提升周期韧性",
+        "基准 EPV 约 30-36 亿美元，乐观 EPV/成长价值可到 42-50 亿美元；55-65 美元更有安全边际，80 美元以上主要为爬坡和煤价韧性付费"
+      ],
+      sections: [
+        {
+          title: "核心矛盾",
+          content: "Warrior 的核心问题不是煤炭行业是否还能长期存在，而是 Blue Creek 投产后，低成本冶金煤资产能否把产量、成本和现金流兑现出来。公司几乎全为非动力冶金煤，终端需求来自高炉钢，商业质量取决于煤质、成本曲线、港口距离和资产负债表，而不是消费品式品牌复利。"
+        },
+        {
+          title: "Blue Creek 转折",
+          content: "Blue Creek 于 2025 年 10 月提前 8 个月长壁投产，并在预算内完成，单长壁方案矿山寿命约 40 年，High Vol A 年化名义产能可提升至约 640 万吨。2026Q1 已看到产量上行和单位现金成本下降，但自由现金流仍需等待营运资本和收尾资本开支释放。"
+        },
+        {
+          title: "竞争与护城河",
+          content: "核心竞品是 Alpha Metallurgical Resources。AMR 规模更大、客户网络更广，但 2025 年亏损且遗留义务更复杂；Warrior 的优势在低杠杆、煤质、Blue Creek 新产能和出口物流。综合护城河评级为中等偏宽，但煤价周期决定估值天花板。"
+        },
+        {
+          title: "估值纪律",
+          content: "当前 83.93 美元对应约 44.31 亿美元市值和约 2.0 倍 PB。保守 AV 只能提供弱保护，真正估值门是 EPV 和现金回收。55-65 美元更像高优先级研究买入区，65-75 美元需要 Blue Creek 成本和自由现金流验证，80 美元以上安全边际偏薄。"
+        },
+        {
+          title: "跟踪指标",
+          content: "重点跟踪 Blue Creek 月度爬坡、平均净售价、现金成本/吨、年度销量是否接近 11-12 百万吨、2026 自由现金流是否转正、回购是否由真实自由现金流支持，以及劳资、安全和监管风险是否升温。"
+        }
+      ],
+      linkedModules: [],
+      linkedIndustryId: null,
+      markdownFile: "reports/warrior-met-coal-deep-report.md"
     }
   ]
 };
