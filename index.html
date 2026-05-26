@@ -1025,7 +1025,7 @@
       .site-actions { display: none; }
       .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid, .liquidity-study-grid { grid-template-columns: 1fr; }
       .liquidity-thesis { grid-template-columns: 1fr; }
       .liquidity-row { grid-template-columns: 1fr; gap: 6px; }
       .directory-head { display: block; }
@@ -1198,6 +1198,45 @@
     .playbook-card h3 { margin: 0 0 8px; font-size: 15px; }
     .playbook-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.62; }
     .liquidity-footnote { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .liquidity-study-panel {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .liquidity-study-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .liquidity-study-summary {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+    .liquidity-study-summary h3 { margin: 0; font-size: 16px; line-height: 1.25; }
+    .liquidity-study-summary p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .liquidity-study-summary a {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .liquidity-study-frame {
+      width: 100%;
+      height: 720px;
+      border: 1px solid var(--line);
+      background: #f7f4ea;
+    }
     .liquidity-chart-panel { padding: 18px; display: grid; gap: 12px; }
     .liquidity-chart {
       width: 100%;
@@ -1904,6 +1943,7 @@
               <a href="#liquidity-pipes">流动性管道</a>
               <a href="#liquidity-dashboard">监测仪表盘</a>
               <a href="#liquidity-drivers">驱动拆解</a>
+              <a href="#liquidity-a-share-thermal">A股冷热流动</a>
               <a href="#liquidity-eurodollar">Eurodollar</a>
               <a href="#liquidity-history">历史曲线</a>
               <a href="#liquidity-playbook">研究动作</a>
@@ -2154,6 +2194,22 @@
           <section class="liquidity-driver-panel panel" id="liquidity-drivers">
             <div class="section-head"><h2>驱动拆解</h2><span>最新 4 周与 13 周边际变化</span></div>
             <div class="liquidity-driver-grid" id="liquidityDriverGrid"></div>
+          </section>
+
+          <section class="liquidity-study-panel panel" id="liquidity-a-share-thermal">
+            <div class="section-head">
+              <h2>A股冷热流动研究</h2>
+              <span>ETF、两融、成交活跃度与红利价值吸引盆</span>
+            </div>
+            <div class="liquidity-study-grid">
+              <article class="liquidity-study-summary">
+                <h3>从“水位”转向“热量流向”</h3>
+                <p>这张图把 A 股结构行情拆成几个吸引盆：科技成长、消费/茅系、小盘扩散、新能源与红利价值。它不是判断全市场涨跌，而是观察热量从哪个主题流入、拥挤在哪里、是否有从单一主线外溢的迹象。</p>
+                <p>当前版本接入 ETF 份额和成交、融资余额、公募季报集中度，并用主题成交活跃度温度做代理。核心结论是科技仍是主要吸热端，消费偏冷，红利价值更像备用蓄水池。</p>
+                <a href="reports/liquidity/a-share-capital-enhanced-thermal.html" target="_blank" rel="noopener">打开完整研究页 →</a>
+              </article>
+              <iframe class="liquidity-study-frame" src="reports/liquidity/a-share-capital-enhanced-thermal.html" title="A股资金增强冷热分布"></iframe>
+            </div>
           </section>
 
           <section class="liquidity-method panel" id="liquidity-eurodollar">
@@ -3131,7 +3187,7 @@
           switchModule("capital-cycle");
         } else if (href === "#deep-reports-module") {
           switchModule("deep-reports");
-        } else if (href === "#liquidity-module" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
+        } else if (href === "#liquidity-module" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-a-share-thermal" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
           switchModule("liquidity");
         }
       });
@@ -3139,7 +3195,7 @@
 
     function openModuleFromHash() {
       const hash = window.location.hash;
-      if (hash === "#liquidity-module" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-drivers" || hash === "#liquidity-eurodollar" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
+      if (hash === "#liquidity-module" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-drivers" || hash === "#liquidity-a-share-thermal" || hash === "#liquidity-eurodollar" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
         switchModule("liquidity", { scroll: false });
         return true;
       }
