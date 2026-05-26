@@ -1025,7 +1025,7 @@
       .site-actions { display: none; }
       .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid, .a-share-thermal-grid, .a-share-driver-grid, .a-share-playbook { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid, .a-share-thermal-grid, .a-share-driver-grid, .a-share-playbook, .liquidity-framework-grid { grid-template-columns: 1fr; }
       .liquidity-thesis { grid-template-columns: 1fr; }
       .liquidity-row { grid-template-columns: 1fr; gap: 6px; }
       .directory-head { display: block; }
@@ -1055,6 +1055,51 @@
     }
     .liquidity-thesis h2 { margin: 0; font-size: 25px; line-height: 1.18; max-width: 880px; }
     .liquidity-thesis p { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 820px; }
+    .liquidity-framework-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .liquidity-framework-card {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.76);
+      padding: 18px;
+      text-decoration: none;
+      color: var(--ink);
+      min-height: 180px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .liquidity-framework-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(23,33,29,.46);
+      background: #fffaf3;
+    }
+    .liquidity-framework-card em {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-style: normal;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .liquidity-framework-card b { display: block; font-size: 22px; line-height: 1.1; }
+    .liquidity-framework-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .liquidity-framework-card span {
+      width: fit-content;
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(244,239,229,.5);
+    }
+    .liquidity-subframe {
+      display: grid;
+      gap: 18px;
+      scroll-margin-top: 86px;
+    }
     .liquidity-map {
       padding: 18px;
       display: grid;
@@ -1995,16 +2040,11 @@
           </div>
           <a class="nav-link" href="#liquidity-module">
             <span class="nav-index">03</span>
-            <span><strong>流动性分析</strong><span>Fed 管道、离岸美元与资产定价压力</span></span>
+            <span><strong>流动性分析</strong><span>美元管道与A股温差双框架</span></span>
           </a>
             <div class="subnav">
-              <a href="#liquidity-pipes">流动性管道</a>
-              <a href="#liquidity-dashboard">监测仪表盘</a>
-              <a href="#liquidity-drivers">驱动拆解</a>
-              <a href="#liquidity-a-share-thermal">A股温度框架</a>
-              <a href="#liquidity-eurodollar">Eurodollar</a>
-              <a href="#liquidity-history">历史曲线</a>
-              <a href="#liquidity-playbook">研究动作</a>
+              <a href="#liquidity-usd-framework">美元流动性分析</a>
+              <a href="#liquidity-a-share-thermal">A股温差分析</a>
             </div>
           <a class="nav-link muted" href="#module-more">
             <span class="nav-index">04</span>
@@ -2039,7 +2079,7 @@
                 <em>03 / ACTIVE</em>
                 <b>流动性分析框架</b>
               </span>
-              <small>以 2026 年 RMP、RRP 枯竭与 SRF 常态化为核心，跟踪美元流动性的边际压力。</small>
+              <small>并列跟踪美元流动性管道与 A股内部温差，分别观察全球水位和本土资金热量分布。</small>
             </a>
             <a class="module-card disabled" id="module-more" href="#site-directory">
               <span>
@@ -2190,16 +2230,32 @@
         <section class="liquidity-module module-view hidden" id="liquidity-module">
           <section class="liquidity-thesis panel">
             <div>
-              <h2>流动性不是“水多水少”，而是美元从哪条管道进入、被哪只水桶吸走、在哪个环节变贵。</h2>
-              <p>2026 年的核心变化是：QT 已结束，Fed 进入 RMP（Reserve Management Purchases）准备金管理阶段；RRP 缓冲垫基本耗尽，SRF 从危机工具变成常规压力阀。因此本模块不再只看“扩表/缩表”，而是同时跟踪 RMP、TGA、准备金、SRF/SOFR-IORB 和离岸美元成本；其中 Eurodollar 的直接价格信号，是 FX swap / cross-currency basis 所体现的“合成美元融资溢价”。</p>
+              <h2>流动性分析框架：一边看全球美元管道，一边看A股内部温差。</h2>
+              <p>美元流动性回答“全球水位和融资价格是否支持风险资产”；A股温差分析回答“本土资金热量停在哪个吸引盆、是否扩散或瓦解”。两个框架并列使用，避免把宏观水位和市场内部拥挤度混成一个信号。</p>
             </div>
             <div class="numbers">
-              <div class="number"><b id="liquidityHeroScore">--</b><span>模型总分</span></div>
-              <div class="number"><b id="liquidityHeroDelta">--</b><span>13 周变化</span></div>
-              <div class="number"><b id="liquidityHeroState">--</b><span>当前状态</span></div>
+              <div class="number"><b>02</b><span>并列子框架</span></div>
+              <div class="number"><b id="liquidityHeroScore">--</b><span>美元流动性分</span></div>
+              <div class="number"><b>+1.88</b><span>A股科技温度</span></div>
             </div>
           </section>
 
+          <section class="liquidity-framework-grid" id="liquidity-framework-menu" aria-label="流动性分析子框架">
+            <a class="liquidity-framework-card" href="#liquidity-usd-framework">
+              <em>Framework A</em>
+              <b>美元流动性分析</b>
+              <p>跟踪 Fed 资产端、TGA、ON RRP、准备金、SOFR-IORB 与离岸美元基差，判断全球美元水位和融资堵点。</p>
+              <span>进入美元框架 →</span>
+            </a>
+            <a class="liquidity-framework-card" href="#liquidity-a-share-thermal">
+              <em>Framework B</em>
+              <b>A股温差分析</b>
+              <p>跟踪 ETF 份额、两融、成交活跃度、基金集中度和主题温度，判断热量流向、抱团稳定性与扩散迹象。</p>
+              <span>进入A股框架 →</span>
+            </a>
+          </section>
+
+          <section class="liquidity-subframe" id="liquidity-usd-framework">
           <section class="liquidity-pulse panel" id="liquidity-pulse">
             <div class="liquidity-score-card">
               <div>
@@ -2252,41 +2308,6 @@
           <section class="liquidity-driver-panel panel" id="liquidity-drivers">
             <div class="section-head"><h2>驱动拆解</h2><span>最新 4 周与 13 周边际变化</span></div>
             <div class="liquidity-driver-grid" id="liquidityDriverGrid"></div>
-          </section>
-
-          <section class="liquidity-study-panel panel" id="liquidity-a-share-thermal">
-            <div class="section-head">
-              <h2>A股流动性温度框架</h2>
-              <span>ETF、两融、成交活跃度、基金集中度与红利价值吸引盆</span>
-            </div>
-            <div class="a-share-thermal-grid">
-              <article class="a-share-pulse-card">
-                <h3>不是看全市场水位，而是看热量停在哪里。</h3>
-                <p>A股内部流动性更像温度场：ETF 和两融提供边际水量，成交活跃度决定传导速度，基金集中度决定抱团惯性。这个框架把结构行情拆成科技成长、消费/茅系、小盘扩散、新能源与红利价值五类吸引盆。</p>
-                <div class="a-share-score-strip">
-                  <div><b>+1.88</b><span>科技温度，高于自身历史均值</span></div>
-                  <div><b>-1.78</b><span>消费温度，仍是冷端</span></div>
-                  <div><b>2.89万亿</b><span>沪深融资余额，杠杆回暖但未极端</span></div>
-                  <div><b>-0.19</b><span>红利价值温度，中性偏冷</span></div>
-                </div>
-                <p>当前状态是科技吸热、消费失温，红利价值更像备用蓄水池。若科技温度高位但 ETF 主力流出继续扩大，要警惕“热而不稳”；若小盘和红利同时升温，才更接近热量外溢。</p>
-                <a href="reports/liquidity/a-share-capital-enhanced-thermal.html" target="_blank" rel="noopener">打开全文归档 →</a>
-              </article>
-              <figure class="a-share-thermal-figure">
-                <img src="assets/liquidity/a-share-capital-enhanced-thermal.png" alt="A股资金增强冷热分布图">
-              </figure>
-            </div>
-            <div class="a-share-driver-grid">
-              <article class="a-share-driver hot"><strong>ETF 交易热度</strong><b>科技 69.7%</b><span>主题 ETF 成交额里科技成长占比最高，但主力净流入约 -95.9 亿，说明交易热度强于边际承接。</span></article>
-              <article class="a-share-driver hot"><strong>ETF 份额底盘</strong><b>科技 50.5%</b><span>科技成长占主题 ETF 份额约一半，是当前最强资金容器；红利价值约 23.0%，仍有防御资金底盘。</span></article>
-              <article class="a-share-driver neutral"><strong>融资余额温度</strong><b>+0.90</b><span>两融回暖但不极端。风险信号不是单独升温，而是融资温度、成交拥挤度和单一主题 ETF 同时冲高。</span></article>
-              <article class="a-share-driver cool"><strong>基金集中度</strong><b>前十约 69%</b><span>样本基金前十重仓集中度仍高，说明抱团惯性还在；主线转弱时更可能先内部切换，而不是平滑扩散。</span></article>
-            </div>
-            <div class="a-share-playbook">
-              <article class="a-share-method"><h3>1. 判断吸引盆稳定性</h3><p>红区只是历史常见状态，不等于安全。真正稳定要同时看温度、拥挤度、ETF 流入和融资温度是否共振。</p><code>稳定 = 温度高但不过热 + ETF 承接稳定 + 杠杆不极端</code></article>
-              <article class="a-share-method"><h3>2. 判断热量外溢</h3><p>小盘扩散升温代表风险偏好扩散，红利价值升温代表防御资金接力。两者同时升温，才说明市场不再只围绕科技单一吸引盆。</p><code>外溢 = 科技降温不崩 + 小盘/红利成交温度上行</code></article>
-              <article class="a-share-method"><h3>3. 判断抱团瓦解</h3><p>若科技高温、ETF 成交占比高、主力净流出扩大，同时基金集中度仍高，说明不是扩散，而可能是拥挤交易的边际松动。</p><code>瓦解风险 = 高温 + 高占比 + 净流出 + 集中度高</code></article>
-            </div>
           </section>
 
           <section class="liquidity-method panel" id="liquidity-eurodollar">
@@ -2361,6 +2382,42 @@
               <article class="playbook-card"><h3>看 SRF 与堵点价格</h3><p>观察 SOFR-IORB、SRF 使用、回购利率和信用利差，判断压力是在银行、交易商还是抵押品市场。</p></article>
               <article class="playbook-card"><h3>看资产映射</h3><p>宽松扩散偏利好高久期成长；抽水收缩偏利好现金流确定、低杠杆、低估值资产。</p></article>
               <article class="playbook-card"><h3>看离岸美元与关税</h3><p>贸易摩擦会让 FX swap、美元基差和非美银行融资成本独立收紧，这条线需要和货币政策管道分开观察。</p></article>
+            </div>
+          </section>
+          </section>
+
+          <section class="liquidity-study-panel panel" id="liquidity-a-share-thermal">
+            <div class="section-head">
+              <h2>A股温差分析</h2>
+              <span>ETF、两融、成交活跃度、基金集中度与红利价值吸引盆</span>
+            </div>
+            <div class="a-share-thermal-grid">
+              <article class="a-share-pulse-card">
+                <h3>不是看全市场水位，而是看热量停在哪里。</h3>
+                <p>A股内部流动性更像温度场：ETF 和两融提供边际水量，成交活跃度决定传导速度，基金集中度决定抱团惯性。这个框架把结构行情拆成科技成长、消费/茅系、小盘扩散、新能源与红利价值五类吸引盆。</p>
+                <div class="a-share-score-strip">
+                  <div><b>+1.88</b><span>科技温度，高于自身历史均值</span></div>
+                  <div><b>-1.78</b><span>消费温度，仍是冷端</span></div>
+                  <div><b>2.89万亿</b><span>沪深融资余额，杠杆回暖但未极端</span></div>
+                  <div><b>-0.19</b><span>红利价值温度，中性偏冷</span></div>
+                </div>
+                <p>当前状态是科技吸热、消费失温，红利价值更像备用蓄水池。若科技温度高位但 ETF 主力流出继续扩大，要警惕“热而不稳”；若小盘和红利同时升温，才更接近热量外溢。</p>
+                <a href="reports/liquidity/a-share-capital-enhanced-thermal.html" target="_blank" rel="noopener">打开全文归档 →</a>
+              </article>
+              <figure class="a-share-thermal-figure">
+                <img src="assets/liquidity/a-share-capital-enhanced-thermal.png" alt="A股资金增强冷热分布图">
+              </figure>
+            </div>
+            <div class="a-share-driver-grid">
+              <article class="a-share-driver hot"><strong>ETF 交易热度</strong><b>科技 69.7%</b><span>主题 ETF 成交额里科技成长占比最高，但主力净流入约 -95.9 亿，说明交易热度强于边际承接。</span></article>
+              <article class="a-share-driver hot"><strong>ETF 份额底盘</strong><b>科技 50.5%</b><span>科技成长占主题 ETF 份额约一半，是当前最强资金容器；红利价值约 23.0%，仍有防御资金底盘。</span></article>
+              <article class="a-share-driver neutral"><strong>融资余额温度</strong><b>+0.90</b><span>两融回暖但不极端。风险信号不是单独升温，而是融资温度、成交拥挤度和单一主题 ETF 同时冲高。</span></article>
+              <article class="a-share-driver cool"><strong>基金集中度</strong><b>前十约 69%</b><span>样本基金前十重仓集中度仍高，说明抱团惯性还在；主线转弱时更可能先内部切换，而不是平滑扩散。</span></article>
+            </div>
+            <div class="a-share-playbook">
+              <article class="a-share-method"><h3>1. 判断吸引盆稳定性</h3><p>红区只是历史常见状态，不等于安全。真正稳定要同时看温度、拥挤度、ETF 流入和融资温度是否共振。</p><code>稳定 = 温度高但不过热 + ETF 承接稳定 + 杠杆不极端</code></article>
+              <article class="a-share-method"><h3>2. 判断热量外溢</h3><p>小盘扩散升温代表风险偏好扩散，红利价值升温代表防御资金接力。两者同时升温，才说明市场不再只围绕科技单一吸引盆。</p><code>外溢 = 科技降温不崩 + 小盘/红利成交温度上行</code></article>
+              <article class="a-share-method"><h3>3. 判断抱团瓦解</h3><p>若科技高温、ETF 成交占比高、主力净流出扩大，同时基金集中度仍高，说明不是扩散，而可能是拥挤交易的边际松动。</p><code>瓦解风险 = 高温 + 高占比 + 净流出 + 集中度高</code></article>
             </div>
           </section>
         </section>
@@ -3264,7 +3321,7 @@
           switchModule("capital-cycle");
         } else if (href === "#deep-reports-module") {
           switchModule("deep-reports");
-        } else if (href === "#liquidity-module" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-a-share-thermal" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
+        } else if (href === "#liquidity-module" || href === "#liquidity-usd-framework" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-a-share-thermal" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
           switchModule("liquidity");
         }
       });
@@ -3272,7 +3329,7 @@
 
     function openModuleFromHash() {
       const hash = window.location.hash;
-      if (hash === "#liquidity-module" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-drivers" || hash === "#liquidity-a-share-thermal" || hash === "#liquidity-eurodollar" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
+      if (hash === "#liquidity-module" || hash === "#liquidity-usd-framework" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-drivers" || hash === "#liquidity-a-share-thermal" || hash === "#liquidity-eurodollar" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
         switchModule("liquidity", { scroll: false });
         return true;
       }
