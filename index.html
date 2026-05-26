@@ -1025,7 +1025,7 @@
       .site-actions { display: none; }
       .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid, .liquidity-study-grid { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid, .a-share-thermal-grid, .a-share-driver-grid, .a-share-playbook { grid-template-columns: 1fr; }
       .liquidity-thesis { grid-template-columns: 1fr; }
       .liquidity-row { grid-template-columns: 1fr; gap: 6px; }
       .directory-head { display: block; }
@@ -1203,13 +1203,13 @@
       display: grid;
       gap: 14px;
     }
-    .liquidity-study-grid {
+    .a-share-thermal-grid {
       display: grid;
-      grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
+      grid-template-columns: minmax(280px, .9fr) minmax(0, 1.55fr);
       gap: 14px;
       align-items: stretch;
     }
-    .liquidity-study-summary {
+    .a-share-pulse-card {
       border: 1px solid var(--line);
       background: rgba(255,250,240,.72);
       padding: 14px;
@@ -1217,9 +1217,22 @@
       gap: 10px;
       align-content: start;
     }
-    .liquidity-study-summary h3 { margin: 0; font-size: 16px; line-height: 1.25; }
-    .liquidity-study-summary p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-    .liquidity-study-summary a {
+    .a-share-pulse-card h3 { margin: 0; font-size: 18px; line-height: 1.24; }
+    .a-share-pulse-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .a-share-score-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .a-share-score-strip div {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      padding: 10px;
+      min-height: 78px;
+    }
+    .a-share-score-strip b { display: block; font-size: 22px; line-height: 1; }
+    .a-share-score-strip span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .a-share-pulse-card a {
       width: fit-content;
       display: inline-flex;
       align-items: center;
@@ -1231,11 +1244,56 @@
       font-size: 12px;
       font-weight: 700;
     }
-    .liquidity-study-frame {
+    .a-share-thermal-figure {
       width: 100%;
-      height: 720px;
       border: 1px solid var(--line);
-      background: #f7f4ea;
+      background: #fffaf3;
+      padding: 10px;
+      min-width: 0;
+    }
+    .a-share-thermal-figure img {
+      width: 100%;
+      display: block;
+    }
+    .a-share-driver-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .a-share-driver {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 12px;
+      min-height: 118px;
+    }
+    .a-share-driver strong { display: block; font-size: 13px; line-height: 1.3; }
+    .a-share-driver b { display: block; margin: 8px 0 6px; font-size: 20px; line-height: 1.1; }
+    .a-share-driver span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .a-share-driver.hot { border-left: 3px solid var(--red); }
+    .a-share-driver.cool { border-left: 3px solid #315f8f; }
+    .a-share-driver.neutral { border-left: 3px solid var(--amber); }
+    .a-share-playbook {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .a-share-method {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.42);
+      padding: 14px;
+    }
+    .a-share-method h3 { margin: 0 0 8px; font-size: 15px; }
+    .a-share-method p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.62; }
+    .a-share-method code {
+      display: block;
+      margin-top: 10px;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: rgba(23,33,29,.06);
+      border: 1px solid var(--line);
+      font-size: 11px;
+      line-height: 1.45;
+      white-space: normal;
     }
     .liquidity-chart-panel { padding: 18px; display: grid; gap: 12px; }
     .liquidity-chart {
@@ -1850,7 +1908,7 @@
       .company-snapshot { grid-template-columns: 1fr; }
       .recent-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .liquidity-thesis, .liquidity-dashboard, .liquidity-latest, .liquidity-pulse { grid-template-columns: 1fr; }
-      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout, .a-share-driver-grid, .a-share-playbook { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 680px) {
       .report-grid { grid-template-columns: 1fr; }
@@ -1859,7 +1917,7 @@
       .business-bar { grid-template-columns: 1fr; }
       .life-event { grid-template-columns: 1fr; gap: 4px; }
       .recent-list { grid-template-columns: 1fr; }
-      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout { grid-template-columns: 1fr; }
+      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout, .a-share-driver-grid, .a-share-playbook { grid-template-columns: 1fr; }
       .copy-toast { left: 12px; right: 12px; text-align: center; }
     }
 
@@ -1943,7 +2001,7 @@
               <a href="#liquidity-pipes">流动性管道</a>
               <a href="#liquidity-dashboard">监测仪表盘</a>
               <a href="#liquidity-drivers">驱动拆解</a>
-              <a href="#liquidity-a-share-thermal">A股冷热流动</a>
+              <a href="#liquidity-a-share-thermal">A股温度框架</a>
               <a href="#liquidity-eurodollar">Eurodollar</a>
               <a href="#liquidity-history">历史曲线</a>
               <a href="#liquidity-playbook">研究动作</a>
@@ -2198,17 +2256,36 @@
 
           <section class="liquidity-study-panel panel" id="liquidity-a-share-thermal">
             <div class="section-head">
-              <h2>A股冷热流动研究</h2>
-              <span>ETF、两融、成交活跃度与红利价值吸引盆</span>
+              <h2>A股流动性温度框架</h2>
+              <span>ETF、两融、成交活跃度、基金集中度与红利价值吸引盆</span>
             </div>
-            <div class="liquidity-study-grid">
-              <article class="liquidity-study-summary">
-                <h3>从“水位”转向“热量流向”</h3>
-                <p>这张图把 A 股结构行情拆成几个吸引盆：科技成长、消费/茅系、小盘扩散、新能源与红利价值。它不是判断全市场涨跌，而是观察热量从哪个主题流入、拥挤在哪里、是否有从单一主线外溢的迹象。</p>
-                <p>当前版本接入 ETF 份额和成交、融资余额、公募季报集中度，并用主题成交活跃度温度做代理。核心结论是科技仍是主要吸热端，消费偏冷，红利价值更像备用蓄水池。</p>
-                <a href="reports/liquidity/a-share-capital-enhanced-thermal.html" target="_blank" rel="noopener">打开完整研究页 →</a>
+            <div class="a-share-thermal-grid">
+              <article class="a-share-pulse-card">
+                <h3>不是看全市场水位，而是看热量停在哪里。</h3>
+                <p>A股内部流动性更像温度场：ETF 和两融提供边际水量，成交活跃度决定传导速度，基金集中度决定抱团惯性。这个框架把结构行情拆成科技成长、消费/茅系、小盘扩散、新能源与红利价值五类吸引盆。</p>
+                <div class="a-share-score-strip">
+                  <div><b>+1.88</b><span>科技温度，高于自身历史均值</span></div>
+                  <div><b>-1.78</b><span>消费温度，仍是冷端</span></div>
+                  <div><b>2.89万亿</b><span>沪深融资余额，杠杆回暖但未极端</span></div>
+                  <div><b>-0.19</b><span>红利价值温度，中性偏冷</span></div>
+                </div>
+                <p>当前状态是科技吸热、消费失温，红利价值更像备用蓄水池。若科技温度高位但 ETF 主力流出继续扩大，要警惕“热而不稳”；若小盘和红利同时升温，才更接近热量外溢。</p>
+                <a href="reports/liquidity/a-share-capital-enhanced-thermal.html" target="_blank" rel="noopener">打开全文归档 →</a>
               </article>
-              <iframe class="liquidity-study-frame" src="reports/liquidity/a-share-capital-enhanced-thermal.html" title="A股资金增强冷热分布"></iframe>
+              <figure class="a-share-thermal-figure">
+                <img src="assets/liquidity/a-share-capital-enhanced-thermal.png" alt="A股资金增强冷热分布图">
+              </figure>
+            </div>
+            <div class="a-share-driver-grid">
+              <article class="a-share-driver hot"><strong>ETF 交易热度</strong><b>科技 69.7%</b><span>主题 ETF 成交额里科技成长占比最高，但主力净流入约 -95.9 亿，说明交易热度强于边际承接。</span></article>
+              <article class="a-share-driver hot"><strong>ETF 份额底盘</strong><b>科技 50.5%</b><span>科技成长占主题 ETF 份额约一半，是当前最强资金容器；红利价值约 23.0%，仍有防御资金底盘。</span></article>
+              <article class="a-share-driver neutral"><strong>融资余额温度</strong><b>+0.90</b><span>两融回暖但不极端。风险信号不是单独升温，而是融资温度、成交拥挤度和单一主题 ETF 同时冲高。</span></article>
+              <article class="a-share-driver cool"><strong>基金集中度</strong><b>前十约 69%</b><span>样本基金前十重仓集中度仍高，说明抱团惯性还在；主线转弱时更可能先内部切换，而不是平滑扩散。</span></article>
+            </div>
+            <div class="a-share-playbook">
+              <article class="a-share-method"><h3>1. 判断吸引盆稳定性</h3><p>红区只是历史常见状态，不等于安全。真正稳定要同时看温度、拥挤度、ETF 流入和融资温度是否共振。</p><code>稳定 = 温度高但不过热 + ETF 承接稳定 + 杠杆不极端</code></article>
+              <article class="a-share-method"><h3>2. 判断热量外溢</h3><p>小盘扩散升温代表风险偏好扩散，红利价值升温代表防御资金接力。两者同时升温，才说明市场不再只围绕科技单一吸引盆。</p><code>外溢 = 科技降温不崩 + 小盘/红利成交温度上行</code></article>
+              <article class="a-share-method"><h3>3. 判断抱团瓦解</h3><p>若科技高温、ETF 成交占比高、主力净流出扩大，同时基金集中度仍高，说明不是扩散，而可能是拥挤交易的边际松动。</p><code>瓦解风险 = 高温 + 高占比 + 净流出 + 集中度高</code></article>
             </div>
           </section>
 
