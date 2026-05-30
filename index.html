@@ -106,6 +106,22 @@
       text-overflow: ellipsis;
     }
 
+    .site-title .site-contact {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .site-contact a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+
     .site-actions {
       display: flex;
       align-items: center;
@@ -1998,6 +2014,7 @@
       <div class="site-title">
         <strong>资本周期 capital cycle</strong>
         <span>资本周期、估值盈利与行业研究池</span>
+        <span class="site-contact">如有问题欢迎垂询<a href="mailto:gogoxx071@gmail.com">gogoxx071@gmail.com</a></span>
       </div>
       <div class="site-actions">
         <a class="header-pill" href="#capital-cycle-module">Capital Cycle</a>
