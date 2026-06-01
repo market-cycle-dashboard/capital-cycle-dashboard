@@ -11,6 +11,7 @@ https://capital-cycle-dashboard.pages.dev/
 - 资本周期：行业资本周期波浪图、行业研究雷达、PB-ROE 估值盈利地图、行业详情、个股财务轨迹、交集研究池。
 - 深度报告：行业报告、公司报告、主题报告，含报告卡片、筛选交互和详情展开面板。
 - 流动性：规划中。
+- 因子监控：代表性因子近期有效性、拥挤度和因子值优秀个股观察面板。
 - 数据中心：规划中。
 - 方法论：规划中。
 
@@ -22,6 +23,7 @@ https://capital-cycle-dashboard.pages.dev/
 - [设计与协作原则](docs/design-principles.md)
 - [数据底座方案](docs/data-foundation.md)
 - [数据源登记表](docs/data-source-registry.md)
+- [因子监控面板说明](factor-monitor/docs/README.md)
 
 ## 协作方式
 

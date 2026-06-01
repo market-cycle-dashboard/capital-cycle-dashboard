@@ -1059,6 +1059,49 @@
     .module-view.hidden { display: none; }
     section[id], .module-view[id] { scroll-margin-top: 86px; }
 
+    .factor-monitor-module {
+      min-width: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .factor-monitor-thesis {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+    }
+
+    .factor-monitor-thesis h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.18;
+      max-width: 900px;
+    }
+
+    .factor-monitor-thesis p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      max-width: 860px;
+    }
+
+    .factor-monitor-frame-wrap {
+      overflow: hidden;
+      min-height: 980px;
+      background: #f6f7f4;
+    }
+
+    .factor-monitor-frame {
+      display: block;
+      width: 100%;
+      min-height: 980px;
+      border: 0;
+      background: #f6f7f4;
+    }
+
     /* ── Liquidity Framework Module ── */
     .liquidity-module { min-width: 0; display: grid; gap: 18px; }
     .liquidity-thesis {
@@ -1968,7 +2011,7 @@
       .reports-thesis { grid-template-columns: 1fr; }
       .company-snapshot { grid-template-columns: 1fr; }
       .recent-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .liquidity-thesis, .liquidity-dashboard, .liquidity-latest, .liquidity-pulse { grid-template-columns: 1fr; }
+      .liquidity-thesis, .liquidity-dashboard, .liquidity-latest, .liquidity-pulse, .factor-monitor-thesis { grid-template-columns: 1fr; }
       .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout, .a-share-driver-grid, .a-share-playbook { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 680px) {
@@ -2020,6 +2063,7 @@
         <a class="header-pill" href="#capital-cycle-module">Capital Cycle</a>
         <a class="header-pill" href="#deep-reports-module">Deep Reports</a>
         <a class="header-pill" href="#liquidity-module">Liquidity</a>
+        <a class="header-pill" href="#factor-monitor-module">Factors</a>
         <span>Research Terminal</span>
       </div>
     </header>
@@ -2063,10 +2107,14 @@
               <a href="#liquidity-usd-framework">美元流动性分析</a>
               <a href="#liquidity-a-share-thermal">A股温差分析</a>
             </div>
-          <a class="nav-link muted" href="#module-more">
+          <a class="nav-link" href="#factor-monitor-module">
             <span class="nav-index">04</span>
-            <span><strong>更多框架</strong><span>库存周期、价格周期、组合跟踪等</span></span>
+            <span><strong>因子监控</strong><span>代表性因子有效性、拥挤度和优秀个股</span></span>
           </a>
+          <div class="subnav">
+            <a href="#factor-monitor-module">因子排行</a>
+            <a href="factor-monitor/" target="_blank" rel="noopener">独立页面</a>
+          </div>
         </nav>
       </aside>
 
@@ -2098,12 +2146,12 @@
               </span>
               <small>并列跟踪美元流动性管道与 A股内部温差，分别观察全球水位和本土资金热量分布。</small>
             </a>
-            <a class="module-card disabled" id="module-more" href="#site-directory">
+            <a class="module-card active" id="module-factor-monitor" href="#factor-monitor-module">
               <span>
-                <em>04 / LATER</em>
-                <b>更多框架</b>
+                <em>04 / ACTIVE</em>
+                <b>因子监控</b>
               </span>
-              <small>库存周期、价格周期、组合跟踪等后续模块。</small>
+              <small>观察代表性因子的近期有效性、拥挤风险，以及每个因子最新一期因子值优秀个股。</small>
             </a>
           </div>
         </section>
@@ -2477,6 +2525,24 @@
 
           <section class="panel">
             <div class="report-grid" id="reportGrid"></div>
+          </section>
+        </section>
+
+        <section class="factor-monitor-module module-view hidden" id="factor-monitor-module">
+          <section class="factor-monitor-thesis panel">
+            <div>
+              <h2>因子监控：用近期 RankIC、拥挤度和优秀个股样本，给常用因子做体检。</h2>
+              <p>当前板块只保留代表性因子和个股展示，不接入行业映射。月频和周频数据来自已有静态 JSON，适合快速观察因子近期是否仍有效、是否拥挤，以及高分组合里具体是哪些股票。</p>
+            </div>
+            <div class="numbers">
+              <div class="number"><b>27</b><span>代表因子</span></div>
+              <div class="number"><b>20</b><span>单因子优秀个股</span></div>
+              <div class="number"><b>月 / 周</b><span>监控频率</span></div>
+            </div>
+          </section>
+
+          <section class="factor-monitor-frame-wrap panel">
+            <iframe class="factor-monitor-frame" src="factor-monitor/index.html" title="因子监控面板"></iframe>
           </section>
         </section>
 
@@ -3288,6 +3354,7 @@
     const capitalCycleContent = document.getElementById("capital-cycle-content");
     const deepReportsContent = document.getElementById("deep-reports-module");
     const liquidityContent = document.getElementById("liquidity-module");
+    const factorMonitorContent = document.getElementById("factor-monitor-module");
     const moduleCards = document.querySelectorAll(".module-card");
 
     function switchModule(moduleId, options = {}) {
@@ -3296,6 +3363,7 @@
       capitalCycleContent.classList.toggle("hidden", moduleId !== "capital-cycle");
       deepReportsContent.classList.toggle("hidden", moduleId !== "deep-reports");
       liquidityContent?.classList.toggle("hidden", moduleId !== "liquidity");
+      factorMonitorContent?.classList.toggle("hidden", moduleId !== "factor-monitor");
 
       // Update module card active states
       moduleCards.forEach(card => {
@@ -3305,7 +3373,9 @@
           card.classList.add("active");
         } else if (card.id === "module-liquidity" && moduleId === "liquidity") {
           card.classList.add("active");
-        } else if (card.id === "capital-cycle" || card.id === "module-reports" || card.id === "module-liquidity") {
+        } else if (card.id === "module-factor-monitor" && moduleId === "factor-monitor") {
+          card.classList.add("active");
+        } else if (card.id === "capital-cycle" || card.id === "module-reports" || card.id === "module-liquidity" || card.id === "module-factor-monitor") {
           card.classList.remove("active");
         }
       });
@@ -3319,6 +3389,7 @@
     document.getElementById("capital-cycle")?.addEventListener("click", e => { e.preventDefault(); switchModule("capital-cycle"); });
     document.getElementById("module-reports")?.addEventListener("click", e => { e.preventDefault(); switchModule("deep-reports"); });
     document.getElementById("module-liquidity")?.addEventListener("click", e => { e.preventDefault(); switchModule("liquidity"); });
+    document.getElementById("module-factor-monitor")?.addEventListener("click", e => { e.preventDefault(); switchModule("factor-monitor"); });
 
     // Header pill click handlers
     document.querySelectorAll(".header-pill").forEach(pill => {
@@ -3327,6 +3398,7 @@
         if (href === "#capital-cycle-module") { e.preventDefault(); switchModule("capital-cycle"); }
         else if (href === "#deep-reports-module") { e.preventDefault(); switchModule("deep-reports"); }
         else if (href === "#liquidity-module") { e.preventDefault(); switchModule("liquidity"); }
+        else if (href === "#factor-monitor-module") { e.preventDefault(); switchModule("factor-monitor"); }
       });
     });
 
@@ -3340,6 +3412,8 @@
           switchModule("deep-reports");
         } else if (href === "#liquidity-module" || href === "#liquidity-usd-framework" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-a-share-thermal" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
           switchModule("liquidity");
+        } else if (href === "#factor-monitor-module") {
+          switchModule("factor-monitor");
         }
       });
     });
@@ -3352,6 +3426,10 @@
       }
       if (hash === "#deep-reports-module") {
         switchModule("deep-reports", { scroll: false });
+        return true;
+      }
+      if (hash === "#factor-monitor-module") {
+        switchModule("factor-monitor", { scroll: false });
         return true;
       }
       if (hash === "#capital-cycle-module" || hash === "#cycle-wave" || hash === "#research-radar" || hash === "#pb-roe-map" || hash === "#research-pool-section") {
