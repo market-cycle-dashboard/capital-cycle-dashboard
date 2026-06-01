@@ -276,10 +276,17 @@ tbody tr.active {
   background: #e8f3ed;
 }
 
+.description-title {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .description {
-  padding: 16px 0;
+  padding: 8px 0 16px;
   line-height: 1.55;
   font-size: 13px;
+  white-space: pre-line;
 }
 
 .metric-grid,
