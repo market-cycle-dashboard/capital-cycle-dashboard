@@ -37,6 +37,7 @@
             <option value="rank_ic_mean">RankIC</option>
             <option value="size_neutral_rank_ic_mean">市值中性 RankIC</option>
             <option value="rank_ic_ir">RankIC IR</option>
+            <option value="recent_3m_rank_ic">近期 RankIC</option>
             <option value="long_short_mean">多空收益</option>
             <option value="crowding_score">拥挤风险</option>
           </select>
@@ -69,6 +70,10 @@
               <span>收益期</span>
               <strong id="signalDate">-</strong>
             </div>
+            <div class="stat best-factor">
+              <span>当前最佳</span>
+              <strong id="bestFactor">-</strong>
+            </div>
           </div>
         </section>
 
@@ -84,12 +89,13 @@
                   <tr>
                     <th>因子</th>
                     <th>分组</th>
-                    <th>RankIC</th>
-                    <th>中性IC</th>
-                    <th>IR</th>
-                    <th>近期</th>
-                    <th>多空</th>
-                    <th>拥挤</th>
+                    <th><button class="sort-button" data-sort="score">评分</button></th>
+                    <th><button class="sort-button" data-sort="rank_ic_mean">RankIC</button></th>
+                    <th><button class="sort-button" data-sort="size_neutral_rank_ic_mean">中性IC</button></th>
+                    <th><button class="sort-button" data-sort="rank_ic_ir">IR</button></th>
+                    <th><button class="sort-button" data-sort="recent_3m_rank_ic">近期</button></th>
+                    <th><button class="sort-button" data-sort="long_short_mean">多空</button></th>
+                    <th><button class="sort-button" data-sort="crowding_score">拥挤</button></th>
                   </tr>
                 </thead>
                 <tbody id="factorRows"></tbody>
@@ -110,6 +116,7 @@
             <p class="description" id="detailDescription"></p>
 
             <div class="metric-grid">
+              <div class="metric"><span>综合评分</span><strong id="mScore">-</strong></div>
               <div class="metric"><span>RankIC</span><strong id="mRankIc">-</strong></div>
               <div class="metric"><span>中性 RankIC</span><strong id="mNeutralRankIc">-</strong></div>
               <div class="metric"><span>RankIC IR</span><strong id="mRankIr">-</strong></div>
