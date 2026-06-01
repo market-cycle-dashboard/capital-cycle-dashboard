@@ -1,6 +1,7 @@
 let monitorData = null;
 let selectedFactor = null;
 let currentFrequency = "monthly";
+let sortDirection = "desc";
 
 const dataFiles = {
   monthly: "../outputs/factor_monitor_data.json",
@@ -15,6 +16,7 @@ const els = {
   panelDate: document.getElementById("panelDate"),
   signalDate: document.getElementById("signalDate"),
   industryStatus: document.getElementById("industryStatus"),
+  bestFactor: document.getElementById("bestFactor"),
   groupFilter: document.getElementById("groupFilter"),
   sortKey: document.getElementById("sortKey"),
   searchBox: document.getElementById("searchBox"),
@@ -25,6 +27,7 @@ const els = {
   detailTitle: document.getElementById("detailTitle"),
   detailCode: document.getElementById("detailCode"),
   detailDescription: document.getElementById("detailDescription"),
+  mScore: document.getElementById("mScore"),
   mRankIc: document.getElementById("mRankIc"),
   mNeutralRankIc: document.getElementById("mNeutralRankIc"),
   mIndustryRankIc: document.getElementById("mIndustryRankIc"),
@@ -54,6 +57,11 @@ const fmt = {
     if (value === null || value === undefined || Number.isNaN(value)) return "-";
     const n = Number(value) * 100;
     return `${n >= 0 ? "+" : ""}${n.toFixed(digits)}%`;
+  },
+  score(value) {
+    if (value === null || value === undefined || Number.isNaN(value)) return "-";
+    const n = Number(value);
+    return `${n >= 0 ? "+" : ""}${n.toFixed(1)}`;
   },
 };
 
@@ -87,6 +95,7 @@ function initControls() {
   els.panelDate.textContent = monitorData.latest_panel_date;
   els.signalDate.textContent = monitorData.latest_complete_signal_date;
   els.industryStatus.textContent = monitorData.industry_map_loaded ? `${monitorData.industry_map_count} 只` : "未启用";
+  els.bestFactor.textContent = bestFactorLabel();
   els.notes.innerHTML = monitorData.notes.map((note) => `<div>${note}</div>`).join("");
 
   const groups = ["全部", ...new Set(monitorData.factors.map((f) => f.group))];
@@ -96,8 +105,30 @@ function initControls() {
 
 els.frequencySelect.addEventListener("change", () => loadData(els.frequencySelect.value));
 els.groupFilter.addEventListener("change", render);
-els.sortKey.addEventListener("change", render);
+els.sortKey.addEventListener("change", () => {
+  sortDirection = els.sortKey.value === "crowding_score" ? "asc" : "desc";
+  render();
+});
 els.searchBox.addEventListener("input", render);
+document.querySelectorAll(".sort-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const nextKey = button.dataset.sort;
+    if (els.sortKey.value === nextKey) {
+      sortDirection = sortDirection === "desc" ? "asc" : "desc";
+    } else {
+      els.sortKey.value = nextKey;
+      sortDirection = nextKey === "crowding_score" ? "asc" : "desc";
+    }
+    render();
+  });
+});
+
+function bestFactorLabel() {
+  const best = [...monitorData.factors]
+    .filter((f) => f.score !== null && f.score !== undefined && !Number.isNaN(f.score))
+    .sort((a, b) => Number(b.score) - Number(a.score))[0];
+  return best ? `${best.label} ${fmt.score(best.score)}` : "-";
+}
 
 function filteredFactors() {
   const group = els.groupFilter.value;
@@ -109,7 +140,8 @@ function filteredFactors() {
     .sort((a, b) => {
       const av = a[sortKey] ?? -Infinity;
       const bv = b[sortKey] ?? -Infinity;
-      return Number(bv) - Number(av);
+      const diff = Number(bv) - Number(av);
+      return sortDirection === "desc" ? diff : -diff;
     });
 }
 
@@ -120,7 +152,17 @@ function render() {
     selectedFactor = rows[0]?.name || monitorData.factors[0]?.name;
   }
   renderRows(rows);
+  renderSortState();
   renderDetail(selectedFactor);
+}
+
+function renderSortState() {
+  document.querySelectorAll(".sort-button").forEach((button) => {
+    const active = button.dataset.sort === els.sortKey.value;
+    button.classList.toggle("active", active);
+    button.dataset.direction = active ? sortDirection : "";
+    button.setAttribute("aria-sort", active ? (sortDirection === "desc" ? "descending" : "ascending") : "none");
+  });
 }
 
 function renderRows(rows) {
@@ -136,6 +178,7 @@ function renderRows(rows) {
             </div>
           </td>
           <td>${f.group}</td>
+          <td class="${toneClass(f.score)}"><strong>${fmt.score(f.score)}</strong></td>
           <td class="${toneClass(f.rank_ic_mean)}">${fmt.num(f.rank_ic_mean, 3)}</td>
           <td class="${toneClass(f.size_neutral_rank_ic_mean)}">${fmt.num(f.size_neutral_rank_ic_mean, 3)}</td>
           <td class="${toneClass(f.industry_neutral_rank_ic_mean)}">${fmt.num(f.industry_neutral_rank_ic_mean, 3)}</td>
@@ -164,6 +207,7 @@ function renderDetail(name) {
   els.detailTitle.textContent = f.label;
   els.detailCode.textContent = f.name;
   els.detailDescription.textContent = f.description;
+  els.mScore.textContent = fmt.score(f.score);
   els.mRankIc.textContent = fmt.num(f.rank_ic_mean, 3);
   els.mNeutralRankIc.textContent = fmt.num(f.size_neutral_rank_ic_mean, 3);
   els.mIndustryRankIc.textContent = fmt.num(f.industry_neutral_rank_ic_mean, 3);

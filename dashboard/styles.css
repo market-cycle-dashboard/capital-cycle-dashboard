@@ -136,8 +136,13 @@ main {
 
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
   gap: 12px;
+}
+
+.best-factor strong {
+  color: var(--accent);
+  font-size: 15px;
 }
 
 .stat,
@@ -224,6 +229,40 @@ th {
   background: #fbfcf8;
   color: var(--muted);
   font-weight: 600;
+}
+
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0;
+}
+
+.sort-button::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  opacity: 0.35;
+}
+
+.sort-button[data-direction="desc"]::after {
+  border-top: 6px solid currentColor;
+}
+
+.sort-button[data-direction="asc"]::after {
+  border-bottom: 6px solid currentColor;
+}
+
+.sort-button.active {
+  color: var(--accent);
 }
 
 tbody tr {
