@@ -22,6 +22,7 @@ const commercialRate = Math.round(operatingCount / data.length * 100);
 const revenueRate = Math.round(confirmedRevenueCount / data.length * 100);
 const history = window.FLEET_DATA.history || [];
 const market = window.FLEET_DATA.market || {};
+const freight = window.VLCC_FREIGHT_RATES || {routes:[]};
 
 document.querySelector("#dataTime").textContent = window.FLEET_DATA.generatedAt.replace(" UTC","Z");
 document.querySelector("#ladenCount").textContent = laden;
@@ -142,7 +143,63 @@ function estimateQuarter(tce, earningFactor, otherProfit=.28){
   return {tankerNet,companyNet:tankerNet+otherProfit};
 }
 const toYi = valueBn => valueBn*10;
+const usdK = value => `$${Math.round(value/1000)}k`;
+function classifyFreightRoute(v){
+  const text=[v.area,v.position_area,v.prior_area,v.prior_origin,v.prior_destination,v.calibrated_position,v.analyst_note].join(" ").toLowerCase();
+  if(/west africa|south africa|安哥拉|刚果|喀麦隆|尼日利亚|西非|djeno|girassol|kribi/.test(text))return "TD15";
+  if(/gulf of mexico|caribbean|north america|south america|美国湾|美湾|科珀斯|巴西|哥伦比亚|圭亚那|加勒比|墨西哥/.test(text))return "TD22";
+  if(/middle east|arabian|indian ocean|indian coast|south east asia|east asia|china coast|波斯湾|阿曼湾|阿拉伯|中东|红海|霍尔木兹|印度洋/.test(text))return "TD3C";
+  return "OTHER";
+}
+function routeExposure(){
+  const eligible=data.filter(v=>["laden_voyage","part_cargo","active_port","ballast_reposition"].includes(v.commercial_bucket));
+  return eligible.reduce((acc,v)=>{
+    const route=classifyFreightRoute(v);
+    acc[route]=(acc[route]||0)+1;
+    return acc;
+  },{TD3C:0,TD15:0,TD22:0,OTHER:0});
+}
+function linkedFreightModel(){
+  const exposure=routeExposure();
+  const tradeable=freight.routes.filter(r=>r.tradeability==="tradeable");
+  const fallback=tradeable.length?tradeable.reduce((sum,r)=>sum+r.tceUsdDay,0)/tradeable.length:90000;
+  let nominalSum=0,realizableSum=0,total=0;
+  Object.entries(exposure).forEach(([id,count])=>{
+    const quote=freight.routes.find(r=>r.id===id);
+    const nominal=quote?.tceUsdDay||fallback;
+    const realizable=quote?.tradeability==="tradeable"?nominal:fallback;
+    nominalSum+=nominal*count;
+    realizableSum+=realizable*count;
+    total+=count;
+  });
+  return {exposure,fallback,nominalTce:nominalSum/Math.max(total,1),realizableTce:realizableSum/Math.max(total,1),total};
+}
+function renderFreightBoard(model){
+  const asOf=new Date(`${freight.asOf}T00:00:00Z`);
+  const ageDays=Math.max(0,Math.floor((Date.now()-asOf.getTime())/86400000));
+  const stale=ageDays>3;
+  const sourceLinks=(freight.sourceUrls||[]).map((url,index)=>`<a href="${url}" target="_blank" rel="noopener">${index===0?"航线定义":"公开周报"}</a>`).join(" · ");
+  document.querySelector("#freightFreshness").className=`freight-freshness ${stale?"stale":""}`;
+  document.querySelector("#freightFreshness").innerHTML=`<b>${freight.asOf} · ${stale?"报价待更新":"最新公开快照"}</b>${freight.sourceLabel}<br>${sourceLinks}`;
+  document.querySelector("#freightRouteGrid").innerHTML=freight.routes.map(r=>{
+    const exposure=model.exposure[r.id]||0;
+    const change=r.dayChangePct;
+    return `<article class="freight-route">
+      <div class="freight-route-head"><span><b>${r.id}</b> · ${r.route}</span><span class="trade-tag ${r.tradeability}">${r.tradeability==="tradeable"?"可成交锚":"名义评估"}</span></div>
+      <div class="route-tce">${usdK(r.tceUsdDay)}<small>/天</small></div>
+      <div class="route-change ${change>=0?"up":"down"}">${change>=0?"+":""}${change.toFixed(2)}% 日变动</div>
+      <dl><div><dt>船队暴露</dt><dd>${exposure}艘</dd></div><div><dt>月均</dt><dd>${usdK(r.monthAverageTceUsdDay)}</dd></div><div><dt>前值</dt><dd>${usdK(r.previousTceUsdDay)}</dd></div><div><dt>年内均值</dt><dd>${usdK(r.ytdAverageTceUsdDay)}</dd></div></dl>
+      <p>${r.note}</p>
+    </article>`;
+  }).join("");
+  const sensitivity=estimateQuarter(model.realizableTce+10000,.93).companyNet-estimateQuarter(model.realizableTce,.93).companyNet;
+  document.querySelector("#freightLinkage").innerHTML=`
+    <div class="linkage-metric"><span>名义加权 TCE</span><b>${usdK(model.nominalTce)}/天</b><small>包含 TD3C 名义盘，仅用于观察价格失真。</small></div>
+    <div class="linkage-metric"><span>可兑现混合 TCE</span><b>${usdK(model.realizableTce)}/天</b><small>TD3C 以 TD15/TD22 可成交均值替代，进入盈利模型。</small></div>
+    <div class="linkage-metric"><span>TCE 每变动 +$10k/天</span><b>+${toYi(sensitivity).toFixed(1)}亿元</b><small>按 53 艘、Q3 92天、93%有效营运天估算。</small></div>`;
+}
 function renderMarketMonitor(){
+  const linked=linkedFreightModel();
   const atlanticWaiting=data.filter(v=>
     ["Gulf of Mexico","Caribbean Sea","West Africa","South America East Coast"].includes(v.area) &&
     v.derived_load_band==="ballast" &&
@@ -158,10 +215,11 @@ function renderMarketMonitor(){
   document.querySelector("#signalGrid").innerHTML=signals.map(s=>`
     <article class="signal-card ${s.state}"><div class="signal-top"><span>${s.name}</span><span>${s.threshold}</span></div><strong>${s.value}</strong><p>${s.note}</p></article>`).join("");
 
+  renderFreightBoard(linked);
   const scenarios=[
-    {name:"悲观",tce:70000,earning:.90,logic:"海峡长期低通行，非中东货盘不足"},
-    {name:"基准",tce:90000,earning:.93,logic:"TD15/TD22附近运行，部分海峡恢复"},
-    {name:"乐观",tce:120000,earning:.95,logic:"海峡恢复叠加补库存和港口拥堵"}
+    {name:"悲观",tce:linked.realizableTce*.78,earning:.90,logic:"可成交混合TCE再下调22%"},
+    {name:"基准",tce:linked.realizableTce,earning:.93,logic:"按当前航线暴露与可成交报价"},
+    {name:"乐观",tce:linked.realizableTce*1.28,earning:.95,logic:"可成交混合TCE上调28%"}
   ].map(s=>({...s,...estimateQuarter(s.tce,s.earning)}));
   const q2=estimateQuarter(market.q2_assumed_tce_usd_day,.95);
   document.querySelector("#profitScenarios").innerHTML=`<table class="scenario-table">
@@ -176,8 +234,8 @@ function renderMarketMonitor(){
     按你提供的TCE $${Math.round(market.q2_assumed_tce_usd_day/1000)}k/天，模型对应公司归母净利约 ${toYi(q2.companyNet).toFixed(1)} 亿元。
     Q2尚未发布正式财报，此数值仅用于校准。<br><br>
     <b>Q3基准判断</b><br>
-    以TD15 $${Math.round(market.td15_tce_usd_day/1000)}k、TD22 $${Math.round(market.td22_tce_usd_day/1000)}k为可成交市场锚，
-    不采用不可成交的TD3C $${Math.round(market.td3c_tce_usd_day/1000)}k名义盘。基准归母净利约 ${toYi(scenarios[1].companyNet).toFixed(1)} 亿元。`;
+    当前船队航线暴露对应的可兑现混合TCE为 ${usdK(linked.realizableTce)}/天；
+    TD3C ${usdK(market.td3c_tce_usd_day)}/天名义盘仅展示、不直接计入。基准归母净利约 ${toYi(scenarios[1].companyNet).toFixed(1)} 亿元。`;
 }
 
 function renderRows(query=""){
