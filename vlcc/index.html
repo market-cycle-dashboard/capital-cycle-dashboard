@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>招商轮船 VLCC 全球运行态势</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div>
+        <a class="back-link" href="../">← Capital Cycle 研究终端</a>
+        <p class="eyebrow">CMES / VLCC FLEET OPERATIONS</p>
+        <h1>全球运行态势</h1>
+        <p class="subtitle">53艘船 · AIS区域快照 · 推断航向 · 运营效率诊断</p>
+      </div>
+      <div class="stamp">
+        <span>数据时点</span>
+        <strong id="dataTime">—</strong>
+        <small>位置为公开AIS区域级快照</small>
+      </div>
+    </header>
+
+    <section class="scoreboard">
+      <article class="hero-score">
+        <div>
+          <p>商业运营率</p>
+          <strong id="commercialRate">—</strong>
+        </div>
+        <div class="score-gauge"><i id="commercialGauge"></i></div>
+        <small>载货、港口作业、部分载货及空载调位 / 53艘</small>
+      </article>
+      <article class="hero-score revenue-score">
+        <div>
+          <p>收入航段率</p>
+          <strong id="revenueRate">—</strong>
+        </div>
+        <div class="score-gauge"><i id="revenueGauge"></i></div>
+        <small>确定载货航次及重载港口作业 / 53艘</small>
+      </article>
+      <article><span class="dot laden"></span><p>重载</p><strong id="ladenCount">—</strong><small>收入航段</small></article>
+      <article><span class="dot part"></span><p>半载</p><strong id="partCount">—</strong><small>待核航段</small></article>
+      <article><span class="dot ballast"></span><p>空载</p><strong id="ballastCount">—</strong><small>调位航段</small></article>
+    </section>
+
+    <main class="workspace">
+      <section class="map-panel">
+        <div class="map-toolbar">
+          <div class="filters" id="filters">
+            <button class="active" data-filter="all">全部 53</button>
+            <button data-filter="laden_voyage">载货航次</button>
+            <button data-filter="ballast_reposition">空载调位</button>
+            <button data-filter="waiting">候货/等指令</button>
+            <button data-filter="stale">低置信度</button>
+          </div>
+          <label class="route-toggle">
+            <input id="routeToggle" type="checkbox" checked>
+            <span>推断航线</span>
+          </label>
+        </div>
+        <div id="map"></div>
+        <div class="map-note">
+          <b>定位说明</b>
+          免费公开页仅提供区域级位置，图中点位采用区域中心固定偏移，不能用于航海导航。
+        </div>
+      </section>
+
+      <aside class="intel-panel">
+        <div class="panel-head">
+          <p class="eyebrow">FLEET INTELLIGENCE</p>
+          <h2>运营诊断</h2>
+        </div>
+        <div class="diagnosis" id="diagnosis"></div>
+        <div class="region-block">
+          <div class="section-label">船队分布</div>
+          <div id="regionBars"></div>
+        </div>
+        <div class="ship-card" id="shipCard">
+          <p class="hint">点击地图上的船舶查看详情</p>
+        </div>
+      </aside>
+    </main>
+
+    <section class="trend-panel">
+      <div class="trend-head">
+        <div>
+          <p class="eyebrow">HISTORICAL COMPARISON</p>
+          <h2>相较过去：改善还是退化</h2>
+        </div>
+        <div class="trend-verdict" id="trendVerdict"></div>
+      </div>
+      <div class="trend-grid">
+        <div class="trend-chart" id="trendChart"></div>
+        <div class="trend-notes" id="trendNotes"></div>
+      </div>
+    </section>
+
+    <section class="market-panel">
+      <div class="trend-head">
+        <div>
+          <p class="eyebrow">MARKET EXPECTATION MONITOR</p>
+          <h2>悲观预期验证与Q3利润情景</h2>
+        </div>
+        <div class="trend-verdict">监控“中东货盘收缩 → 运力西移 → 非中东运力过剩 → TCE下行”是否真正落地。</div>
+      </div>
+      <div class="signal-grid" id="signalGrid"></div>
+      <div class="profit-grid">
+        <div>
+          <div class="section-label">Q3归母利润情景估算</div>
+          <div id="profitScenarios"></div>
+        </div>
+        <div class="model-note" id="modelNote"></div>
+      </div>
+    </section>
+
+    <section class="fleet-table">
+      <div class="table-head">
+        <div>
+          <p class="eyebrow">LIVE REGISTER</p>
+          <h2>船队登记册</h2>
+        </div>
+        <input id="search" type="search" placeholder="搜索船名 / IMO / 区域">
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>船名</th><th>IMO / MMSI</th><th>区域</th><th>吃水</th><th>经纪人判断</th><th>置信度</th><th>推断航向</th></tr></thead>
+          <tbody id="fleetRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="site-disclaimer">
+      <b>研究说明</b>
+      本页基于截至 2026 年 6 月 10 日的公开 AIS 区域快照、公开运价与财务信息建立。船位、航线和经营状态均为研究推断，Q3 利润为情景估算，不构成航海指引或投资建议。
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="fleet-map-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
