@@ -1,7 +1,45 @@
 const data = window.FLEET_DATA.vessels;
 const colors = {laden:"#19a875",part_laden:"#4e9ab2",ballast:"#e4a23a"};
 const labels = {laden:"重载",part_laden:"半载",ballast:"空载"};
-const isStale = v => v.ais_age_hours_at_collection === "" || Number(v.ais_age_hours_at_collection) > 72;
+function parseUtc(value){
+  if(!value)return null;
+  const parsed = Date.parse(String(value).replace(" UTC","Z"));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+function positionAgeHours(v){
+  if(v.ais_age_hours_at_collection !== "" && v.ais_age_hours_at_collection !== undefined){
+    const age = Number(v.ais_age_hours_at_collection);
+    if(Number.isFinite(age))return age;
+  }
+  const received = parseUtc(v.position_received_at || v.ais_timestamp_utc);
+  const collected = parseUtc(v.collected_at_utc || window.FLEET_DATA.generatedAt);
+  if(received && collected)return Math.max(0,(collected-received)/36e5);
+  return Infinity;
+}
+function confidenceMeta(v){
+  const age = positionAgeHours(v);
+  const freshnessScore =
+    age <= 6 ? 70 :
+    age <= 24 ? 60 :
+    age <= 72 ? 40 :
+    age <= 168 ? 20 : 0;
+  const consistency = v.source_consistency || (v.position_authority === "review_required" ? "review_required" : "single_public_source");
+  const sourceScore = {
+    multi_source: 30,
+    cross_checked_supplemental: 24,
+    single_public_source: 18,
+    indexed_snapshot: 8,
+    review_required: 0
+  }[consistency] ?? 12;
+  let score = freshnessScore + sourceScore;
+  if(consistency === "review_required")score = Math.min(score,45);
+  if(!Number.isFinite(age))score = Math.min(score,35);
+  const label = score >= 75 ? "高" : score >= 50 ? "中" : "低";
+  const ageText = Number.isFinite(age) ? `${Math.round(age)}h` : "无精确时点";
+  const reason = `位置新鲜度 ${ageText}；来源 ${v.source || "unknown"} / ${consistency}`;
+  return {score,label,age,reason,consistency};
+}
+const isStale = v => confidenceMeta(v).label === "低";
 const count = key => data.filter(v => v.derived_load_band === key).length;
 const laden = count("laden"), part = count("part_laden"), ballast = count("ballast");
 const stale = data.filter(isStale).length;
@@ -40,14 +78,30 @@ const markerLayer = L.layerGroup().addTo(map);
 const routeLayer = L.layerGroup().addTo(map);
 let activeFilter = "all";
 
-function routePoints(v){
-  const points = [[v.lat,v.lon]];
-  if(Math.abs(v.route_lon-v.lon)>80){
-    const bendLon = v.lon > 80 && v.route_lon < 0 ? 178 : (v.lon < -80 && v.route_lon > 0 ? -178 : (v.lon+v.route_lon)/2);
-    points.push([(v.lat+v.route_lat)/2,bendLon]);
+function greatCirclePoints(v, steps=48){
+  const toRad = deg => deg*Math.PI/180;
+  const toDeg = rad => rad*180/Math.PI;
+  const lat1=toRad(v.lat), lon1=toRad(v.lon), lat2=toRad(v.route_lat), lon2=toRad(v.route_lon);
+  const d=2*Math.asin(Math.sqrt(Math.sin((lat2-lat1)/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin((lon2-lon1)/2)**2));
+  if(!Number.isFinite(d)||d===0)return [[v.lat,v.lon],[v.route_lat,v.route_lon]];
+  const points=[];
+  for(let i=0;i<=steps;i++){
+    const f=i/steps;
+    const a=Math.sin((1-f)*d)/Math.sin(d), b=Math.sin(f*d)/Math.sin(d);
+    const x=a*Math.cos(lat1)*Math.cos(lon1)+b*Math.cos(lat2)*Math.cos(lon2);
+    const y=a*Math.cos(lat1)*Math.sin(lon1)+b*Math.cos(lat2)*Math.sin(lon2);
+    const z=a*Math.sin(lat1)+b*Math.sin(lat2);
+    points.push([toDeg(Math.atan2(z,Math.sqrt(x*x+y*y))),toDeg(Math.atan2(y,x))]);
   }
-  points.push([v.route_lat,v.route_lon]);
   return points;
+}
+function addRouteLine(v){
+  const options={color:colors[v.derived_load_band],weight:1,opacity:.42,dashArray:"5 6",interactive:false,steps:64};
+  const endpoints=[[v.lat,v.lon],[v.route_lat,v.route_lon]];
+  if(L.Geodesic){
+    return new L.Geodesic(endpoints,options).addTo(routeLayer);
+  }
+  return L.polyline(greatCirclePoints(v),options).addTo(routeLayer);
 }
 function markerIcon(v){
   const size = v.derived_load_band === "laden" ? 13 : 10;
@@ -55,7 +109,7 @@ function markerIcon(v){
 }
 function visible(v){
   if(activeFilter==="all")return true;
-  if(activeFilter==="stale")return v.assessment_confidence==="低";
+  if(activeFilter==="stale")return confidenceMeta(v).label==="低";
   if(activeFilter==="waiting")return ["waiting_loading","waiting_orders"].includes(v.commercial_bucket);
   return v.commercial_bucket===activeFilter;
 }
@@ -66,7 +120,7 @@ function renderMap(){
     marker.bindTooltip(`${v.roster_name} · ${labels[v.derived_load_band]}`,{direction:"top"});
     marker.on("click",()=>showShip(v));
     if(document.querySelector("#routeToggle").checked){
-      L.polyline(routePoints(v),{color:colors[v.derived_load_band],weight:1,opacity:.42,dashArray:"5 6",interactive:false}).addTo(routeLayer);
+      addRouteLine(v);
     }
   });
 }
@@ -78,6 +132,7 @@ document.querySelector("#filters").addEventListener("click",e=>{
 document.querySelector("#routeToggle").addEventListener("change",renderMap);
 
 function showShip(v){
+  const confidence=confidenceMeta(v);
   const supplemental = v.calibrated_position && v.calibrated_position !== "—"
     ? `<br><br><b>人工校准观察：${v.calibrated_position}</b>${v.analyst_note?`<br>${v.analyst_note}`:""}`
     : (v.analyst_note?`<br><br><b>人工备注</b><br>${v.analyst_note}`:"");
@@ -88,10 +143,10 @@ function showShip(v){
       <div><span>当前区域</span><b>${v.area}</b></div>
       <div><span>吃水 / 载况</span><b>${v.draught_m}m · ${labels[v.derived_load_band]}</b></div>
       <div><span>航行状态</span><b>${v.navigation_status||"未上报"}</b></div>
-      <div><span>AIS时点</span><b>${v.ais_timestamp_utc||"索引快照"}</b></div>
+      <div><span>位置接收</span><b>${v.position_received_at||v.ais_timestamp_utc||"索引快照"}</b></div>
       <div><span>建造 / 载重吨</span><b>${v.build_year||"—"} · ${v.dwt?Math.round(v.dwt/1000)+"k DWT":"—"}</b></div>
-      <div><span>船旗</span><b>${v.flag||"—"}</b></div>
-    </div><div class="route-call"><b>${v.broker_status} · ${v.assessment_confidence}置信度</b><br>${v.broker_rationale}<br><br><b>推断航向：${v.route_name}</b><br>${v.route_note}</div>`;
+      <div><span>来源</span><b>${v.source||"—"}</b></div>
+    </div><div class="route-call"><b>${v.broker_status} · ${confidence.label}置信度 / ${confidence.score}分</b><br>${v.broker_rationale}<br><small>${confidence.reason}</small><br><br><b>推断航向：${v.route_name}</b><br>${v.route_note}</div>`;
   document.querySelector("#shipCard .route-call").insertAdjacentHTML("beforeend",supplemental);
 }
 
@@ -240,13 +295,16 @@ function renderMarketMonitor(){
 
 function renderRows(query=""){
   const q=query.trim().toLowerCase();
-  document.querySelector("#fleetRows").innerHTML=data.filter(v=>!q||[v.roster_name,v.current_name,v.imo,v.mmsi,v.area].join(" ").toLowerCase().includes(q)).map(v=>`
+  document.querySelector("#fleetRows").innerHTML=data.filter(v=>!q||[v.roster_name,v.current_name,v.imo,v.mmsi,v.area].join(" ").toLowerCase().includes(q)).map(v=>{
+    const confidence=confidenceMeta(v);
+    return `
     <tr data-imo="${v.imo}">
       <td><b>${v.roster_name}</b>${v.current_name.toUpperCase()!==v.roster_name.toUpperCase()?`<br><small>现名 ${v.current_name}</small>`:""}</td>
       <td><span class="freshness">${v.imo}<br>${v.mmsi}</span></td><td>${v.area}</td><td>${v.draught_m} m</td>
       <td><span class="load-pill" style="color:${colors[v.derived_load_band]}">${v.broker_status}</span></td>
-      <td><span class="freshness ${v.assessment_confidence==="低"?"old":""}">${v.assessment_confidence}<br>${v.ais_timestamp_utc||"时间待核"}</span></td><td>${v.route_name}</td>
-    </tr>`).join("");
+      <td><span class="freshness ${confidence.label==="低"?"old":""}">${confidence.label} / ${confidence.score}<br>${v.position_received_at||v.ais_timestamp_utc||"时间待核"}</span></td><td>${v.route_name}</td>
+    </tr>`;
+  }).join("");
 }
 document.querySelector("#search").addEventListener("input",e=>renderRows(e.target.value));
 document.querySelector("#fleetRows").addEventListener("click",e=>{
