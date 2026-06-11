@@ -62,7 +62,26 @@ const history = window.FLEET_DATA.history || [];
 const market = window.FLEET_DATA.market || {};
 const freight = window.VLCC_FREIGHT_RATES || {routes:[]};
 
-document.querySelector("#dataTime").textContent = window.FLEET_DATA.generatedAt.replace(" UTC","Z");
+function formatUpdateTime(value){
+  const parsed = parseUtc(value);
+  if(!parsed)return {primary:value || "—", detail:"更新时间待核"};
+  const beijing = new Intl.DateTimeFormat("zh-CN",{
+    timeZone:"Asia/Shanghai",
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit",
+    hour:"2-digit",
+    minute:"2-digit",
+    hour12:false
+  }).format(new Date(parsed)).replace(/\//g,"-");
+  return {
+    primary:`${beijing} 北京时间`,
+    detail:`UTC ${String(value).replace(" UTC","Z")}`
+  };
+}
+const updateTime = formatUpdateTime(window.FLEET_DATA.generatedAt);
+document.querySelector("#dataTime").textContent = updateTime.primary;
+document.querySelector("#dataTimeDetail").textContent = `${updateTime.detail} · 位置为公开AIS区域级快照`;
 document.querySelector("#ladenCount").textContent = laden;
 document.querySelector("#partCount").textContent = part;
 document.querySelector("#ballastCount").textContent = ballast;
