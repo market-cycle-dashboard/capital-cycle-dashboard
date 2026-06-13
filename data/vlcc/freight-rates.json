@@ -1,0 +1,47 @@
+{
+  "asOf": "2026-06-09",
+  "frequency": "latest-public-daily-snapshot",
+  "sourceLabel": "申万交运日度汇总 / Baltic Exchange公开航线定义与周报",
+  "sourceUrls": [
+    "https://www.balticexchange.com/en/data-services/market-information0/tankers-services.html",
+    "https://www.thedcn.com.au/news/baltic-exchange-weekly-report-5-june-2026"
+  ],
+  "routes": [
+    {
+      "id": "TD3C",
+      "route": "中东湾 → 中国",
+      "cargoKt": 270,
+      "tceUsdDay": 400885,
+      "previousTceUsdDay": 400890,
+      "monthAverageTceUsdDay": 401845,
+      "ytdAverageTceUsdDay": 309141,
+      "dayChangePct": 0,
+      "tradeability": "theoretical",
+      "note": "霍尔木兹通行受限后成交稀少，名义评估与可兑现租金可能显著脱节。"
+    },
+    {
+      "id": "TD15",
+      "route": "西非 → 中国",
+      "cargoKt": 260,
+      "tceUsdDay": 88645,
+      "previousTceUsdDay": 85081,
+      "monthAverageTceUsdDay": 86224,
+      "ytdAverageTceUsdDay": 114729,
+      "dayChangePct": 4.19,
+      "tradeability": "tradeable",
+      "note": "当前主要可成交大西洋回程锚之一。"
+    },
+    {
+      "id": "TD22",
+      "route": "美国湾 → 中国",
+      "cargoKt": 270,
+      "tceUsdDay": 95288,
+      "previousTceUsdDay": 95264,
+      "monthAverageTceUsdDay": 98038,
+      "ytdAverageTceUsdDay": 108922,
+      "dayChangePct": 0.03,
+      "tradeability": "tradeable",
+      "note": "长航程大西洋回程锚，对船队西移收益最敏感。"
+    }
+  ]
+}

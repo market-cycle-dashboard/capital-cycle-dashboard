@@ -205,7 +205,7 @@ function renderHistory(){
   document.querySelector("#trendNotes").innerHTML=`
     <div class="trend-note"><b>相较3月：明确改善</b><br>重载由17艘升至22艘，维修/系泊标签由4艘降至当前未识别到明确船厂状态，船队已走出封锁初期低点。</div>
     <div class="trend-note warn"><b>相较6月7日：可能回落</b><br>汇总曾记录28艘重载，目前为22艘。但6月7日只有51艘且半载口径为0，存在分类合并，不能据此断言运营退化。</div>
-    <div class="trend-note risk"><b>最大的限制是数据时效</b><br>当前19艘为低置信度。只有连续快照后，才能计算真实等待天数、空载航程、航次转换和趋势。</div>
+    <div class="trend-note risk"><b>最大的限制是数据时效</b><br>当前${stale}艘为低置信度。只有连续快照后，才能计算真实等待天数、空载航程、航次转换和趋势。</div>
     <div class="trend-note"><b>后续比较规则</b><br>每12小时保存一次IMO级快照；同一口径连续7天后，再判断商业运营率和收入航段率的改善或退化。</div>`;
 }
 

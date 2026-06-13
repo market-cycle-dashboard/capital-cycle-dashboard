@@ -1,0 +1,14 @@
+{
+  "as_of": "2026-06-09",
+  "td3c_tce_usd_day": 400885,
+  "td3c_tradeable": false,
+  "td15_tce_usd_day": 88645,
+  "td22_tce_usd_day": 95288,
+  "vlcc_average_tce_usd_day": 194939,
+  "vlsfo_usd_ton": 801,
+  "q1_company_net_profit_rmb_bn": 2.763,
+  "q1_tanker_net_profit_rmb_bn": 2.486,
+  "q1_reference_tce_usd_day": 102000,
+  "q2_assumed_tce_usd_day": 150000,
+  "q2_status": "用户补充TCE；公司披露营运天基本定载完成"
+}

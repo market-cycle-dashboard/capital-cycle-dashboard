@@ -1,0 +1,40 @@
+name: VLCC data update
+
+on:
+  schedule:
+    # Twice daily, around 08:20 and 20:20 Beijing time.
+    - cron: "20 0,12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-vlcc-data:
+    runs-on: ubuntu-latest
+    env:
+      VLCC_OBSERVATIONS_URL: ${{ secrets.VLCC_OBSERVATIONS_URL }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rebuild VLCC data
+        run: node scripts/update-vlcc-data.mjs
+
+      - name: Commit updated VLCC data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vlcc/fleet-map-data.js vlcc/freight-rates.js vlcc/snapshots/*.json data/vlcc/*.json
+          if git diff --cached --quiet; then
+            echo "No VLCC data changes."
+          else
+            git commit -m "Update VLCC data"
+            git push
+          fi
