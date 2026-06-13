@@ -1,47 +1,47 @@
 window.VLCC_FREIGHT_RATES = {
-  asOf: "2026-06-09",
-  frequency: "latest-public-daily-snapshot",
-  sourceLabel: "申万交运日度汇总 / Baltic Exchange公开航线定义与周报",
-  sourceUrls: [
+  "asOf": "2026-06-05",
+  "frequency": "Baltic Exchange public weekly tanker report",
+  "sourceLabel": "Baltic Exchange公开航线定义 / Baltic Exchange Tanker Report Week 23",
+  "sourceUrls": [
     "https://www.balticexchange.com/en/data-services/market-information0/tankers-services.html",
-    "https://www.thedcn.com.au/news/baltic-exchange-weekly-report-5-june-2026"
+    "https://www.balticexchange.com/en/data-services/WeeklyRoundup/tanker/news/2026/tanker-report-week-23.html"
   ],
-  routes: [
+  "routes": [
     {
-      id: "TD3C",
-      route: "中东湾 → 中国",
-      cargoKt: 270,
-      tceUsdDay: 400885,
-      previousTceUsdDay: 400890,
-      monthAverageTceUsdDay: 401845,
-      ytdAverageTceUsdDay: 309141,
-      dayChangePct: 0.00,
-      tradeability: "theoretical",
-      note: "霍尔木兹通行受限后成交稀少，名义评估与可兑现租金可能显著脱节。"
+      "id": "TD3C",
+      "route": "中东湾 → 中国",
+      "cargoKt": 270,
+      "tceUsdDay": 400700,
+      "previousTceUsdDay": 400700,
+      "monthAverageTceUsdDay": null,
+      "ytdAverageTceUsdDay": null,
+      "dayChangePct": 0,
+      "tradeability": "theoretical",
+      "note": "Baltic周报称TD3C约WS402.5、TCE约$400,700/天，较前一周基本持平。"
     },
     {
-      id: "TD15",
-      route: "西非 → 中国",
-      cargoKt: 260,
-      tceUsdDay: 88645,
-      previousTceUsdDay: 85081,
-      monthAverageTceUsdDay: 86224,
-      ytdAverageTceUsdDay: 114729,
-      dayChangePct: 4.19,
-      tradeability: "tradeable",
-      note: "当前主要可成交大西洋回程锚之一。"
+      "id": "TD15",
+      "route": "西非 → 中国",
+      "cargoKt": 260,
+      "tceUsdDay": 84600,
+      "previousTceUsdDay": null,
+      "monthAverageTceUsdDay": null,
+      "ytdAverageTceUsdDay": null,
+      "dayChangePct": null,
+      "tradeability": "tradeable",
+      "note": "Baltic周报称TD15约WS93、TCE约$84,600/天。"
     },
     {
-      id: "TD22",
-      route: "美国湾 → 中国",
-      cargoKt: 270,
-      tceUsdDay: 95288,
-      previousTceUsdDay: 95264,
-      monthAverageTceUsdDay: 98038,
-      ytdAverageTceUsdDay: 108922,
-      dayChangePct: 0.03,
-      tradeability: "tradeable",
-      note: "长航程大西洋回程锚，对船队西移收益最敏感。"
+      "id": "TD22",
+      "route": "美国湾 → 中国",
+      "cargoKt": 270,
+      "tceUsdDay": 95700,
+      "previousTceUsdDay": null,
+      "monthAverageTceUsdDay": null,
+      "ytdAverageTceUsdDay": null,
+      "dayChangePct": null,
+      "tradeability": "tradeable",
+      "note": "Baltic周报称TD22约WS65.5、TCE约$95,700/天。"
     }
   ]
 };

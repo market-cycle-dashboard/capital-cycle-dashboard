@@ -217,7 +217,7 @@ function estimateQuarter(tce, earningFactor, otherProfit=.28){
   return {tankerNet,companyNet:tankerNet+otherProfit};
 }
 const toYi = valueBn => valueBn*10;
-const usdK = value => `$${Math.round(value/1000)}k`;
+const usdK = value => Number.isFinite(Number(value)) ? `$${Math.round(Number(value)/1000)}k` : "—";
 function classifyFreightRoute(v){
   const text=[v.area,v.position_area,v.prior_area,v.prior_origin,v.prior_destination,v.calibrated_position,v.analyst_note].join(" ").toLowerCase();
   if(/west africa|south africa|安哥拉|刚果|喀麦隆|尼日利亚|西非|djeno|girassol|kribi/.test(text))return "TD15";
@@ -252,16 +252,16 @@ function renderFreightBoard(model){
   const asOf=new Date(`${freight.asOf}T00:00:00Z`);
   const ageDays=Math.max(0,Math.floor((Date.now()-asOf.getTime())/86400000));
   const stale=ageDays>3;
-  const sourceLinks=(freight.sourceUrls||[]).map((url,index)=>`<a href="${url}" target="_blank" rel="noopener">${index===0?"航线定义":"公开周报"}</a>`).join(" · ");
+  const sourceLinks=(freight.sourceUrls||[]).map((url,index)=>`<a href="${url}" target="_blank" rel="noopener">${index===0?"航线定义":"Baltic周报"}</a>`).join(" · ");
   document.querySelector("#freightFreshness").className=`freight-freshness ${stale?"stale":""}`;
   document.querySelector("#freightFreshness").innerHTML=`<b>${freight.asOf} · ${stale?"报价待更新":"最新公开快照"}</b>${freight.sourceLabel}<br>${sourceLinks}`;
   document.querySelector("#freightRouteGrid").innerHTML=freight.routes.map(r=>{
     const exposure=model.exposure[r.id]||0;
-    const change=r.dayChangePct;
+    const change=Number(r.dayChangePct);
     return `<article class="freight-route">
       <div class="freight-route-head"><span><b>${r.id}</b> · ${r.route}</span><span class="trade-tag ${r.tradeability}">${r.tradeability==="tradeable"?"可成交锚":"名义评估"}</span></div>
       <div class="route-tce">${usdK(r.tceUsdDay)}<small>/天</small></div>
-      <div class="route-change ${change>=0?"up":"down"}">${change>=0?"+":""}${change.toFixed(2)}% 日变动</div>
+      <div class="route-change ${Number.isFinite(change) ? (change>=0?"up":"down") : ""}">${Number.isFinite(change) ? `${change>=0?"+":""}${change.toFixed(2)}% 变动` : "周报未披露环比"}</div>
       <dl><div><dt>船队暴露</dt><dd>${exposure}艘</dd></div><div><dt>月均</dt><dd>${usdK(r.monthAverageTceUsdDay)}</dd></div><div><dt>前值</dt><dd>${usdK(r.previousTceUsdDay)}</dd></div><div><dt>年内均值</dt><dd>${usdK(r.ytdAverageTceUsdDay)}</dd></div></dl>
       <p>${r.note}</p>
     </article>`;
