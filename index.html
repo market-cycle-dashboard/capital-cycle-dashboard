@@ -125,6 +125,8 @@
     .site-actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 10px;
       color: var(--muted);
       font-family: "Cascadia Mono", "Consolas", monospace;
@@ -278,6 +280,17 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 6px;
+    }
+
+    .nav-group-title {
+      margin: 8px 0 0;
+      padding: 8px 2px 0;
+      border-top: 1px solid rgba(23,33,29,.12);
+      color: var(--red);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
     }
 
     .subnav a {
@@ -515,7 +528,7 @@
 
     .module-grid {
       display: grid;
-      grid-template-columns: 1.35fr repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 10px;
     }
 
@@ -2066,6 +2079,7 @@
         <a class="header-pill" href="#factor-monitor-module">Factors</a>
         <a class="header-pill" href="nvidia-supply-chain/">AI Supply Chain</a>
         <a class="header-pill" href="vlcc/">VLCC Fleet</a>
+        <a class="header-pill" href="iching/">I Ching</a>
         <span>Research Terminal</span>
       </div>
     </header>
@@ -2081,6 +2095,7 @@
 
         <nav class="site-nav" aria-label="研究目录">
           <span class="label">Research Directory</span>
+          <span class="nav-group-title">Core Research</span>
           <a class="nav-link" href="#capital-cycle-module">
             <span class="nav-index">01</span>
             <span><strong>资本周期</strong><span>进入当前完整分析界面</span></span>
@@ -2117,6 +2132,7 @@
             <a href="#factor-monitor-module">因子排行</a>
             <a href="factor-monitor/" target="_blank" rel="noopener">独立页面</a>
           </div>
+          <span class="nav-group-title">Topic Maps</span>
           <a class="nav-link" href="nvidia-supply-chain/">
             <span class="nav-index">05</span>
             <span><strong>AI 供应链</strong><span>英伟达 NVL72 从分子到超算产业链</span></span>
@@ -2130,6 +2146,15 @@
           </a>
           <div class="subnav">
             <a href="vlcc/">全球运行态势</a>
+          </div>
+          <span class="nav-group-title">Thinking Tools</span>
+          <a class="nav-link" href="iching/">
+            <span class="nav-index">07</span>
+            <span><strong>易经系统</strong><span>六十四卦图谱、占卜解释与关系教学</span></span>
+          </a>
+          <div class="subnav">
+            <a href="iching/">占卜工作台</a>
+            <a href="iching/">六十四卦环形图谱</a>
           </div>
         </nav>
       </aside>
@@ -2182,6 +2207,13 @@
                 <b>VLCC 船队运营</b>
               </span>
               <small>跟踪招商轮船 53 艘 VLCC 的区域位置、载重状态、推断航线、霍尔木兹风险、运价信号与 Q3 利润情景。</small>
+            </a>
+            <a class="module-card active" id="module-iching" href="iching/">
+              <span>
+                <em>07 / TOOL</em>
+                <b>易经占卜与教学系统</b>
+              </span>
+              <small>用六十四卦环形图谱、动爻、变卦、错卦、综卦和互卦，把问题转成可解释的状态路径。</small>
             </a>
           </div>
         </section>
