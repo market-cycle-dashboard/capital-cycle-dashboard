@@ -1,0 +1,40 @@
+name: Daily liquidity data update
+
+on:
+  schedule:
+    # FRED weekly series usually update after the US business day. This runs at 07:30 Beijing time.
+    - cron: "30 23 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-liquidity-data:
+    runs-on: ubuntu-latest
+    env:
+      CME_OAUTH_TOKEN: ${{ secrets.CME_OAUTH_TOKEN }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rebuild liquidity data
+        run: node scripts/build-liquidity-data.mjs
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add liquidity-data.js data/liquidity/*.csv
+          if git diff --cached --quiet; then
+            echo "No liquidity data changes."
+          else
+            git commit -m "Update liquidity data"
+            git push
+          fi

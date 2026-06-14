@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>易经系统 · 六十四卦状态机</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap');
+
+:root {
+  --bg: #0d0d0f;
+  --bg2: #13131a;
+  --bg3: #1a1a24;
+  --gold: #c9933a;
+  --gold2: #e8c97a;
+  --jade: #4a9e7e;
+  --vermillion: #c0392b;
+  --paper: #f0e8d8;
+  --dim: #5a5a6e;
+  --mid: #8888a0;
+  --text: #d0ccc4;
+  --border: #2a2a38;
+  --yang-col: #c9933a;
+  --yin-col: #4a6a9e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Noto Serif SC', serif; }
+
+/* ── LAYOUT ── */
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+.topbar {
+  height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 20px; flex-shrink: 0;
+  z-index: 10;
+}
+.topbar-title { font-size: 14px; letter-spacing: 4px; color: var(--gold); font-weight: 300; white-space: nowrap; }
+.topbar-sep { width: 1px; height: 20px; background: var(--border); }
+.topbar-mode { display: flex; gap: 4px; }
+.mode-btn {
+  padding: 4px 12px; border: 1px solid var(--border); background: transparent;
+  color: var(--mid); font-family: 'Noto Sans SC', sans-serif; font-size: 11px;
+  cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+}
+.mode-btn:hover { border-color: var(--gold); color: var(--gold); }
+.mode-btn.active { background: var(--gold); border-color: var(--gold); color: #0d0d0f; }
+.topbar-current {
+  margin-left: auto; display: flex; align-items: center; gap: 10px;
+}
+.current-glyph { font-size: 24px; color: var(--gold2); }
+.current-name { font-size: 13px; letter-spacing: 2px; }
+.current-sub { font-family: 'Noto Sans SC', sans-serif; font-size: 10px; color: var(--mid); }
+
+.main-area { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+
+/* ── GRAPH PANEL ── */
+#graphPanel { flex: 1; position: relative; overflow: hidden; }
+#graphSvg { width: 100%; height: 100%; }
+
+/* ── RIGHT PANEL ── */
+#rightPanel {
+  width: 340px; flex-shrink: 0; background: var(--bg2);
+  border-left: 1px solid var(--border); display: flex; flex-direction: column;
+  overflow-x: hidden; overflow-y: auto; min-height: 0;
+}
+
+/* ── BOTTOM TIMELINE ── */
+#timelineBar {
+  height: 120px; background: var(--bg2); border-top: 1px solid var(--border);
+  flex-shrink: 0; display: flex; align-items: stretch; padding: 0;
+  overflow-x: auto; overflow-y: hidden;
+}
+
+/* === GRAPH === */
+.node-circle { cursor: pointer; transition: all 0.2s; }
+.node-glyph { font-size: 14px; pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
+.node-label { font-size: 7px; pointer-events: none; text-anchor: middle; font-family: 'Noto Serif SC', serif; }
+.link { stroke-opacity: 0.15; fill: none; }
+.link-change { stroke: var(--gold); }
+.link-mirror { stroke: var(--jade); }
+.link-inverse { stroke: var(--vermillion); }
+
+/* === RIGHT PANEL SECTIONS === */
+.rp-section { border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.rp-title {
+  padding: 10px 16px 8px;
+  font-family: 'Noto Sans SC', sans-serif; font-size: 9px;
+  letter-spacing: 3px; color: var(--gold); text-transform: uppercase;
+}
+
+/* Current hex display */
+.hex-display {
+  padding: 12px 16px 16px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.hex-big { font-size: 52px; line-height: 1; color: var(--gold2); }
+.hex-info { flex: 1; }
+.hex-info h2 { font-size: 20px; letter-spacing: 4px; font-weight: 300; margin-bottom: 2px; }
+.hex-info .py { font-family: 'Noto Sans SC'; font-size: 10px; color: var(--mid); letter-spacing: 2px; margin-bottom: 6px; }
+.hex-info .jmt { font-size: 11px; color: var(--gold2); line-height: 1.7; }
+
+/* Trigram lines */
+.tgm-display { display: flex; gap: 12px; padding: 0 16px 12px; }
+.tgm-box { flex: 1; background: var(--bg3); border: 1px solid var(--border); padding: 8px; text-align: center; }
+.tgm-role { font-family: 'Noto Sans SC'; font-size: 8px; color: var(--dim); margin-bottom: 4px; letter-spacing: 1px; }
+.tgm-name { font-size: 12px; letter-spacing: 2px; margin-bottom: 4px; }
+.tgm-lines { display: flex; flex-direction: column; gap: 3px; margin: 6px auto; width: 36px; }
+.l-yang { height: 4px; background: var(--gold); border-radius: 1px; }
+.l-yin { display: flex; gap: 3px; }
+.l-yin span { height: 4px; width: calc(50% - 1.5px); background: var(--yin-col); border-radius: 1px; }
+.tgm-attr { font-family: 'Noto Sans SC'; font-size: 8px; color: var(--mid); }
+
+/* Relations */
+.relations-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 12px 12px; }
+.rel-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 8px 10px; cursor: pointer; transition: all 0.15s;
+  position: relative;
+}
+.rel-card:hover { border-color: var(--gold); }
+.rel-card.highlight-change { border-color: var(--gold); }
+.rel-card.highlight-mirror { border-color: var(--jade); }
+.rel-card.highlight-inverse { border-color: var(--vermillion); }
+.rel-card.highlight-mutual { border-color: #9b59b6; }
+.rel-card.highlight-line1 { border-color: #3498db; }
+.rel-type {
+  font-family: 'Noto Sans SC'; font-size: 8px; letter-spacing: 1px;
+  color: var(--dim); margin-bottom: 4px;
+}
+.rel-hex { display: flex; align-items: center; gap: 6px; }
+.rel-glyph { font-size: 22px; color: var(--gold2); }
+.rel-name { font-size: 13px; letter-spacing: 2px; }
+.rel-sub { font-family: 'Noto Sans SC'; font-size: 9px; color: var(--mid); }
+.rel-meaning { font-size: 10px; color: #888; margin-top: 4px; line-height: 1.5; }
+
+/* Binary */
+.binary-row {
+  display: flex; gap: 4px; padding: 0 16px 8px; align-items: center;
+}
+.bbit {
+  width: 22px; height: 22px; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono'; font-size: 11px; color: var(--dim);
+}
+.bbit.on { background: var(--gold); border-color: var(--gold); color: #0d0d0f; }
+.bin-dec { font-family: 'JetBrains Mono'; font-size: 11px; color: var(--mid); margin-left: 8px; }
+
+/* Narrative */
+.narrative-box {
+  padding: 10px 16px 14px; font-size: 11px; line-height: 1.9;
+  color: #a0a0b8; overflow-y: auto; flex: 1;
+}
+.life-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.chip {
+  border: 1px solid var(--border); padding: 2px 8px;
+  font-family: 'Noto Sans SC'; font-size: 9px; color: var(--mid); letter-spacing: 1px;
+}
+.chip.primary { border-color: var(--gold); color: var(--gold); }
+
+/* State machine path */
+.sm-row { display: flex; gap: 8px; padding: 10px 16px; align-items: center; flex-wrap: wrap; }
+.sm-step {
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.sm-step:hover .sm-glyph { color: var(--gold); }
+.sm-glyph { font-size: 20px; color: var(--mid); }
+.sm-name { font-family: 'Noto Sans SC'; font-size: 8px; color: var(--dim); letter-spacing: 1px; margin-top: 2px; }
+.sm-arrow { color: var(--dim); font-size: 12px; margin-top: -10px; }
+.sm-step.past .sm-glyph { color: var(--mid); }
+.sm-step.present .sm-glyph { color: var(--gold2); font-size: 24px; }
+.sm-step.future .sm-glyph { color: var(--jade); opacity: 0.7; }
+
+/* === TIMELINE === */
+.tl-section { display: flex; flex-direction: column; flex-shrink: 0; }
+.tl-label {
+  font-family: 'Noto Sans SC'; font-size: 8px; letter-spacing: 2px;
+  color: var(--dim); padding: 8px 12px 4px; white-space: nowrap;
+}
+.tl-items { display: flex; gap: 0; align-items: stretch; height: 88px; }
+
+.tl-divider { width: 1px; background: var(--border); flex-shrink: 0; }
+
+.tl-card {
+  min-width: 70px; padding: 6px 10px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.2s; border-right: 1px solid var(--border);
+}
+.tl-card:hover { background: var(--bg3); }
+.tl-card.tl-past { opacity: 0.6; }
+.tl-card.tl-present { background: #1f1f2e; }
+.tl-card.tl-future { opacity: 0.5; border-style: dashed; }
+.tl-card .tc-glyph { font-size: 22px; margin-bottom: 2px; color: var(--gold2); }
+.tl-card.tl-past .tc-glyph { color: var(--mid); }
+.tl-card.tl-future .tc-glyph { color: var(--jade); }
+.tl-card .tc-name { font-size: 11px; letter-spacing: 2px; }
+.tl-card .tc-idx { font-family: 'Noto Sans SC'; font-size: 8px; color: var(--dim); margin-top: 1px; }
+.tl-add {
+  min-width: 70px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--dim); font-size: 20px; transition: color 0.2s;
+  border-right: 1px dashed var(--border);
+}
+.tl-add:hover { color: var(--gold); }
+
+.tl-future-branch {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 4px 10px; justify-content: center; min-width: 90px;
+}
+.fb-item {
+  display: flex; align-items: center; gap: 6px; cursor: pointer;
+  padding: 2px 4px; border-radius: 2px; transition: background 0.15s;
+}
+.fb-item:hover { background: var(--bg3); }
+.fb-glyph { font-size: 14px; color: var(--jade); }
+.fb-name { font-family: 'Noto Sans SC'; font-size: 9px; color: var(--dim); letter-spacing: 1px; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* tooltip */
+.tooltip {
+  position: fixed; background: var(--bg3); border: 1px solid var(--gold);
+  padding: 8px 12px; font-size: 11px; color: var(--text);
+  pointer-events: none; z-index: 999; max-width: 200px;
+  line-height: 1.6; display: none;
+}
+
+/* Legend */
+.legend {
+  position: absolute; bottom: 12px; left: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  background: rgba(13,13,15,0.85); padding: 8px 12px;
+  border: 1px solid var(--border);
+}
+.leg-item { display: flex; align-items: center; gap: 6px; }
+.leg-line { width: 20px; height: 2px; }
+.leg-label { font-family: 'Noto Sans SC'; font-size: 9px; color: var(--dim); letter-spacing: 1px; }
+
+/* search input */
+.search-input {
+  background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+  padding: 4px 10px; font-family: 'Noto Serif SC'; font-size: 12px;
+  width: 160px; outline: none; letter-spacing: 1px;
+}
+.search-input:focus { border-color: var(--gold); }
+.search-input::placeholder { color: var(--dim); }
+
+/* Divination */
+.divine-box { padding: 0 16px 14px; }
+.question-input {
+  width: 100%; min-height: 58px; resize: none; outline: none;
+  background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 10px; font-family: 'Noto Serif SC'; font-size: 12px; line-height: 1.7;
+}
+.question-input:focus { border-color: var(--gold); }
+.divine-actions { display: grid; grid-template-columns: 1fr 96px; gap: 8px; margin-top: 8px; }
+.method-select {
+  background: var(--bg3); border: 1px solid var(--border); color: var(--mid);
+  padding: 6px 8px; font-family: 'Noto Sans SC'; font-size: 11px; outline: none;
+}
+.cast-btn {
+  border: 1px solid var(--gold); background: var(--gold); color: #0d0d0f;
+  font-family: 'Noto Sans SC'; font-size: 11px; letter-spacing: 2px;
+  cursor: pointer; transition: all 0.2s;
+}
+.cast-btn:hover { background: var(--gold2); border-color: var(--gold2); }
+.cast-lines { display: flex; flex-direction: column-reverse; gap: 4px; margin-top: 10px; }
+.cast-line {
+  display: grid; grid-template-columns: 34px 1fr 52px; align-items: center; gap: 8px;
+  font-family: 'Noto Sans SC'; font-size: 9px; color: var(--dim);
+}
+.cast-mark { color: var(--vermillion); font-size: 11px; }
+.cast-bar { display: flex; gap: 5px; height: 7px; align-items: center; }
+.cast-bar.yang::before {
+  content: ''; display: block; height: 5px; width: 100%;
+  background: var(--gold); border-radius: 1px;
+}
+.cast-bar.yin::before, .cast-bar.yin::after {
+  content: ''; display: block; height: 5px; flex: 1;
+  background: var(--yin-col); border-radius: 1px;
+}
+.cast-summary {
+  margin-top: 10px; padding: 8px 10px; background: var(--bg3); border: 1px solid var(--border);
+  font-size: 11px; line-height: 1.8; color: #a0a0b8;
+}
+.cast-summary b { color: var(--gold2); font-weight: 400; }
+.cast-reading {
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
+}
+.reading-title {
+  font-family: 'Noto Sans SC'; font-size: 9px; letter-spacing: 2px;
+  color: var(--gold); margin: 8px 0 4px;
+}
+.reading-line { margin-bottom: 6px; }
+.reading-line span { color: var(--gold2); }
+.teach-box {
+  padding: 0 16px 14px; font-size: 11px; line-height: 1.8; color: #a0a0b8;
+}
+.teach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+.teach-btn {
+  background: var(--bg3); border: 1px solid var(--border); color: var(--mid);
+  padding: 6px 8px; font-family: 'Noto Sans SC'; font-size: 10px;
+  cursor: pointer; text-align: left;
+}
+.teach-btn:hover, .teach-btn.active { border-color: var(--gold); color: var(--gold); }
+.teach-note { border-top: 1px solid var(--border); padding-top: 8px; }
+
+@media (max-width: 820px) {
+  html, body { overflow: auto; }
+  #app { min-height: 100vh; height: auto; }
+  .topbar { overflow-x: auto; gap: 12px; padding: 0 12px; }
+  .topbar-current { margin-left: 0; }
+  .main-area { flex-direction: column; min-height: 760px; }
+  #graphPanel { min-height: 420px; }
+  #rightPanel {
+    width: 100%; max-height: none; border-left: 0; border-top: 1px solid var(--border);
+  }
+  #timelineBar { height: 108px; }
+  .relations-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">易经 · 系统</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-mode">
+      <button class="mode-btn" onclick="setMode('graph',this)">图谱</button>
+      <button class="mode-btn active" onclick="setMode('circle',this)">环形</button>
+    </div>
+    <div class="topbar-sep"></div>
+    <input class="search-input" id="searchInput" placeholder="搜索卦名…" oninput="searchHex(this.value)">
+    <div class="topbar-sep"></div>
+    <div style="font-family:'Noto Sans SC';font-size:10px;color:var(--dim);letter-spacing:2px;">显示关系:</div>
+    <button class="mode-btn active" id="btnChange" onclick="toggleLink('change',this)">变卦</button>
+    <button class="mode-btn active" id="btnMirror" onclick="toggleLink('mirror',this)">错卦</button>
+    <button class="mode-btn" id="btnInverse" onclick="toggleLink('inverse',this)">综卦</button>
+    <div class="topbar-current" id="topbarCurrent">
+      <div class="current-glyph" id="tcGlyph">䷀</div>
+      <div>
+        <div class="current-name" id="tcName">乾</div>
+        <div class="current-sub" id="tcSub">第1卦 · 111111</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-area">
+
+    <!-- GRAPH -->
+    <div id="graphPanel">
+      <svg id="graphSvg"></svg>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-line" style="background:var(--gold)"></div><div class="leg-label">变卦（一爻变）</div></div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--jade)"></div><div class="leg-label">错卦（阴阳互换）</div></div>
+        <div class="leg-item"><div class="leg-line" style="background:var(--vermillion)"></div><div class="leg-label">综卦（倒置）</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="rightPanel">
+
+      <!-- Divination -->
+      <div class="rp-section">
+        <div class="rp-title">起卦</div>
+        <div class="divine-box">
+          <textarea class="question-input" id="questionInput" placeholder="写下所问之事，例如：这个项目下一步该怎么推进？"></textarea>
+          <div class="divine-actions">
+            <select class="method-select" id="castMethod">
+              <option value="coins">三枚铜钱</option>
+              <option value="random">灵感起卦</option>
+            </select>
+            <button class="cast-btn" onclick="castHexagram()">起卦</button>
+          </div>
+          <div class="cast-lines" id="castLines"></div>
+          <div class="cast-summary" id="castSummary">未起卦。可先在图谱中浏览，也可写下问题后起卦。</div>
+        </div>
+      </div>
+
+      <!-- Current hex -->
+      <div class="rp-section">
+        <div class="rp-title">当前卦象</div>
+        <div class="hex-display">
+          <div class="hex-big" id="rpGlyph">䷀</div>
+          <div class="hex-info">
+            <h2 id="rpName">乾</h2>
+            <div class="py" id="rpPy">Qián · 第1卦</div>
+            <div class="jmt" id="rpJmt">元亨利贞</div>
+          </div>
+        </div>
+        <div class="tgm-display" id="rpTrigrams"></div>
+        <div class="binary-row" id="rpBinary"></div>
+      </div>
+
+      <!-- Relations -->
+      <div class="rp-section">
+        <div class="rp-title">五种变换关系</div>
+        <div class="relations-grid" id="rpRelations"></div>
+      </div>
+
+      <!-- Teaching -->
+      <div class="rp-section">
+        <div class="rp-title">关系教学</div>
+        <div class="teach-box">
+          <div class="teach-grid">
+            <button class="teach-btn active" onclick="explainRelation('change',this)">变卦</button>
+            <button class="teach-btn" onclick="explainRelation('mirror',this)">错卦</button>
+            <button class="teach-btn" onclick="explainRelation('inverse',this)">综卦</button>
+            <button class="teach-btn" onclick="explainRelation('mutual',this)">互卦</button>
+          </div>
+          <div class="teach-note" id="teachNote"></div>
+        </div>
+      </div>
+
+      <!-- Narrative -->
+      <div class="rp-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+        <div class="rp-title">人生意义 · 哲学解读</div>
+        <div class="narrative-box" id="rpNarrative"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div id="timelineBar">
+    <div class="tl-section">
+      <div class="tl-label" id="tlPastLabel">解读路径</div>
+      <div class="tl-items" id="tlPast"></div>
+    </div>
+    <div class="tl-divider"></div>
+    <div class="tl-section">
+      <div class="tl-label" id="tlPresentLabel">当前</div>
+      <div class="tl-items" id="tlPresent"></div>
+    </div>
+    <div class="tl-divider"></div>
+    <div class="tl-section">
+      <div class="tl-label" id="tlFutureLabel">延伸视角</div>
+      <div class="tl-items" id="tlFuture"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+const TRIGRAMS = {
+  '乾': { sym:'☰', lines:[1,1,1], attr:'天·健', element:'金' },
+  '兑': { sym:'☱', lines:[0,1,1], attr:'泽·悦', element:'金' },
+  '离': { sym:'☲', lines:[1,0,1], attr:'火·丽', element:'火' },
+  '震': { sym:'☳', lines:[0,0,1], attr:'雷·动', element:'木' },
+  '巽': { sym:'☴', lines:[1,1,0], attr:'风·入', element:'木' },
+  '坎': { sym:'☵', lines:[0,1,0], attr:'水·陷', element:'水' },
+  '艮': { sym:'☶', lines:[1,0,0], attr:'山·止', element:'土' },
+  '坤': { sym:'☷', lines:[0,0,0], attr:'地·顺', element:'土' },
+};
+
+// 序卦传的叙事因果
+const SEQUENCE_REASON = {
+  '1-2':'有天地，然后万物生焉。承乾之后，坤德以承',
+  '2-3':'盈天地之间者唯万物，屯者，物之始生也',
+  '3-4':'物生必蒙，故受之以蒙。蒙者，蒙也，物之稚也',
+  '4-5':'物稚不可不养也，故受之以需。需者，饮食之道也',
+  '5-6':'饮食必有讼，故受之以讼',
+  '11-12':'物不可以终通，故受之以否',
+  '12-13':'物不可以终否，故受之以同人',
+  '23-24':'物不可以终尽剥，穷上反下，故受之以复',
+  '29-30':'陷必有所丽，故受之以离',
+  '63-64':'有过物者必济，故受之以既济。物不可穷也，故受之以未济终焉',
+};
+
+const HEX = [
+  { n:1,  sym:'䷀', name:'乾', py:'Qián', upper:'乾', lower:'乾', bin:'111111', judgment:'元亨利贞', life:'创始·刚健·领导', tags:['创始','天行','刚健','进取'], narrative:'乾为天，纯阳之卦。潜龙勿用——积蓄实力；见龙在田——崭露头角；飞龙在天——成就巅峰；亢龙有悔——物极必反。此卦警示：刚健进取须知节制，领导者尤需谦逊。' },
+  { n:2,  sym:'䷁', name:'坤', py:'Kūn',  upper:'坤', lower:'坤', bin:'000000', judgment:'元亨利牝马之贞', life:'包容·顺承·厚德', tags:['包容','大地','顺承','厚德'], narrative:'坤为地，纯阴之卦。厚德载物，顺以承天。坤道不在强争，而在滋养万物。人生中遇坤卦，宜守柔处下，以包容化刚强，以耐心积善缘。' },
+  { n:3,  sym:'䷂', name:'屯', py:'Zhūn', upper:'坎', lower:'震', bin:'010001', judgment:'元亨利贞，勿用有攸往', life:'草创·艰难·蓄势', tags:['草创','艰难','蓄势','坚持'], narrative:'屯者，难也。万事起初皆艰难，如草木破土，力量却已在积聚。此时勿贸然行动，宜广结人脉，积蓄力量，待机而发。艰难本身是修炼。' },
+  { n:4,  sym:'䷃', name:'蒙', py:'Méng', upper:'艮', lower:'坎', bin:'100010', judgment:'匪我求童蒙，童蒙求我', life:'启蒙·学习·师道', tags:['启蒙','学习','教育','谦逊'], narrative:'蒙者，蒙昧未开也。山下有险，须向明师求教。学习之道：不是老师求学生，而是学生诚心求教。虚心、专注、反复，方能开蒙。' },
+  { n:5,  sym:'䷄', name:'需', py:'Xū',   upper:'坎', lower:'乾', bin:'010111', judgment:'有孚光亨贞吉', life:'等待·时机·耐心', tags:['等待','时机','耐心','养精'], narrative:'需者，待也。云上于天，等待降雨。最优的等待不是被动，而是积极备战：强健体魄，积累资粮，静待最佳时机。不可急躁冒进。' },
+  { n:6,  sym:'䷅', name:'讼', py:'Sòng', upper:'乾', lower:'坎', bin:'111010', judgment:'有孚窒惕中吉', life:'争讼·慎重·妥协', tags:['争讼','矛盾','慎重','息争'], narrative:'讼者，争也。内险外强，必生争端。争讼极少有赢家，宜大事化小，以和为贵。若必须争，须占据道义高地，且见好就收。' },
+  { n:7,  sym:'䷆', name:'师', py:'Shī',  upper:'坤', lower:'坎', bin:'000010', judgment:'贞丈人吉无咎', life:'团队·纪律·领导', tags:['军队','纪律','统率','正义'], narrative:'师者，众也。地中有水，兵法藏于心。领导之道：纪律严明，赏罚公正，以正义凝聚人心。一人之力有限，众志成城。' },
+  { n:8,  sym:'䷇', name:'比', py:'Bǐ',   upper:'坎', lower:'坤', bin:'010000', judgment:'吉，原筮元永贞', life:'联合·亲近·归属', tags:['联合','亲近','协作','选择'], narrative:'比者，亲也。众流归一，真诚联结。人生在世，选择与谁同行至关重要。以诚信建立联盟，以善意维系关系，比独行更能成大事。' },
+  { n:9,  sym:'䷈', name:'小畜', py:'Xiǎo Xù', upper:'巽', lower:'乾', bin:'110111', judgment:'亨，密云不雨自我西郊', life:'蓄积·克制·渐进', tags:['蓄积','克制','积累','渐进'], narrative:'小畜，小停蓄也。蓄而未发，云密未雨。此时宜积小成大，从细节处着手，克制急躁，等待突破的临界点到来。' },
+  { n:10, sym:'䷉', name:'履', py:'Lǚ',   upper:'乾', lower:'兑', bin:'111011', judgment:'履虎尾不咥人亨', life:'礼仪·谨慎·分寸', tags:['礼制','谨慎','步履','秩序'], narrative:'履者，礼也。踩着虎尾而不被咬，全在分寸。行事有礼，言语有节，知进退。危险之中，礼与智慧是最好的护身符。' },
+  { n:11, sym:'䷊', name:'泰', py:'Tài',  upper:'坤', lower:'乾', bin:'000111', judgment:'小往大来吉亨', life:'通达·和谐·盛世', tags:['通达','和谐','盛世','交流'], narrative:'泰者，通也。天地交而万物通，上下交而志同。是人生最理想的状态：内外和谐，上下贯通，事事顺遂。但盛极必衰，需居安思危。' },
+  { n:12, sym:'䷋', name:'否', py:'Pǐ',  upper:'乾', lower:'坤', bin:'111000', judgment:'否之匪人不利君子贞', life:'闭塞·逆境·隐忍', tags:['闭塞','逆境','隐忍','反转'], narrative:'否者，闭也。天地不交，上下隔绝。逆境中，小人得志，君子退守。此时不可强行，宜韬光养晦，守正待时，否极终将泰来。' },
+  { n:13, sym:'䷌', name:'同人', py:'Tóng Rén', upper:'乾', lower:'离', bin:'111101', judgment:'同人于野亨', life:'同道·协作·开放', tags:['同道','协作','广纳','开放'], narrative:'同人者，与人同也。天火同明，志同道合。真正的合作需要开放的格局，在旷野中广结同道，而非局限于小圈子。' },
+  { n:14, sym:'䷍', name:'大有', py:'Dà Yǒu', upper:'离', lower:'乾', bin:'101111', judgment:'元亨', life:'丰盛·成就·谦逊', tags:['丰盛','成就','富有','柔中'], narrative:'大有，大受也。火在天上，光照一切。拥有丰盛须怀柔谦之心，以柔克强，以善施予。越富有，越需要警惕骄傲与贪婪。' },
+  { n:15, sym:'䷎', name:'谦', py:'Qiān', upper:'坤', lower:'艮', bin:'000100', judgment:'亨君子有终', life:'谦逊·内敛·平衡', tags:['谦逊','内敛','平衡','美德'], narrative:'谦者，谦也。山隐于地中，功高而不自张扬。谦虚是最高级的修养——损高益低，天道补足。千古成功者，无不深谙此道。' },
+  { n:16, sym:'䷏', name:'豫', py:'Yù',  upper:'震', lower:'坤', bin:'001000', judgment:'利建侯行师', life:'欢悦·预备·顺势', tags:['欢悦','预备','顺势','音乐'], narrative:'豫者，乐也。雷出地上，万象欢腾。顺势而为，预先谋划，则行事如有神助。但逸乐须有节度，不可沉溺享乐而忘进取。' },
+  { n:17, sym:'䷐', name:'随', py:'Suí', upper:'兑', lower:'震', bin:'011001', judgment:'元亨利贞无咎', life:'随顺·适时·灵活', tags:['随顺','适时','跟随','变通'], narrative:'随者，随也。泽中有雷，动而悦随。随时而动，灵活变通，是处世大智慧。但"随"非盲从——随天道，随正义，而非随小人。' },
+  { n:18, sym:'䷑', name:'蛊', py:'Gǔ',  upper:'艮', lower:'巽', bin:'100110', judgment:'元亨利涉大川', life:'整治·改革·担当', tags:['整治','改革','振弊','担当'], narrative:'蛊者，事也。积弊已深，必须整顿。蛊之后是临——整顿好后自然能临驾一切。承担改革之责，是对过去的修正，也是对未来的承诺。' },
+  { n:19, sym:'䷒', name:'临', py:'Lín', upper:'坤', lower:'兑', bin:'000011', judgment:'元亨利贞至于八月有凶', life:'亲临·主动·时限', tags:['亲临','主动','管理','时限'], narrative:'临者，大也。泽上有地，君临在上。主动作为，关怀下情，是领导者的责任。但卦辞警示：至于八月有凶，好景有时限，须珍惜当下。' },
+  { n:20, sym:'䷓', name:'观', py:'Guān', upper:'巽', lower:'坤', bin:'110000', judgment:'盥而不荐有孚颙若', life:'观察·示范·洞见', tags:['观察','示范','洞见','影响'], narrative:'观者，示也。风行地上，遍观四方。以身作则，无声之教最深远。观察之道：不仅观察外物，更要观察自己，内省方能洞见真相。' },
+  { n:21, sym:'䷔', name:'噬嗑', py:'Shì Kè', upper:'离', lower:'震', bin:'101001', judgment:'亨利用狱', life:'决断·执法·克障', tags:['决断','执法','克服','律法'], narrative:'噬嗑者，食也。口中有物，必须咬断。人生中遭遇阻碍，需果断决策，不可优柔寡断。正义的执法、坚定的决心，是化解困局的关键。' },
+  { n:22, sym:'䷕', name:'贲', py:'Bì',   upper:'艮', lower:'离', bin:'100101', judgment:'亨小利有攸往', life:'文饰·美学·本质', tags:['文饰','美学','外表','文明'], narrative:'贲者，饰也。山下有火，文明以止。美化修饰有其价值，但装饰终究服务于本质。过度追求外表而忽视内涵，是本末倒置。' },
+  { n:23, sym:'䷖', name:'剥', py:'Bō',   upper:'艮', lower:'坤', bin:'100000', judgment:'不利有攸往', life:'剥落·衰退·守静', tags:['剥落','衰退','守静','止损'], narrative:'剥者，落也。山附于地，势将崩剥。衰退期，顺应天道，无为守静，保存实力。止损比强行反转更重要。等待一阳来复。' },
+  { n:24, sym:'䷗', name:'复', py:'Fù',   upper:'坤', lower:'震', bin:'000001', judgment:'亨出入无疾', life:'回归·复苏·初心', tags:['回归','复苏','更新','初心'], narrative:'复者，返也。黑夜最深处，一阳来复。黎明前最黑暗，转机往往在绝望之际。回归初心，重新出发，周而复始，生生不息。' },
+  { n:25, sym:'䷘', name:'无妄', py:'Wú Wàng', upper:'乾', lower:'震', bin:'111001', judgment:'元亨利贞', life:'自然·诚信·顺命', tags:['自然','诚信','顺命','天真'], narrative:'无妄者，诚也。天下有雷，物与无妄。不妄为，不投机，顺从自然规律行事。诚信是最强的竞争力，顺天者昌。' },
+  { n:26, sym:'䷙', name:'大畜', py:'Dà Xù', upper:'艮', lower:'乾', bin:'100111', judgment:'利贞不家食吉', life:'大积·厚藏·文化', tags:['大积','厚藏','文化','潜力'], narrative:'大畜者，大积也。天在山中，积蓄宏大。厚积薄发，博古通今。大器晚成者往往经历最长的积累期，不显山露水，终成大器。' },
+  { n:27, sym:'䷚', name:'颐', py:'Yí',   upper:'艮', lower:'震', bin:'100001', judgment:'贞吉观颐自求口实', life:'养育·节制·谨言', tags:['养育','饮食','谨言','节制'], narrative:'颐者，养也。山下有雷，颐养自身。养身养德，谨言慎行。口乃祸福之门——言语的节制，是修身的第一课。' },
+  { n:28, sym:'䷛', name:'大过', py:'Dà Guò', upper:'兑', lower:'巽', bin:'011110', judgment:'栋桡利有攸往亨', life:'超载·危机·果断', tags:['超载','过度','危机','非常'], narrative:'大过者，过也。大梁压弯，危机已至。非常之时需非常之举，果断破局，不可优柔。超越常规，有时是唯一出路。' },
+  { n:29, sym:'䷜', name:'坎', py:'Kǎn',  upper:'坎', lower:'坎', bin:'010010', judgment:'有孚维心亨行有尚', life:'险难·历练·坚守', tags:['险难','历练','坚守','不停'], narrative:'坎者，陷也。重险相叠，如深渊在前。但水流百折不回，终达大海。以诚守中，百折不挠，险难是最好的历练场。' },
+  { n:30, sym:'䷝', name:'离', py:'Lí',   upper:'离', lower:'离', bin:'101101', judgment:'利贞亨畜牝牛吉', life:'光明·智慧·文明', tags:['光明','依附','文明','智慧'], narrative:'离者，丽也，附也。重明相照，日月并辉。人类文明之光，智慧之火。所有伟大的成就，都需要依托于某种更大的力量。' },
+  { n:31, sym:'䷞', name:'咸', py:'Xián', upper:'兑', lower:'艮', bin:'011100', judgment:'亨利贞取女吉', life:'感应·情感·交流', tags:['感应','爱情','感动','交流'], narrative:'咸者，感也。山上有泽，山泽通气。男女相感，心心相印。真正的感动来自内心的共鸣，不是表演，是真实的感受与回应。' },
+  { n:32, sym:'䷟', name:'恒', py:'Héng', upper:'震', lower:'巽', bin:'001110', judgment:'亨无咎利贞利有攸往', life:'恒久·坚持·规律', tags:['恒久','坚持','规律','稳定'], narrative:'恒者，久也。雷风相与，持之以恒。日月之所以能长久照耀，在于运行有常。坚守正道，不忘初心，方能成就持久的事业。' },
+  { n:33, sym:'䷠', name:'遁', py:'Dùn',  upper:'乾', lower:'艮', bin:'111100', judgment:'亨小利贞', life:'退隐·策略·保存', tags:['退隐','策略','隐退','保存'], narrative:'遁者，退也。审时度势，适时隐退，保存实力。退不是失败，而是智慧。该进则进，该退则退——知退者方能再进。' },
+  { n:34, sym:'䷡', name:'大壮', py:'Dà Zhuàng', upper:'震', lower:'乾', bin:'001111', judgment:'利贞', life:'强壮·正当·律己', tags:['强壮','正当','有力','律己'], narrative:'大壮者，大正也。刚健之力须以正道驾驭。强大是手段，不是目的。以正义引导力量，方能持久而不失其壮。滥用力量，羊触藩篱。' },
+  { n:35, sym:'䷢', name:'晋', py:'Jìn',  upper:'离', lower:'坤', bin:'101000', judgment:'康侯用锡马蕃庶', life:'晋升·认可·进取', tags:['晋升','光明','进取','认可'], narrative:'晋者，进也。明出地上，光照万方。得到正当的赏识，光明正大地晋升。受到认可时，更需谦虚，保持清醒的头脑。' },
+  { n:36, sym:'䷣', name:'明夷', py:'Míng Yí', upper:'坤', lower:'离', bin:'000101', judgment:'利艰贞', life:'韬晦·隐忍·逆境', tags:['韬晦','隐忍','逆境','保护'], narrative:'明夷者，明伤也。光入地中，才华被压制。黑暗时代，韬光养晦，守护内心光明，等待时机。是历史上每一个被压制者的智慧。' },
+  { n:37, sym:'䷤', name:'家人', py:'Jiā Rén', upper:'巽', lower:'离', bin:'110101', judgment:'利女贞', life:'家庭·角色·责任', tags:['家庭','角色','秩序','责任'], narrative:'家人者，家道也。风自火出，家庭秩序正则社会正。各安其位，各尽其责。家是最小的社会单位，家道正则天下正。' },
+  { n:38, sym:'䷥', name:'睽', py:'Kuí',  upper:'离', lower:'兑', bin:'101011', judgment:'小事吉', life:'差异·对立·包容', tags:['对立','差异','包容','和而不同'], narrative:'睽者，乖也。火动而上，泽动而下。差异与对立是常态，和而不同才是智慧。在矛盾中寻求共识，是最高级的协调能力。' },
+  { n:39, sym:'䷦', name:'蹇', py:'Jiǎn', upper:'坎', lower:'艮', bin:'010100', judgment:'利西南不利东北', life:'障碍·反思·求助', tags:['障碍','反思','求助','内修'], narrative:'蹇者，难也。山上有水，进退两难。遇到障碍，第一反应不是强攻，而是反思自身，向外寻求帮助，调整方向，绕道而行。' },
+  { n:40, sym:'䷧', name:'解', py:'Jiě',  upper:'震', lower:'坎', bin:'001010', judgment:'利西南无所往其来复吉', life:'解除·释放·宽容', tags:['解除','释放','宽容','新生'], narrative:'解者，缓也。雷雨作解，天下舒缓。危机解除，宜宽宏大量，迅速回归正轨。宽恕是解脱自己，也是让系统恢复健康。' },
+  { n:41, sym:'䷨', name:'损', py:'Sǔn', upper:'艮', lower:'兑', bin:'100011', judgment:'有孚元吉无咎', life:'减损·奉献·舍得', tags:['减损','奉献','舍得','德行'], narrative:'损者，损益也。山下有泽，损下益上。有时候，舍去一些是为了得到更多。减少欲望，奉献他人，往往带来意想不到的丰盛。' },
+  { n:42, sym:'䷩', name:'益', py:'Yì',  upper:'巽', lower:'震', bin:'110001', judgment:'利有攸往利涉大川', life:'增益·施惠·共赢', tags:['增益','施惠','改革','利他'], narrative:'益者，益也。风雷益彰，上损下益。真正的益是共赢——让利于下，激发整体活力。利他最终会回报自己，这是系统的智慧。' },
+  { n:43, sym:'䷪', name:'夬', py:'Guài', upper:'兑', lower:'乾', bin:'011111', judgment:'扬于王庭孚号有厉', life:'决断·去除·正气', tags:['决断','去除','果断','公正'], narrative:'夬者，决也。泽上于天，水满决堤。果断去除小人与积弊，须公开正大，以正气对抗邪恶。决断时机，一旦到来不可迟疑。' },
+  { n:44, sym:'䷫', name:'姤', py:'Gòu',  upper:'乾', lower:'巽', bin:'111110', judgment:'女壮勿用取女', life:'相遇·诱惑·警觉', tags:['相遇','诱惑','防微','机缘'], narrative:'姤者，遇也。一阴初生，看似微小。但防微杜渐，邪恶往往始于细微。同时，意外的相遇也可能带来转机，需智慧辨别。' },
+  { n:45, sym:'䷬', name:'萃', py:'Cuì', upper:'兑', lower:'坤', bin:'011000', judgment:'亨王假有庙利见大人', life:'聚合·凝聚·归属', tags:['聚合','凝聚','仪式','团结'], narrative:'萃者，聚也。众水汇聚，人心凝聚。建立共同愿景，举行仪式，凝聚人心。志同道合的聚合，是建功立业的基础。' },
+  { n:46, sym:'䷭', name:'升', py:'Shēng', upper:'坤', lower:'巽', bin:'000110', judgment:'元亨用见大人勿恤南征吉', life:'上升·积累·稳健', tags:['上升','积累','稳健','渐进'], narrative:'升者，升也。地中生木，逐渐上升。稳扎稳打，循序渐进，不急不躁，是持续向上的正道。每一步积累都有意义。' },
+  { n:47, sym:'䷮', name:'困', py:'Kùn',  upper:'兑', lower:'坎', bin:'011010', judgment:'亨贞大人吉无咎', life:'困境·坚守·超越', tags:['困境','坚守','志气','贫而乐'], narrative:'困者，穷也。泽无水，困境中求存。困境是试金石——小人抱怨，君子守志。困而能乐，是最高的精神境界。' },
+  { n:48, sym:'䷯', name:'井', py:'Jǐng', upper:'坎', lower:'巽', bin:'010110', judgment:'改邑不改井无丧无得', life:'价值·不竭·奉献', tags:['资源','不竭','奉献','价值'], narrative:'井者，通也。木上有水，汲取不竭。如同水井，默默奉献，滋养众生，而本质不变。真正的价值，在于持续而稳定的给予。' },
+  { n:49, sym:'䷰', name:'革', py:'Gé',  upper:'兑', lower:'离', bin:'011101', judgment:'己日乃孚元亨利贞', life:'变革·革新·时机', tags:['变革','革新','时机','彻底'], narrative:'革者，改也。水火相克，革故鼎新。变革须顺天应人，时机成熟则大刀阔斧。既济之后是革——守成反而孕育变革。' },
+  { n:50, sym:'䷱', name:'鼎', py:'Dǐng', upper:'离', lower:'巽', bin:'101110', judgment:'元吉亨', life:'鼎新·文化·养贤', tags:['鼎新','文化','养贤','稳定'], narrative:'鼎者，器也。以文化礼器凝聚人心，养育贤才。变革（革）之后须建立新秩序（鼎）。鼎是文明的象征，稳定中孕育新生。' },
+  { n:51, sym:'䷲', name:'震', py:'Zhèn', upper:'震', lower:'震', bin:'001001', judgment:'亨震来虩虩笑言哑哑', life:'惊醒·警觉·自省', tags:['震动','惊醒','警觉','自省'], narrative:'震者，动也。重雷叠震，天威凛然。大惊大骇之后，笑言如常——在震动中保持清醒，自省自新，方能通过考验。' },
+  { n:52, sym:'䷳', name:'艮', py:'Gèn',  upper:'艮', lower:'艮', bin:'100100', judgment:'艮其背不获其身', life:'静止·冥想·定力', tags:['静止','冥想','止境','修行'], narrative:'艮者，止也。重山叠止，止于其所。知止而后有定，静中生慧。现代人最缺的是"止"——止于当下，才能真正看清自己。' },
+  { n:53, sym:'䷴', name:'渐', py:'Jiàn', upper:'巽', lower:'艮', bin:'110100', judgment:'女归吉利贞', life:'渐进·秩序·水到渠成', tags:['渐进','秩序','礼序','成长'], narrative:'渐者，进也。山上有木，循序渐进。水到渠成，不可急于求成。每一个阶段有每个阶段的使命，跳级往往带来根基不稳。' },
+  { n:54, sym:'䷵', name:'归妹', py:'Guī Mèi', upper:'震', lower:'兑', bin:'001011', judgment:'征凶无攸利', life:'归属·关系·名分', tags:['归属','关系','名分','情义'], narrative:'归妹者，女之终也。情义为重，但名分须正。关系中的主次、边界要清晰。感情用事而无原则，往往带来困境。' },
+  { n:55, sym:'䷶', name:'丰', py:'Fēng', upper:'震', lower:'离', bin:'001101', judgment:'亨王假之勿忧宜日中', life:'丰盛·辉煌·珍惜', tags:['丰盛','辉煌','珍惜','盛极'], narrative:'丰者，大也。雷电交作，文明辉煌。最辉煌之时须居安思危——丰之后是旅（漂泊），盛极必衰。珍惜当下，同时做好衰退的准备。' },
+  { n:56, sym:'䷷', name:'旅', py:'Lǚ',   upper:'离', lower:'艮', bin:'101100', judgment:'小亨旅贞吉', life:'漂泊·谨慎·适应', tags:['旅途','漂泊','谨慎','随遇'], narrative:'旅者，行也。身处异地，谦逊谨慎，随遇而安，是漂泊者的生存智慧。不强求归属，在流动中找到内心的定所。' },
+  { n:57, sym:'䷸', name:'巽', py:'Xùn',  upper:'巽', lower:'巽', bin:'110110', judgment:'小亨利有攸往利见大人', life:'柔顺·渗透·潜移', tags:['柔顺','渗透','谦和','影响'], narrative:'巽者，入也。重风相随，潜移默化。以柔克刚，细水长流。最深远的影响不是强行灌输，而是润物无声的渗透。' },
+  { n:58, sym:'䷹', name:'兑', py:'Duì',  upper:'兑', lower:'兑', bin:'011011', judgment:'亨利贞', life:'喜悦·沟通·悦众', tags:['喜悦','沟通','友善','内守'], narrative:'兑者，说也。重泽相连，喜悦之象。真诚的喜悦能感染他人，和悦沟通是最美的人际关系。但兑须守正——悦众而不失节。' },
+  { n:59, sym:'䷺', name:'涣', py:'Huàn', upper:'巽', lower:'坎', bin:'110010', judgment:'亨王假有庙利涉大川', life:'凝聚·感召·重整', tags:['涣散','凝聚','精神','感召'], narrative:'涣者，散也。风行水上，精神之力可以凝聚散乱。以大义感召，以文化凝心。涣散之后的重整，需要精神领袖与共同信仰。' },
+  { n:60, sym:'䷻', name:'节', py:'Jié',  upper:'坎', lower:'兑', bin:'010011', judgment:'亨苦节不可贞', life:'节制·规律·界限', tags:['节制','规律','界限','适度'], narrative:'节者，止也。节制是智慧，但"苦节"反成束缚。界限不是枷锁，而是保护。找到适度的平衡，是人生的艺术。' },
+  { n:61, sym:'䷼', name:'中孚', py:'Zhōng Fú', upper:'巽', lower:'兑', bin:'110011', judgment:'豚鱼吉利涉大川', life:'诚信·感化·中道', tags:['诚信','内在','感化','真诚'], narrative:'中孚者，信也。诚信发自内心，能感化一切——甚至鱼和猪。真诚是最强大的力量，也是穿越一切危机的通行证。' },
+  { n:62, sym:'䷽', name:'小过', py:'Xiǎo Guò', upper:'震', lower:'艮', bin:'001100', judgment:'亨利贞可小事不可大事', life:'谨慎·量力·小成', tags:['谦逊','小成','适度','量力'], narrative:'小过者，小事过也。量力而行，谨守本分。知道自己的边界，是智慧而非软弱。不求大成而行小过，步步为营。' },
+  { n:63, sym:'䷾', name:'既济', py:'Jì Jì', upper:'坎', lower:'离', bin:'010101', judgment:'亨小利贞初吉终乱', life:'完成·警惕·守成', tags:['完成','警惕','守成','慎终'], narrative:'既济者，已渡也。事已成就，水火既济。但卦辞警示：初吉终乱。成功后最须警惕，善始善终是最难的功课。' },
+  { n:64, sym:'䷿', name:'未济', py:'Wèi Jì', upper:'离', lower:'坎', bin:'101010', judgment:'亨小狐汔济濡其尾', life:'未竟·希望·循环', tags:['未竟','希望','继续','新始'], narrative:'未济者，未渡也。六十四卦以未济终，是深刻的智慧——事无终结，循环不息。未完成不是失败，而是新循环的开始，是生命的本质。' },
+];
+
+// index by n
+const HEX_MAP = {};
+HEX.forEach(h => { HEX_MAP[h.n] = h; HEX_MAP[h.bin] = h; });
+
+// ══════════════════════════════════════════
+//  RELATIONSHIPS
+// ══════════════════════════════════════════
+function getMirror(bin) {
+  // 错卦: flip all bits
+  return bin.split('').map(b=>b==='1'?'0':'1').join('');
+}
+function getInverse(bin) {
+  // 综卦: reverse order
+  return bin.split('').reverse().join('');
+}
+function getMutual(bin) {
+  // 互卦: lines 2-4 as lower, 3-5 as upper (1-indexed from bottom)
+  const bits = bin.split(''); // index 0=top, 5=bottom
+  const l = bits[2] + bits[3] + bits[4]; // lower trigram: lines 4,3,2 top-to-bottom
+  const u = bits[1] + bits[2] + bits[3]; // upper trigram: lines 5,4,3 top-to-bottom
+  return u + l;
+}
+
+function getVariants(bin) {
+  // 变卦: flip each of 6 bits one at a time
+  const results = [];
+  for(let i=0;i<6;i++){
+    const arr = bin.split('');
+    arr[i] = arr[i]==='1'?'0':'1';
+    results.push(arr.join(''));
+  }
+  return results;
+}
+
+function getRelations(h) {
+  const mirror = getMirror(h.bin);
+  const inverse = getInverse(h.bin);
+  const mutual = getMutual(h.bin);
+  const variants = getVariants(h.bin);
+
+  return {
+    mirror:  HEX_MAP[mirror]  || null,
+    inverse: HEX_MAP[inverse] || null,
+    mutual:  HEX_MAP[mutual]  || null,
+    variants: variants.map(v=>HEX_MAP[v]).filter(Boolean),
+    lineName: ['初爻变','二爻变','三爻变','四爻变','五爻变','上爻变'],
+  };
+}
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let currentHex = HEX[0];
+let history = []; // past hexagrams
+let showLinks = { change: true, mirror: true, inverse: false };
+let graphMode = 'circle';
+let simulation = null;
+let svgG = null;
+let nodeEls = null;
+let linkEls = null;
+let lastCast = null;
+
+// ══════════════════════════════════════════
+//  GRAPH
+// ══════════════════════════════════════════
+function buildGraphData() {
+  const nodes = HEX.map(h => ({
+    id: h.n,
+    h,
+    x: null, y: null,
+  }));
+
+  const links = [];
+  const seen = new Set();
+
+  HEX.forEach(h => {
+    if(showLinks.change) {
+      getVariants(h.bin).forEach(vbin => {
+        const vh = HEX_MAP[vbin];
+        if(vh) {
+          const key = [Math.min(h.n,vh.n), Math.max(h.n,vh.n), 'change'].join('-');
+          if(!seen.has(key)) { seen.add(key); links.push({source:h.n, target:vh.n, type:'change'}); }
+        }
+      });
+    }
+    if(showLinks.mirror) {
+      const mh = HEX_MAP[getMirror(h.bin)];
+      if(mh && mh.n !== h.n) {
+        const key = [Math.min(h.n,mh.n), Math.max(h.n,mh.n), 'mirror'].join('-');
+        if(!seen.has(key)) { seen.add(key); links.push({source:h.n, target:mh.n, type:'mirror'}); }
+      }
+    }
+    if(showLinks.inverse) {
+      const ih = HEX_MAP[getInverse(h.bin)];
+      if(ih && ih.n !== h.n) {
+        const key = [Math.min(h.n,ih.n), Math.max(h.n,ih.n), 'inverse'].join('-');
+        if(!seen.has(key)) { seen.add(key); links.push({source:h.n, target:ih.n, type:'inverse'}); }
+      }
+    }
+  });
+
+  return { nodes, links };
+}
+
+function yangCount(bin) { return bin.split('').filter(b=>b==='1').length; }
+
+function initGraph() {
+  const svg = d3.select('#graphSvg');
+  svg.selectAll('*').remove();
+
+  const w = document.getElementById('graphPanel').offsetWidth;
+  const h = document.getElementById('graphPanel').offsetHeight;
+
+  const { nodes, links } = buildGraphData();
+
+  const nodeMap = {};
+  nodes.forEach(n => nodeMap[n.id] = n);
+  const linksResolved = links.map(l => ({
+    source: nodeMap[l.source], target: nodeMap[l.target], type: l.type
+  }));
+
+  svgG = svg.append('g');
+
+  // zoom
+  const zoom = d3.zoom().scaleExtent([0.3,3]).on('zoom', e => svgG.attr('transform', e.transform));
+  svg.call(zoom);
+
+  // links
+  const linkSel = svgG.selectAll('.link')
+    .data(linksResolved)
+    .enter().append('line')
+    .attr('class', d => `link link-${d.type}`)
+    .attr('stroke-width', d => d.type==='change'?0.5:0.8);
+
+  // nodes
+  const nodeSel = svgG.selectAll('.node')
+    .data(nodes)
+    .enter().append('g')
+    .attr('class','node')
+    .style('cursor','pointer')
+    .on('click', (e,d) => selectHex(d.h))
+    .on('mouseover', (e,d) => showTooltip(e, d.h))
+    .on('mouseout', hideTooltip);
+
+  nodeSel.append('circle')
+    .attr('r', 14)
+    .attr('fill', d => {
+      const yc = yangCount(d.h.bin);
+      if(yc===6) return '#2a1f0a';
+      if(yc===0) return '#0a0a18';
+      return '#12121e';
+    })
+    .attr('stroke', d => d.h.n === currentHex.n ? '#c9933a' : '#2a2a38')
+    .attr('stroke-width', d => d.h.n === currentHex.n ? 2 : 1);
+
+  nodeSel.append('text')
+    .attr('class','node-glyph')
+    .attr('y', 1)
+    .attr('fill', d => {
+      if(d.h.n===currentHex.n) return '#e8c97a';
+      const yc = yangCount(d.h.bin);
+      return yc >= 4 ? '#c9933a' : yc <= 2 ? '#4a6a9e' : '#7a7a8e';
+    })
+    .style('font-size','12px')
+    .text(d => d.h.sym);
+
+  nodeEls = nodeSel;
+  linkEls = linkSel;
+
+  // layout
+  if(graphMode === 'graph') {
+    simulation = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(linksResolved).id(d=>d.id).distance(50).strength(0.08))
+      .force('charge', d3.forceManyBody().strength(-120))
+      .force('center', d3.forceCenter(w/2, h/2))
+      .force('collision', d3.forceCollide(18))
+      .on('tick', () => {
+        linkSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+               .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+        nodeSel.attr('transform',d=>`translate(${d.x},${d.y})`);
+      });
+  } else {
+    // circle layout
+    simulation = null;
+    nodes.forEach((n,i) => {
+      const angle = (i / nodes.length) * 2 * Math.PI - Math.PI/2;
+      const r = Math.min(w,h) * 0.42;
+      n.x = w/2 + r * Math.cos(angle);
+      n.y = h/2 + r * Math.sin(angle);
+    });
+    linkSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+           .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    nodeSel.attr('transform',d=>`translate(${d.x},${d.y})`);
+  }
+}
+
+function updateGraphSelection() {
+  if(!svgG) return;
+  svgG.selectAll('.node circle')
+    .attr('stroke', d => d.h.n === currentHex.n ? '#c9933a' : '#2a2a38')
+    .attr('stroke-width', d => d.h.n === currentHex.n ? 2.5 : 1)
+    .attr('r', d => d.h.n === currentHex.n ? 18 : 14);
+  svgG.selectAll('.node text')
+    .attr('fill', d => {
+      if(d.h.n===currentHex.n) return '#e8c97a';
+      const yc = yangCount(d.h.bin);
+      return yc >= 4 ? '#c9933a' : yc <= 2 ? '#4a6a9e' : '#7a7a8e';
+    })
+    .style('font-size', d => d.h.n===currentHex.n ? '16px' : '12px');
+}
+
+function showTooltip(e, h) {
+  const t = document.getElementById('tooltip');
+  t.style.display = 'block';
+  t.innerHTML = `<b>${h.sym} ${h.name}</b> · ${h.py}<br>第${h.n}卦 · ${h.bin}<br>${h.life}`;
+  t.style.left = (e.clientX+12)+'px';
+  t.style.top = (e.clientY-30)+'px';
+}
+function hideTooltip() {
+  document.getElementById('tooltip').style.display='none';
+}
+
+// ══════════════════════════════════════════
+//  RIGHT PANEL
+// ══════════════════════════════════════════
+function trigramLineHTML(name) {
+  const t = TRIGRAMS[name];
+  return [...t.lines].reverse().map(l => {
+    if(l===1) return `<div class="l-yang"></div>`;
+    return `<div class="l-yin"><span></span><span></span></div>`;
+  }).join('');
+}
+
+function renderRightPanel(h) {
+  // topbar
+  document.getElementById('tcGlyph').textContent = h.sym;
+  document.getElementById('tcName').textContent = h.name;
+  document.getElementById('tcSub').textContent = `第${h.n}卦 · ${h.bin}`;
+
+  // main display
+  document.getElementById('rpGlyph').textContent = h.sym;
+  document.getElementById('rpName').textContent = h.name;
+  document.getElementById('rpPy').textContent = `${h.py} · 第${h.n}卦`;
+  document.getElementById('rpJmt').textContent = `「${h.judgment}」`;
+
+  // trigrams
+  document.getElementById('rpTrigrams').innerHTML = `
+    <div class="tgm-box">
+      <div class="tgm-role">上卦</div>
+      <div class="tgm-name">${h.upper} ${TRIGRAMS[h.upper].sym}</div>
+      <div class="tgm-lines">${trigramLineHTML(h.upper)}</div>
+      <div class="tgm-attr">${TRIGRAMS[h.upper].attr}</div>
+    </div>
+    <div class="tgm-box">
+      <div class="tgm-role">下卦</div>
+      <div class="tgm-name">${h.lower} ${TRIGRAMS[h.lower].sym}</div>
+      <div class="tgm-lines">${trigramLineHTML(h.lower)}</div>
+      <div class="tgm-attr">${TRIGRAMS[h.lower].attr}</div>
+    </div>
+  `;
+
+  // binary
+  const bits = h.bin.split('').map((b,i) => `<div class="bbit ${b==='1'?'on':''}" title="第${6-i}爻">${b}</div>`).join('');
+  document.getElementById('rpBinary').innerHTML = bits + `<span class="bin-dec">= ${parseInt(h.bin,2)}</span>`;
+
+  // relations
+  const rel = getRelations(h);
+  let relHTML = '';
+
+  if(rel.mirror && rel.mirror.n !== h.n) {
+    relHTML += relCard(rel.mirror, '错卦', '阴阳互换', 'highlight-mirror', '逆境中的镜像，提供另一视角');
+  }
+  if(rel.inverse && rel.inverse.n !== h.n) {
+    relHTML += relCard(rel.inverse, '综卦', '倒置视角', 'highlight-inverse', '他人眼中的你，旁观者清');
+  }
+  if(rel.mutual) {
+    relHTML += relCard(rel.mutual, '互卦', '内部结构', 'highlight-mutual', '当下处境的深层逻辑');
+  }
+  // first two variant changes
+  rel.variants.slice(0,3).forEach((v,i) => {
+    if(v && v.n !== h.n) {
+      relHTML += relCard(v, rel.lineName[i], '一爻之变', 'highlight-change', '微调一步可能的走向');
+    }
+  });
+
+  document.getElementById('rpRelations').innerHTML = relHTML;
+
+  // narrative
+  document.getElementById('rpNarrative').innerHTML = `
+    <div class="life-chips">
+      <div class="chip primary">${h.life}</div>
+      ${h.tags.map(t=>`<div class="chip">${t}</div>`).join('')}
+    </div>
+    <div style="margin-bottom:10px;">${h.narrative}</div>
+    ${getTransitionNarrative(h)}
+  `;
+}
+
+function relCard(h, type, sub, cls, meaning) {
+  return `<div class="rel-card ${cls}" onclick="selectHex(HEX_MAP[${h.n}]); explainRelationByType('${type}')">
+    <div class="rel-type">${type} · ${sub}</div>
+    <div class="rel-hex">
+      <div class="rel-glyph">${h.sym}</div>
+      <div>
+        <div class="rel-name">${h.name}</div>
+        <div class="rel-sub">${h.py} · 第${h.n}卦</div>
+      </div>
+    </div>
+    <div class="rel-meaning">${meaning}</div>
+  </div>`;
+}
+
+function getTransitionNarrative(h) {
+  // check sequence reason from/to
+  const lines = [];
+  const prevKey = `${h.n-1}-${h.n}`;
+  const nextKey = `${h.n}-${h.n+1}`;
+  if(SEQUENCE_REASON[prevKey]) lines.push(`<span style="color:var(--mid);font-size:10px;">← 序卦传：${SEQUENCE_REASON[prevKey]}</span>`);
+  if(SEQUENCE_REASON[nextKey]) lines.push(`<span style="color:var(--jade);font-size:10px;">→ 序卦传：${SEQUENCE_REASON[nextKey]}</span>`);
+  if(lines.length===0) return '';
+  return `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);line-height:2;">${lines.join('<br>')}</div>`;
+}
+
+// ══════════════════════════════════════════
+//  DIVINATION + TEACHING
+// ══════════════════════════════════════════
+function castOneLine(method) {
+  if(method === 'random') {
+    const roll = Math.floor(Math.random() * 4);
+    return [6, 7, 8, 9][roll];
+  }
+  const coins = Array.from({length:3}, () => Math.random() < 0.5 ? 2 : 3);
+  return coins.reduce((a,b) => a + b, 0);
+}
+
+function lineFromValue(value) {
+  if(value === 6) return { bit:'0', changed:'1', moving:true, name:'老阴', kind:'yin' };
+  if(value === 7) return { bit:'1', changed:'1', moving:false, name:'少阳', kind:'yang' };
+  if(value === 8) return { bit:'0', changed:'0', moving:false, name:'少阴', kind:'yin' };
+  return { bit:'1', changed:'0', moving:true, name:'老阳', kind:'yang' };
+}
+
+function castHexagram() {
+  const method = document.getElementById('castMethod').value;
+  const question = document.getElementById('questionInput').value.trim();
+  const lines = [];
+
+  for(let i=1;i<=6;i++) {
+    const value = castOneLine(method);
+    lines.push({ index:i, value, ...lineFromValue(value) });
+  }
+
+  const baseBin = [...lines].reverse().map(l => l.bit).join('');
+  const changedBin = [...lines].reverse().map(l => l.changed).join('');
+  const baseHex = HEX_MAP[baseBin];
+  const changedHex = HEX_MAP[changedBin];
+  const moving = lines.filter(l => l.moving).map(l => l.index);
+
+  lastCast = { question, method, lines, baseHex, changedHex, moving };
+  renderCastResult(lastCast);
+  if(baseHex) selectHex(baseHex);
+}
+
+function renderCastResult(cast) {
+  const lineEl = document.getElementById('castLines');
+  lineEl.innerHTML = cast.lines.map(l => `
+    <div class="cast-line">
+      <div>第${l.index}爻</div>
+      <div class="cast-bar ${l.kind}"></div>
+      <div>${l.name}${l.moving ? ' <span class="cast-mark">变</span>' : ''}</div>
+    </div>
+  `).join('');
+
+  const q = cast.question ? `问事：${cast.question}<br>` : '';
+  const movingText = cast.moving.length ? `动爻：${cast.moving.map(i => `第${i}爻`).join('、')}` : '无动爻：以本卦为主';
+  const changedText = cast.moving.length && cast.changedHex
+    ? `<br>变卦：<b>${cast.changedHex.sym} ${cast.changedHex.name}</b>，表示事情继续推进后的趋势。`
+    : '';
+
+  document.getElementById('castSummary').innerHTML = `
+    ${q}本卦：<b>${cast.baseHex.sym} ${cast.baseHex.name}</b>，先看当下处境。<br>
+    ${movingText}${changedText}
+    ${buildDivinationReading(cast)}
+  `;
+}
+
+function buildDivinationReading(cast) {
+  const base = cast.baseHex;
+  const changed = cast.changedHex;
+  const hasMoving = cast.moving.length > 0;
+  const focus = cast.question ? '就你所问之事，' : '';
+  const movingAdvice = getMovingAdvice(cast.moving);
+  const trend = hasMoving && changed
+    ? `后势会转向「${changed.name}」：${changed.life}。${changed.narrative}`
+    : `此卦无动爻，表示局面暂时不宜急变，重点在把「${base.name}」这件事做稳。`;
+
+  return `
+    <div class="cast-reading">
+      <div class="reading-title">占断</div>
+      <div class="reading-line"><span>当下：</span>${focus}${base.name}卦主「${base.life}」。${base.narrative}</div>
+      <div class="reading-line"><span>变化：</span>${movingAdvice}</div>
+      <div class="reading-line"><span>趋势：</span>${trend}</div>
+      <div class="reading-line"><span>建议：</span>${buildPracticalAdvice(base, changed, hasMoving)}</div>
+    </div>
+  `;
+}
+
+function getMovingAdvice(moving) {
+  if(moving.length === 0) return '没有动爻，说明问题的关键不在立刻改变方向，而在守住本卦所提示的原则。';
+  const names = ['初爻','二爻','三爻','四爻','五爻','上爻'];
+  const zones = moving.map(i => {
+    if(i <= 2) return `${names[i-1]}动，变化从基础、资源或初始条件开始`;
+    if(i <= 4) return `${names[i-1]}动，变化发生在执行过程与人事关系中`;
+    return `${names[i-1]}动，变化牵动结果、位置或外部评价`;
+  });
+  return zones.join('；') + '。动爻越多，局面越不稳定，宜先抓主要矛盾。';
+}
+
+function buildPracticalAdvice(base, changed, hasMoving) {
+  const tagText = base.tags.slice(0, 3).join('、');
+  if(!hasMoving || !changed) {
+    return `先围绕「${tagText}」行动，少做大幅转向，多观察反馈。`;
+  }
+  return `先按本卦处理眼前的「${tagText}」，再以变卦「${changed.name}」校准下一步；不要只看结果，要看哪一爻正在提醒你调整。`;
+}
+
+const TEACHING = {
+  change: '变卦看“哪一爻正在变化”。占卜时，老阴、老阳为动爻；动爻翻转后形成变卦，用来观察事情继续发展后的趋势。',
+  mirror: '错卦是阴阳全部互换。它像把处境翻到对面看：哪里过刚，哪里过柔，常能提示你隐藏的反面力量。',
+  inverse: '综卦是把六爻上下倒置。它强调视角转换：从对方、旁观者或结果回看原因，常适合处理关系与判断偏差。',
+  mutual: '互卦取中间四爻重组，观察事情内部的结构。它不看表面状态，而看这个局面里面真正驱动它的逻辑。'
+};
+
+function explainRelation(type, btn) {
+  document.querySelectorAll('.teach-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('teachNote').textContent = TEACHING[type] || TEACHING.change;
+}
+
+function explainRelationByType(label) {
+  const map = { '错卦':'mirror', '综卦':'inverse', '互卦':'mutual' };
+  const type = map[label] || 'change';
+  const target = [...document.querySelectorAll('.teach-btn')].find(b => (
+    (type === 'change' && b.textContent === '变卦') ||
+    (type === 'mirror' && b.textContent === '错卦') ||
+    (type === 'inverse' && b.textContent === '综卦') ||
+    (type === 'mutual' && b.textContent === '互卦')
+  ));
+  explainRelation(type, target);
+}
+
+// ══════════════════════════════════════════
+//  TIMELINE
+// ══════════════════════════════════════════
+function renderTimeline() {
+  document.getElementById('tlPastLabel').textContent = lastCast ? '占卜路径' : '解读路径';
+  document.getElementById('tlPresentLabel').textContent = lastCast ? '本卦' : '当前';
+  document.getElementById('tlFutureLabel').textContent = lastCast ? '变卦与建议' : '延伸视角';
+
+  const pastEl = document.getElementById('tlPast');
+  pastEl.innerHTML = '';
+
+  if(lastCast) {
+    const moving = lastCast.moving.length ? lastCast.moving.map(i => `第${i}爻`).join('、') : '无动爻';
+    pastEl.innerHTML = `
+      <div class="tl-card tl-past">
+        <div class="tc-glyph">问</div>
+        <div class="tc-name">所问</div>
+        <div class="tc-idx">${lastCast.question || '未填写问题'}</div>
+      </div>
+      <div class="tl-card tl-past">
+        <div class="tc-glyph">爻</div>
+        <div class="tc-name">动爻</div>
+        <div class="tc-idx">${moving}</div>
+      </div>
+    `;
+  } else {
+    pastEl.innerHTML = `
+      <div class="tl-card tl-past">
+        <div class="tc-glyph">1</div>
+        <div class="tc-name">看卦辞</div>
+        <div class="tc-idx">判断处境</div>
+      </div>
+      <div class="tl-card tl-past">
+        <div class="tc-glyph">2</div>
+        <div class="tc-name">看上下卦</div>
+        <div class="tc-idx">理解结构</div>
+      </div>
+      <div class="tl-card tl-past">
+        <div class="tc-glyph">3</div>
+        <div class="tc-name">看关系</div>
+        <div class="tc-idx">寻找视角</div>
+      </div>
+    `;
+  }
+
+  const presentEl = document.getElementById('tlPresent');
+  presentEl.innerHTML = `<div class="tl-card tl-present">
+    <div class="tc-glyph" style="font-size:28px;color:var(--gold2);">${currentHex.sym}</div>
+    <div class="tc-name" style="color:var(--gold);">${currentHex.name}</div>
+    <div class="tc-idx" style="color:var(--gold);">第${currentHex.n}卦</div>
+  </div>`;
+
+  const futureEl = document.getElementById('tlFuture');
+  futureEl.innerHTML = '';
+
+  if(lastCast) {
+    const changed = lastCast.changedHex;
+    futureEl.innerHTML = `
+      <div class="tl-card tl-future" onclick="selectHex(HEX_MAP[${changed.n}])">
+        <div class="tc-glyph">${changed.sym}</div>
+        <div class="tc-name">${changed.name}</div>
+        <div class="tc-idx">变卦趋势</div>
+      </div>
+      <div class="tl-future-branch">
+        <div class="fb-item" onclick="explainRelation('change', document.querySelector('.teach-btn'))">
+          <div class="fb-glyph">读</div>
+          <div class="fb-name">先看本卦处境，再看动爻提醒</div>
+        </div>
+        <div class="fb-item" onclick="selectHex(HEX_MAP[${changed.n}])">
+          <div class="fb-glyph">${changed.sym}</div>
+          <div class="fb-name">用${changed.name}校准下一步</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const rel = getRelations(currentHex);
+  const futures = [];
+
+  // next in sequence
+  if(currentHex.n < 64) futures.push({ h: HEX[currentHex.n], label:'序卦↓' });
+
+  // top 3 variants
+  rel.variants.slice(0,4).forEach((v,i) => {
+    if(v && v.n !== currentHex.n && !futures.find(f=>f.h.n===v.n)) {
+      futures.push({ h:v, label: rel.lineName[i] });
+    }
+  });
+
+  if(rel.mirror && rel.mirror.n!==currentHex.n) futures.push({ h:rel.mirror, label:'错卦' });
+
+  // render as branch list
+  const branchDiv = document.createElement('div');
+  branchDiv.className = 'tl-future-branch';
+  futures.slice(0,5).forEach(f => {
+    branchDiv.innerHTML += `<div class="fb-item" onclick="selectHex(HEX_MAP[${f.h.n}])">
+      <div class="fb-glyph">${f.h.sym}</div>
+      <div class="fb-name">${f.h.name} <span style="color:var(--dim)">(${f.label})</span></div>
+    </div>`;
+  });
+  futureEl.appendChild(branchDiv);
+}
+
+// ══════════════════════════════════════════
+//  SELECT HEX
+// ══════════════════════════════════════════
+function selectHex(h) {
+  if(!h) return;
+  if(currentHex && h.n !== currentHex.n) {
+    history.push(currentHex);
+    if(history.length > 20) history.shift();
+  }
+  currentHex = h;
+  renderRightPanel(h);
+  renderTimeline();
+  updateGraphSelection();
+}
+
+// ══════════════════════════════════════════
+//  CONTROLS
+// ══════════════════════════════════════════
+function setMode(m, btn) {
+  graphMode = m;
+  document.querySelectorAll('.topbar-mode .mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  initGraph();
+  updateGraphSelection();
+}
+
+function toggleLink(type, btn) {
+  showLinks[type] = !showLinks[type];
+  btn.classList.toggle('active');
+  initGraph();
+  updateGraphSelection();
+}
+
+function searchHex(q) {
+  q = q.trim().toLowerCase();
+  if(!q) { hideTooltip(); return; }
+  const found = HEX.find(h => h.name.includes(q) || h.py.toLowerCase().includes(q) || String(h.n)===q);
+  if(found) selectHex(found);
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+window.addEventListener('load', () => {
+  initGraph();
+  renderRightPanel(currentHex);
+  renderTimeline();
+  explainRelation('change', document.querySelector('.teach-btn'));
+});
+
+window.addEventListener('resize', () => {
+  if(simulation) simulation.stop();
+  initGraph();
+  updateGraphSelection();
+});
+</script>
+</body>
+</html>

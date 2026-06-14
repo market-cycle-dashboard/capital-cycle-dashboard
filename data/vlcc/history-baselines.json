@@ -1,0 +1,30 @@
+[
+  {
+    "date": "2026-03-15",
+    "label": "3月中旬 AIS",
+    "coverage": 53,
+    "laden": 17,
+    "part_laden": 6,
+    "ballast": 26,
+    "yard": 4,
+    "commercial_rate": null,
+    "revenue_rate": 32,
+    "waiting": null,
+    "confidence": "medium",
+    "comparability": "同一53艘名册，但商业状态字段不完整"
+  },
+  {
+    "date": "2026-06-07",
+    "label": "6月7日汇总",
+    "coverage": 51,
+    "laden": 28,
+    "part_laden": 0,
+    "ballast": 19,
+    "yard": 4,
+    "commercial_rate": null,
+    "revenue_rate": 55,
+    "waiting": null,
+    "confidence": "low",
+    "comparability": "仅51艘汇总，半载口径并入其他类别"
+  }
+]

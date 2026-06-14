@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>A股资本周期波浪图</title>
+  <title>资本周期 capital cycle</title>
   <script src="data.js"></script>
+  <script src="reports-data.js"></script>
+  <script src="liquidity-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
       --paper: #f4efe5;
@@ -103,9 +106,27 @@
       text-overflow: ellipsis;
     }
 
+    .site-title .site-contact {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .site-contact a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+
     .site-actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 10px;
       color: var(--muted);
       font-family: "Cascadia Mono", "Consolas", monospace;
@@ -143,7 +164,7 @@
       height: 100vh;
       overflow: hidden;
       display: grid;
-      grid-template-rows: auto auto auto 1fr;
+      grid-template-rows: auto 1fr;
       transform: translateX(-104%);
       transition: transform .28s ease;
       box-shadow: 26px 0 70px rgba(23,33,29,.24);
@@ -180,7 +201,7 @@
 
     .brand {
       position: relative;
-      padding: 30px 72px 20px 28px;
+      padding: 26px 72px 18px 28px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -193,8 +214,8 @@
     }
 
     h1 {
-      margin: 10px 0 0;
-      font-size: 30px;
+      margin: 8px 0 0;
+      font-size: 26px;
       line-height: 1.04;
       font-weight: 800;
     }
@@ -261,6 +282,17 @@
       gap: 6px;
     }
 
+    .nav-group-title {
+      margin: 8px 0 0;
+      padding: 8px 2px 0;
+      border-top: 1px solid rgba(23,33,29,.12);
+      color: var(--red);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
     .subnav a {
       padding: 7px 8px;
       border: 1px solid rgba(23,33,29,.12);
@@ -275,6 +307,7 @@
       border-bottom: 1px solid var(--line);
       display: grid;
       gap: 14px;
+      background: rgba(255, 250, 240, .7);
     }
 
     .label {
@@ -470,7 +503,7 @@
     }
 
     .directory {
-      padding: 18px;
+      padding: 14px 18px;
     }
 
     .directory-head {
@@ -478,12 +511,12 @@
       align-items: end;
       justify-content: space-between;
       gap: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .directory-head h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
       line-height: 1.2;
     }
 
@@ -495,13 +528,13 @@
 
     .module-grid {
       display: grid;
-      grid-template-columns: 1.35fr repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 10px;
     }
 
     .module-card {
-      min-height: 112px;
-      padding: 14px;
+      min-height: 86px;
+      padding: 11px 12px;
       border: 1px solid rgba(23,33,29,.14);
       background: rgba(255,250,240,.66);
       color: var(--ink);
@@ -526,17 +559,17 @@
 
     .module-card b {
       display: block;
-      margin-top: 8px;
-      font-size: 16px;
+      margin-top: 6px;
+      font-size: 14px;
       line-height: 1.25;
     }
 
     .module-card small {
       display: block;
-      margin-top: 10px;
+      margin-top: 7px;
       color: inherit;
       opacity: .7;
-      line-height: 1.45;
+      line-height: 1.35;
     }
 
     .module-card.disabled {
@@ -601,6 +634,25 @@
     }
 
     .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+
+    .cycle-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .cycle-inspector {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      background: #fffaf0;
+    }
+
+    .cycle-inspector .detail {
+      max-height: 620px;
+    }
 
     .wave-panel {
       position: relative;
@@ -982,8 +1034,10 @@
     @media (max-width: 1180px) {
       .frame { grid-template-columns: 1fr; }
       .detail { max-height: none; }
-      .topbar, .thesis, .bottom-grid { grid-template-columns: 1fr; }
-      .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topbar, .thesis, .cycle-workspace, .bottom-grid { grid-template-columns: 1fr; }
+      .cycle-inspector { grid-template-rows: auto auto; }
+      .cycle-inspector .detail { max-height: none; }
+      .module-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .legend { grid-template-columns: repeat(3, minmax(120px, 1fr)); }
       .radar-head { grid-template-columns: 1fr; }
       .radar-key { min-width: 0; }
@@ -1000,7 +1054,9 @@
       .site-actions { display: none; }
       .side { width: calc(100vw - 14px); }
       h1 { font-size: 25px; }
-      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav { grid-template-columns: 1fr; }
+      .numbers, .metrics, .legend, .axis-title, .market-note, .stock-grid, .radar-key, .pbroe-key, .module-grid, .subnav, .pipe-grid, .liquidity-dashboard, .liquidity-playbook, .liquidity-pulse, .liquidity-driver-grid, .basis-grid, .a-share-thermal-grid, .a-share-driver-grid, .a-share-playbook, .liquidity-framework-grid { grid-template-columns: 1fr; }
+      .liquidity-thesis { grid-template-columns: 1fr; }
+      .liquidity-row { grid-template-columns: 1fr; gap: 6px; }
       .directory-head { display: block; }
       .directory-head span { display: block; margin-top: 6px; }
       .axis-title { position: static; padding: 14px; }
@@ -1010,6 +1066,994 @@
       #pbRoeChart { height: 440px; }
       th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5) { display: none; }
     }
+
+    /* ── Module Switching ── */
+    .module-view { display: grid; gap: 18px; }
+    .module-view.hidden { display: none; }
+    section[id], .module-view[id] { scroll-margin-top: 86px; }
+
+    .factor-monitor-module {
+      min-width: 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .factor-monitor-thesis {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+    }
+
+    .factor-monitor-thesis h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.18;
+      max-width: 900px;
+    }
+
+    .factor-monitor-thesis p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      max-width: 860px;
+    }
+
+    .factor-monitor-frame-wrap {
+      overflow: hidden;
+      min-height: 980px;
+      background: #f6f7f4;
+    }
+
+    .factor-monitor-frame {
+      display: block;
+      width: 100%;
+      min-height: 980px;
+      border: 0;
+      background: #f6f7f4;
+    }
+
+    /* ── Liquidity Framework Module ── */
+    .liquidity-module { min-width: 0; display: grid; gap: 18px; }
+    .liquidity-thesis {
+      padding: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 380px);
+      gap: 18px;
+      align-items: center;
+      background: #f7fbf8;
+    }
+    .liquidity-thesis h2 { margin: 0; font-size: 25px; line-height: 1.18; max-width: 880px; }
+    .liquidity-thesis p { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 820px; }
+    .liquidity-framework-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .liquidity-framework-card {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.76);
+      padding: 18px;
+      text-decoration: none;
+      color: var(--ink);
+      min-height: 180px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .liquidity-framework-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(23,33,29,.46);
+      background: #fffaf3;
+    }
+    .liquidity-framework-card em {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-style: normal;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .liquidity-framework-card b { display: block; font-size: 22px; line-height: 1.1; }
+    .liquidity-framework-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .liquidity-framework-card span {
+      width: fit-content;
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(244,239,229,.5);
+    }
+    .liquidity-subframe {
+      display: grid;
+      gap: 18px;
+      scroll-margin-top: 86px;
+    }
+    .liquidity-map {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      background: linear-gradient(135deg, rgba(255,250,240,.88), rgba(237,246,241,.92));
+    }
+    .liquidity-pulse {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+      gap: 16px;
+      align-items: stretch;
+      background: #fffaf3;
+    }
+    .liquidity-score-card {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      padding: 16px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+      min-height: 190px;
+    }
+    .liquidity-score-card b {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 48px;
+      line-height: .95;
+    }
+    .liquidity-score-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+    .liquidity-regime {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      background: var(--teal);
+      color: var(--paper-2);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .liquidity-brief {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      border-left: 3px solid var(--teal);
+      padding-left: 14px;
+    }
+    .liquidity-brief h3 { margin: 0; font-size: 18px; line-height: 1.25; }
+    .liquidity-brief p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .liquidity-brief ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .pipe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .pipe-card {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.78);
+      padding: 14px;
+      min-height: 160px;
+      display: grid;
+      align-content: start;
+      gap: 9px;
+    }
+    .pipe-card b { font-size: 15px; line-height: 1.35; }
+    .pipe-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .pipe-card small {
+      display: block;
+      color: var(--muted);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 11px;
+    }
+    .pipe-meter {
+      height: 8px;
+      border: 1px solid var(--line);
+      background: rgba(23,33,29,.07);
+      overflow: hidden;
+    }
+    .pipe-meter span { display: block; height: 100%; background: var(--teal); }
+    .liquidity-dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 18px;
+    }
+    .liquidity-stack {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .liquidity-row {
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr) 72px;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .liquidity-track {
+      height: 10px;
+      background: rgba(23,33,29,.08);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .liquidity-fill { height: 100%; background: var(--red); }
+    .liquidity-state {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .state-list { display: grid; gap: 10px; }
+    .state-item {
+      border-left: 3px solid var(--teal);
+      background: rgba(244,239,229,.45);
+      padding: 10px 12px;
+    }
+    .state-item strong { display: block; font-size: 13px; margin-bottom: 4px; }
+    .state-item span { display: block; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .liquidity-playbook {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .playbook-card {
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: rgba(255,250,240,.74);
+      min-height: 148px;
+    }
+    .playbook-card h3 { margin: 0 0 8px; font-size: 15px; }
+    .playbook-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.62; }
+    .liquidity-footnote { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .liquidity-study-panel {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .a-share-thermal-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, .9fr) minmax(0, 1.55fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .a-share-pulse-card {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+    .a-share-pulse-card h3 { margin: 0; font-size: 18px; line-height: 1.24; }
+    .a-share-pulse-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .a-share-score-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .a-share-score-strip div {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      padding: 10px;
+      min-height: 78px;
+    }
+    .a-share-score-strip b { display: block; font-size: 22px; line-height: 1; }
+    .a-share-score-strip span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .a-share-pulse-card a {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .a-share-thermal-figure {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      padding: 10px;
+      min-width: 0;
+    }
+    .a-share-thermal-figure img {
+      width: 100%;
+      display: block;
+    }
+    .a-share-driver-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .a-share-driver {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 12px;
+      min-height: 118px;
+    }
+    .a-share-driver strong { display: block; font-size: 13px; line-height: 1.3; }
+    .a-share-driver b { display: block; margin: 8px 0 6px; font-size: 20px; line-height: 1.1; }
+    .a-share-driver span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .a-share-driver.hot { border-left: 3px solid var(--red); }
+    .a-share-driver.cool { border-left: 3px solid #315f8f; }
+    .a-share-driver.neutral { border-left: 3px solid var(--amber); }
+    .a-share-playbook {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .a-share-method {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.42);
+      padding: 14px;
+    }
+    .a-share-method h3 { margin: 0 0 8px; font-size: 15px; }
+    .a-share-method p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.62; }
+    .a-share-method code {
+      display: block;
+      margin-top: 10px;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: rgba(23,33,29,.06);
+      border: 1px solid var(--line);
+      font-size: 11px;
+      line-height: 1.45;
+      white-space: normal;
+    }
+    .liquidity-chart-panel { padding: 18px; display: grid; gap: 12px; }
+    .liquidity-chart {
+      width: 100%;
+      height: 320px;
+      display: block;
+      background: #fffaf3;
+      border: 1px solid var(--line);
+    }
+    .liquidity-chart text {
+      fill: var(--muted);
+      font-size: 11px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+    .liquidity-chart .axis { stroke: rgba(23,33,29,.22); stroke-width: 1; }
+    .liquidity-chart .grid-line { stroke: rgba(23,33,29,.09); stroke-width: 1; }
+    .liquidity-chart .score-line { fill: none; stroke: var(--teal); stroke-width: 3; }
+    .liquidity-chart .net-area { fill: rgba(55,125,113,.11); }
+    .liquidity-chart .hover-line { stroke: rgba(23,33,29,.38); stroke-width: 1; stroke-dasharray: 4 4; }
+    .liquidity-chart .hover-dot { fill: var(--teal); stroke: #fffaf3; stroke-width: 2; }
+    .liquidity-chart .hover-box { fill: rgba(23,33,29,.94); }
+    .liquidity-chart .hover-text { fill: #fffaf3; font-size: 12px; }
+    .liquidity-chart .hover-layer { opacity: 0; pointer-events: none; }
+    .liquidity-chart.is-hovering .hover-layer { opacity: 1; }
+    .liquidity-chart .hover-capture { fill: transparent; cursor: crosshair; }
+    .liquidity-latest {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .liquidity-metric {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.42);
+      padding: 10px 12px;
+      min-height: 84px;
+    }
+    .liquidity-metric b { display: block; font-size: 18px; margin-bottom: 5px; }
+    .liquidity-metric span { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .liquidity-source-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .liquidity-driver-panel {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .liquidity-driver-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .liquidity-driver {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 12px;
+      min-height: 118px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+    .liquidity-driver strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .liquidity-driver b {
+      display: block;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+    .liquidity-driver span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .liquidity-driver.supportive { border-left: 3px solid var(--teal); }
+    .liquidity-driver.tightening { border-left: 3px solid var(--red); }
+    .liquidity-driver.neutral { border-left: 3px solid var(--amber); }
+    .liquidity-method {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .basis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .basis-card {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.42);
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      min-height: 154px;
+    }
+    .basis-card h3 { margin: 0; font-size: 15px; line-height: 1.35; }
+    .basis-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .basis-card code {
+      display: block;
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      padding: 9px 10px;
+      color: var(--ink);
+      white-space: normal;
+      line-height: 1.55;
+      font-size: 12px;
+    }
+    .basis-readout {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .basis-readout-card {
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      padding: 12px;
+      display: grid;
+      gap: 6px;
+      min-height: 112px;
+      align-content: start;
+    }
+    .basis-readout-card strong { font-size: 12px; line-height: 1.35; }
+    .basis-readout-card b {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+    .basis-readout-card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    /* ── Deep Reports Module ── */
+    .reports-module { min-width: 0; display: grid; gap: 18px; }
+
+    .reports-thesis {
+      padding: 20px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
+      gap: 18px;
+      align-items: center;
+      background: #fff9ec;
+    }
+    .reports-thesis h2 { margin: 0; font-size: 25px; line-height: 1.15; }
+    .reports-thesis p { margin: 9px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; max-width: 780px; }
+
+    .reports-filters {
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
+      background: rgba(255,250,240,.7);
+      border-bottom: 1px solid var(--line);
+    }
+    .reports-filter-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+    .reports-search {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      background: #fffaf3;
+      color: var(--ink);
+      padding: 0 12px;
+      outline: none;
+      border-radius: 0;
+      font: inherit;
+    }
+    .reports-search:focus {
+      border-color: rgba(182,64,45,.62);
+      box-shadow: 0 0 0 3px rgba(182,64,45,.10);
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .report-card {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+      position: relative;
+    }
+    .report-card:hover {
+      border-color: rgba(23,33,29,.38);
+      background: rgba(255,250,240,.92);
+      box-shadow: 0 8px 24px rgba(30,25,15,.1);
+    }
+    .report-card.active {
+      border-color: var(--ink);
+      background: rgba(255,250,240,.96);
+      box-shadow: 0 12px 32px rgba(30,25,15,.14);
+    }
+
+    .report-card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .report-type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      color: #fffaf0;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .report-type-badge.industry { background: var(--teal); }
+    .report-type-badge.company { background: var(--blue); }
+    .report-type-badge.theme { background: var(--amber); }
+    .report-type-badge.century { background: var(--charcoal); }
+    .report-type-badge.company-card { background: var(--violet); }
+
+    .report-card-date {
+      color: var(--muted);
+      font-size: 11px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+
+    .report-card h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .report-card-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .report-card-conclusion {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      border-left: 2px solid var(--line);
+      padding-left: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .report-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .report-tag {
+      padding: 2px 7px;
+      border: 1px solid rgba(23,33,29,.14);
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(244,239,229,.5);
+    }
+
+    .report-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 6px;
+      border-top: 1px solid var(--line);
+    }
+    .report-confidence {
+      font-size: 11px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      color: var(--muted);
+    }
+
+    .report-detail-panel {
+      grid-column: 1 / -1;
+      border: 1px solid var(--ink);
+      background: #fffaf0;
+      padding: 24px;
+      animation: reportSlideIn .24s ease;
+    }
+    @keyframes reportSlideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .report-detail-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .report-detail-header h2 { margin: 0; font-size: 22px; line-height: 1.2; }
+    .report-detail-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      align-items: center;
+    }
+    .report-close-btn {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      font-size: 20px;
+      display: grid;
+      place-items: center;
+    }
+    .report-close-btn:hover { background: rgba(23,33,29,.06); }
+
+    .report-evidence-box {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.4);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .report-evidence-box h4 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .report-evidence-box p {
+      margin: 0 0 10px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--ink);
+    }
+    .report-evidence-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 6px;
+    }
+    .report-evidence-list li {
+      padding: 8px 10px;
+      border-left: 3px solid var(--red);
+      background: rgba(255,250,240,.6);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+
+    .report-sections { display: grid; gap: 18px; }
+    .report-section-block {
+      border-top: 2px solid var(--ink);
+      padding-top: 14px;
+    }
+    .report-section-block h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+    .report-section-block .section-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.72;
+      white-space: pre-line;
+    }
+
+    .report-links {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .report-module-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+    .report-module-link:hover {
+      background: rgba(23,33,29,.06);
+      border-color: rgba(23,33,29,.3);
+    }
+
+    .recent-reports {
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .recent-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .recent-item {
+      border: 1px solid var(--line);
+      background: rgba(255,250,240,.72);
+      padding: 12px;
+      color: var(--ink);
+      text-decoration: none;
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .recent-item:hover {
+      border-color: rgba(23,33,29,.36);
+      background: rgba(255,250,240,.95);
+    }
+
+    .recent-item b {
+      font-size: 13px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .recent-meta {
+      color: var(--muted);
+      font-size: 11px;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+    }
+
+    .report-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .copy-report-link {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.5);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 6px 10px;
+      font-size: 12px;
+      align-self: flex-start;
+    }
+
+    .copy-report-link:hover {
+      background: rgba(23,33,29,.06);
+      border-color: rgba(23,33,29,.3);
+    }
+
+    .copy-toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 80;
+      padding: 10px 14px;
+      background: var(--ink);
+      color: var(--paper-2);
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .company-snapshot {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .snapshot-card {
+      border: 1px solid var(--line);
+      background: rgba(244,239,229,.4);
+      padding: 14px;
+    }
+
+    .snapshot-card h4,
+    .timeline-panel h4 {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .snapshot-metric {
+      border-top: 2px solid var(--ink);
+      padding-top: 8px;
+      min-height: 58px;
+    }
+
+    .snapshot-metric b {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .snapshot-metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .business-bars {
+      display: grid;
+      gap: 8px;
+    }
+
+    .business-bar {
+      display: grid;
+      grid-template-columns: minmax(90px, 1fr) 2fr auto;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .business-track {
+      height: 8px;
+      background: rgba(23,33,29,.09);
+      overflow: hidden;
+    }
+
+    .business-fill {
+      height: 100%;
+      background: var(--teal);
+    }
+
+    .timeline-panel {
+      border: 1px solid var(--line);
+      background: #fffaf0;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .life-timeline {
+      display: grid;
+      gap: 10px;
+      position: relative;
+    }
+
+    .life-event {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .life-event time {
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      color: var(--red);
+      font-size: 12px;
+    }
+
+    .life-event b {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .life-event p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .reports-empty {
+      grid-column: 1 / -1;
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1180px) {
+      .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .reports-thesis { grid-template-columns: 1fr; }
+      .company-snapshot { grid-template-columns: 1fr; }
+      .recent-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .liquidity-thesis, .liquidity-dashboard, .liquidity-latest, .liquidity-pulse, .factor-monitor-thesis { grid-template-columns: 1fr; }
+      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout, .a-share-driver-grid, .a-share-playbook { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .report-grid { grid-template-columns: 1fr; }
+      .report-detail-header { grid-template-columns: 1fr; }
+      .snapshot-grid { grid-template-columns: 1fr; }
+      .business-bar { grid-template-columns: 1fr; }
+      .life-event { grid-template-columns: 1fr; gap: 4px; }
+      .recent-list { grid-template-columns: 1fr; }
+      .pipe-grid, .liquidity-playbook, .liquidity-driver-grid, .basis-grid, .basis-readout, .a-share-driver-grid, .a-share-playbook { grid-template-columns: 1fr; }
+      .copy-toast { left: 12px; right: 12px; text-align: center; }
+    }
+
+    /* ── Full Markdown Report ── */
+    .report-full-md { font-size: 14px; line-height: 1.78; color: var(--ink); }
+    .report-full-md h1 { font-size: 22px; margin: 24px 0 12px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+    .report-full-md h2 { font-size: 18px; margin: 22px 0 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+    .report-full-md h3 { font-size: 15px; margin: 18px 0 8px; }
+    .report-full-md h4 { font-size: 14px; margin: 14px 0 6px; }
+    .report-full-md p { margin: 8px 0; }
+    .report-full-md hr { border: none; border-top: 1px solid var(--line); margin: 20px 0; }
+    .report-full-md table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .report-full-md th, .report-full-md td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }
+    .report-full-md th { background: rgba(244,239,229,.6); font-weight: 600; }
+    .report-full-md strong { color: var(--ink); }
+    .report-full-md ul, .report-full-md ol { padding-left: 20px; margin: 8px 0; }
+    .report-full-md li { margin: 4px 0; }
+    .report-full-md blockquote { border-left: 3px solid var(--red); padding: 8px 14px; margin: 12px 0; background: rgba(244,239,229,.3); color: var(--muted); }
+    .report-md-loading { padding: 40px; text-align: center; color: var(--muted); font-size: 14px; }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KPH20KFDWH"></script>
   <script>
@@ -1024,11 +2068,18 @@
     <header class="site-header">
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="打开研究导航" aria-expanded="false" aria-controls="sideNav">☰</button>
       <div class="site-title">
-        <strong>Market Cycle Dashboard</strong>
+        <strong>资本周期 capital cycle</strong>
         <span>资本周期、估值盈利与行业研究池</span>
+        <span class="site-contact">如有问题欢迎垂询<a href="mailto:gogoxx071@gmail.com">gogoxx071@gmail.com</a></span>
       </div>
       <div class="site-actions">
         <a class="header-pill" href="#capital-cycle-module">Capital Cycle</a>
+        <a class="header-pill" href="#deep-reports-module">Deep Reports</a>
+        <a class="header-pill" href="#liquidity-module">Liquidity</a>
+        <a class="header-pill" href="#factor-monitor-module">Factors</a>
+        <a class="header-pill" href="nvidia-supply-chain/">AI Supply Chain</a>
+        <a class="header-pill" href="vlcc/">VLCC Fleet</a>
+        <a class="header-pill" href="iching/">I Ching</a>
         <span>Research Terminal</span>
       </div>
     </header>
@@ -1037,13 +2088,14 @@
       <aside class="side panel" id="sideNav" aria-label="隐藏式研究导航">
         <button class="menu-close" id="menuClose" type="button" aria-label="关闭研究导航">×</button>
         <section class="brand">
-          <div class="kicker">Marathon Capital Cycle · A Shares</div>
-          <h1>A股行业资本周期波浪图</h1>
-          <p class="read">点击行业点查看行业内个股，再点击个股查看 2010-2025 年财务数据轨迹。</p>
+          <div class="kicker">capital cycle</div>
+          <h1>研究导航</h1>
+          <p class="read">从一级框架进入各研究模块。</p>
         </section>
 
         <nav class="site-nav" aria-label="研究目录">
           <span class="label">Research Directory</span>
+          <span class="nav-group-title">Core Research</span>
           <a class="nav-link" href="#capital-cycle-module">
             <span class="nav-index">01</span>
             <span><strong>资本周期</strong><span>进入当前完整分析界面</span></span>
@@ -1054,39 +2106,57 @@
             <a href="#pb-roe-map">PB-ROE 子框架</a>
             <a href="#research-pool-section">交集研究池</a>
           </div>
-          <a class="nav-link muted" href="#module-liquidity">
+          <a class="nav-link" href="#deep-reports-module">
             <span class="nav-index">02</span>
-            <span><strong>流动性分析</strong><span>后续新增的一级研究框架</span></span>
+            <span><strong>深度报告</strong><span>行业、公司与主题深度研究</span></span>
           </a>
-          <a class="nav-link muted" href="#module-more">
+          <div class="subnav">
+            <a href="#deep-reports-module" data-report-type="century">百年专题</a>
+            <a href="#deep-reports-module" data-report-type="company-card">公司卡片</a>
+            <a href="#deep-reports-module" data-report-type="industry">行业报告</a>
+            <a href="#deep-reports-module" data-report-type="company">公司报告</a>
+          </div>
+          <a class="nav-link" href="#liquidity-module">
             <span class="nav-index">03</span>
-            <span><strong>更多框架</strong><span>库存周期、价格周期、组合跟踪等</span></span>
+            <span><strong>流动性分析</strong><span>美元管道与A股温差双框架</span></span>
           </a>
-        </nav>
-
-        <section class="controls">
-          <label>
-            <span class="label">Industry</span>
-            <input class="search" id="search" placeholder="搜索行业，例如 锂、化学制剂、风电">
-          </label>
-          <div>
-            <span class="label">Stage</span>
-            <div class="stage-filter" id="stageFilter"></div>
-          </div>
-          <div>
-            <span class="label">Market</span>
-            <div class="stage-filter" id="marketFilter"></div>
-          </div>
-          <div>
-            <span class="label">Minimum Score</span>
-            <div class="range-row">
-              <input id="scoreRange" type="range" min="-7" max="4" step="0.1" value="-7">
-              <span id="scoreValue">全部</span>
+            <div class="subnav">
+              <a href="#liquidity-usd-framework">美元流动性分析</a>
+              <a href="#liquidity-a-share-thermal">A股温差分析</a>
             </div>
+          <a class="nav-link" href="#factor-monitor-module">
+            <span class="nav-index">04</span>
+            <span><strong>因子监控</strong><span>代表性因子有效性、拥挤度和优秀个股</span></span>
+          </a>
+          <div class="subnav">
+            <a href="#factor-monitor-module">因子排行</a>
+            <a href="factor-monitor/" target="_blank" rel="noopener">独立页面</a>
           </div>
-        </section>
-
-        <section class="detail" id="detail"></section>
+          <span class="nav-group-title">Topic Maps</span>
+          <a class="nav-link" href="nvidia-supply-chain/">
+            <span class="nav-index">05</span>
+            <span><strong>AI 供应链</strong><span>英伟达 NVL72 从分子到超算产业链</span></span>
+          </a>
+          <div class="subnav">
+            <a href="nvidia-supply-chain/">NVL72 产业链全景</a>
+          </div>
+          <a class="nav-link" href="vlcc/">
+            <span class="nav-index">06</span>
+            <span><strong>VLCC 船队</strong><span>船位、航线、运价与利润情景</span></span>
+          </a>
+          <div class="subnav">
+            <a href="vlcc/">全球运行态势</a>
+          </div>
+          <span class="nav-group-title">Thinking Tools</span>
+          <a class="nav-link" href="iching/">
+            <span class="nav-index">07</span>
+            <span><strong>易经系统</strong><span>六十四卦图谱、占卜解释与关系教学</span></span>
+          </a>
+          <div class="subnav">
+            <a href="iching/">占卜工作台</a>
+            <a href="iching/">六十四卦环形图谱</a>
+          </div>
+        </nav>
       </aside>
 
       <section class="main">
@@ -1103,30 +2173,52 @@
               </span>
               <small>当前完整分析界面。下级包含资本周期波浪、行业研究雷达、PB-ROE 子框架与交集研究池。</small>
             </a>
-            <a class="module-card disabled" id="module-liquidity" href="#site-directory">
+            <a class="module-card active" id="module-reports" href="#deep-reports-module">
               <span>
-                <em>02 / NEXT</em>
+                <em>02 / ACTIVE</em>
+                <b>深度报告</b>
+              </span>
+              <small>行业、公司与主题深度研究报告。核心矛盾、关键证据与投资含义。</small>
+            </a>
+            <a class="module-card active" id="module-liquidity" href="#liquidity-module">
+              <span>
+                <em>03 / ACTIVE</em>
                 <b>流动性分析框架</b>
               </span>
-              <small>后续作为一级栏目加入，用资金面、成交、信用与市场结构刻画资产定价环境。</small>
+              <small>并列跟踪美元流动性管道与 A股内部温差，分别观察全球水位和本土资金热量分布。</small>
             </a>
-            <a class="module-card disabled" id="module-cycle-extra" href="#site-directory">
+            <a class="module-card active" id="module-factor-monitor" href="#factor-monitor-module">
               <span>
-                <em>03 / LATER</em>
-                <b>库存与价格周期</b>
+                <em>04 / ACTIVE</em>
+                <b>因子监控</b>
               </span>
-              <small>可用于补充供需验证，把价格、库存、产能利用率和行业资本纪律连接起来。</small>
+              <small>观察代表性因子的近期有效性、拥挤风险，以及每个因子最新一期因子值优秀个股。</small>
             </a>
-            <a class="module-card disabled" id="module-more" href="#site-directory">
+            <a class="module-card active" id="module-nvidia-supply-chain" href="nvidia-supply-chain/">
               <span>
-                <em>04 / LATER</em>
-                <b>组合与市场脉冲</b>
+                <em>05 / TOPIC</em>
+                <b>AI 供应链</b>
               </span>
-              <small>后续可加入组合观察、行业权重、回撤与基本面验证记录。</small>
+              <small>拆解英伟达 NVL72 从分子、电子材料、设备、晶圆、封装、光互联到超算中心的产业链全景。</small>
+            </a>
+            <a class="module-card active" id="module-vlcc" href="vlcc/">
+              <span>
+                <em>06 / ACTIVE</em>
+                <b>VLCC 船队运营</b>
+              </span>
+              <small>跟踪招商轮船 53 艘 VLCC 的区域位置、载重状态、推断航线、霍尔木兹风险、运价信号与 Q3 利润情景。</small>
+            </a>
+            <a class="module-card active" id="module-iching" href="iching/">
+              <span>
+                <em>07 / TOOL</em>
+                <b>易经占卜与教学系统</b>
+              </span>
+              <small>用六十四卦环形图谱、动爻、变卦、错卦、综卦和互卦，把问题转成可解释的状态路径。</small>
             </a>
           </div>
         </section>
 
+        <div class="module-view" id="capital-cycle-content">
         <div class="topbar" id="capital-cycle-module">
           <section class="thesis panel">
             <div>
@@ -1143,15 +2235,43 @@
 
         <section class="legend panel" id="legend"></section>
 
-        <section class="wave-panel panel" id="cycle-wave">
-          <div class="axis-title">
-            <div class="phase"><strong>高回报吸引资本</strong>投资人和管理层 extrapolate 增长</div>
-            <div class="phase"><strong>资本投入竞争</strong>产能扩张，竞争者跟随</div>
-            <div class="phase"><strong>过剩与承压</strong>回报下滑，现金质量分化</div>
-            <div class="phase"><strong>收缩出清</strong>资本撤出，供给纪律形成</div>
-            <div class="phase"><strong>回报右侧</strong>低再投资，现金积累，ROIC 修复</div>
-          </div>
-          <svg id="waveSvg" viewBox="0 0 1200 620" role="img" aria-label="A股行业资本周期波浪图"></svg>
+        <section class="cycle-workspace" aria-label="资本周期工作区">
+          <section class="wave-panel panel" id="cycle-wave">
+            <div class="axis-title">
+              <div class="phase"><strong>高回报吸引资本</strong>投资人和管理层 extrapolate 增长</div>
+              <div class="phase"><strong>资本投入竞争</strong>产能扩张，竞争者跟随</div>
+              <div class="phase"><strong>过剩与承压</strong>回报下滑，现金质量分化</div>
+              <div class="phase"><strong>收缩出清</strong>资本撤出，供给纪律形成</div>
+              <div class="phase"><strong>回报右侧</strong>低再投资，现金积累，ROIC 修复</div>
+            </div>
+            <svg id="waveSvg" viewBox="0 0 1200 620" role="img" aria-label="A股行业资本周期波浪图"></svg>
+          </section>
+
+          <aside class="cycle-inspector panel" aria-label="资本周期筛选与行业详情">
+            <section class="controls">
+              <label>
+                <span class="label">Industry</span>
+                <input class="search" id="search" placeholder="搜索行业，例如 锂、化学制剂、风电">
+              </label>
+              <div>
+                <span class="label">Stage</span>
+                <div class="stage-filter" id="stageFilter"></div>
+              </div>
+              <div>
+                <span class="label">Market</span>
+                <div class="stage-filter" id="marketFilter"></div>
+              </div>
+              <div>
+                <span class="label">Minimum Score</span>
+                <div class="range-row">
+                  <input id="scoreRange" type="range" min="-7" max="4" step="0.1" value="-7">
+                  <span id="scoreValue">全部</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="detail" id="detail"></section>
+          </aside>
         </section>
 
         <section class="radar-panel panel" id="research-radar">
@@ -1231,9 +2351,267 @@
             <div><span class="dot" style="display:inline-block;background:var(--teal)"></span> 最新主面板年份随数据文件更新，目前使用 2025 年报口径。</div>
           </div>
         </section>
+        </div>
+
+        <!-- ══ Deep Reports Module ══ -->
+        <section class="liquidity-module module-view hidden" id="liquidity-module">
+          <section class="liquidity-thesis panel">
+            <div>
+              <h2>流动性分析框架：一边看全球美元管道，一边看A股内部温差。</h2>
+              <p>美元流动性回答“全球水位和融资价格是否支持风险资产”；A股温差分析回答“本土资金热量停在哪个吸引盆、是否扩散或瓦解”。两个框架并列使用，避免把宏观水位和市场内部拥挤度混成一个信号。</p>
+            </div>
+            <div class="numbers">
+              <div class="number"><b>02</b><span>并列子框架</span></div>
+              <div class="number"><b id="liquidityHeroScore">--</b><span>美元流动性分</span></div>
+              <div class="number"><b>+1.88</b><span>A股科技温度</span></div>
+            </div>
+          </section>
+
+          <section class="liquidity-framework-grid" id="liquidity-framework-menu" aria-label="流动性分析子框架">
+            <a class="liquidity-framework-card" href="#liquidity-usd-framework">
+              <em>Framework A</em>
+              <b>美元流动性分析</b>
+              <p>跟踪 Fed 资产端、TGA、ON RRP、准备金、SOFR-IORB 与离岸美元基差，判断全球美元水位和融资堵点。</p>
+              <span>进入美元框架 →</span>
+            </a>
+            <a class="liquidity-framework-card" href="#liquidity-a-share-thermal">
+              <em>Framework B</em>
+              <b>A股温差分析</b>
+              <p>跟踪 ETF 份额、两融、成交活跃度、基金集中度和主题温度，判断热量流向、抱团稳定性与扩散迹象。</p>
+              <span>进入A股框架 →</span>
+            </a>
+          </section>
+
+          <section class="liquidity-subframe" id="liquidity-usd-framework">
+          <section class="liquidity-pulse panel" id="liquidity-pulse">
+            <div class="liquidity-score-card">
+              <div>
+                <span>Dollar Liquidity Pipe Score</span>
+                <b id="liquidityPulseScore">--</b>
+                <span id="liquidityPulseDate">等待数据</span>
+              </div>
+              <div class="liquidity-regime" id="liquidityPulseRegime">等待数据</div>
+            </div>
+            <div class="liquidity-brief">
+              <h3 id="liquidityPulseTitle">等待流动性数据</h3>
+              <p id="liquidityPulseText">模型会把 Fed 资产、TGA、RRP、准备金、美元指数与 SOFR-IORB 合成成一张可跟踪的流动性仪表盘。</p>
+              <ul id="liquidityPulseBullets"></ul>
+            </div>
+          </section>
+
+          <section class="liquidity-map panel" id="liquidity-pipes">
+            <div class="section-head">
+              <h2>美元流动性管道地图</h2>
+              <span>从中央银行资产负债表到全球资产价格</span>
+            </div>
+            <div class="pipe-grid">
+              <article class="pipe-card"><b>1. Fed 资产端：RMP / QE / 回购</b><small id="pipeFedValue">等待数据</small><div class="pipe-meter"><span id="pipeFedMeter" style="width:62%"></span></div><p>2026 年重点是 RMP：Fed 买入短期国债以匹配准备金趋势需求，性质更像管道维护，不等同于主动 QE。</p></article>
+              <article class="pipe-card"><b>2. TGA：财政部现金账户</b><small id="pipeTgaValue">等待数据</small><div class="pipe-meter"><span id="pipeTgaMeter" style="width:48%"></span></div><p>TGA 上升像抽水，财政部把市场现金吸回 Fed；TGA 下降像放水，财政支出重新进入银行体系。</p></article>
+              <article class="pipe-card"><b>3. ON RRP：缓冲垫耗尽</b><small id="pipeRrpValue">等待数据</small><div class="pipe-meter"><span id="pipeRrpMeter" style="width:35%"></span></div><p>RRP 曾在 2022-2023 年承担蓄水池功能；2026 年余额接近零后，更多是历史缓冲参考，不再是主要保护垫。</p></article>
+              <article class="pipe-card"><b>4. 银行准备金：风险资产底层余额</b><small id="pipeReserveValue">等待数据</small><div class="pipe-meter"><span id="pipeReserveMeter" style="width:56%"></span></div><p>准备金充裕时融资价格稳定；接近稀缺区间后，SOFR、回购利率和信用利差会更敏感。</p></article>
+              <article class="pipe-card"><b>5. Eurodollar：FX Swap / 基差</b><small id="pipeDollarValue">等待数据</small><div class="pipe-meter"><span id="pipeDollarMeter" style="width:44%"></span></div><p>离岸美元不是只看 DXY，而是看非美机构通过 FX swap 合成美元时，要为偏离 CIP 支付多少额外成本。</p></article>
+              <article class="pipe-card"><b>6. SRF / SOFR-IORB：常规压力阀</b><small id="pipeSofrValue">等待数据</small><div class="pipe-meter"><span id="pipeSofrMeter" style="width:52%"></span></div><p>SRF 使用不再只意味着危机；SOFR-IORB 上穿和 SRF 频繁使用，说明准备金进入“够用但边际变贵”。</p></article>
+            </div>
+            <p class="liquidity-footnote">当前版本接入 FRED：Fed 资产、TGA、ON RRP、准备金、SOFR、IORB 与广义美元指数。模型权重已从“水量模型”改为“水位 + 融资价格 + 缓冲垫风险”：准备金与净流动性为核心，RRP 作为枯竭风险开关，SOFR-IORB 权重上调。Eurodollar 基差目前只展示，不参与总分。</p>
+          </section>
+
+          <section class="liquidity-dashboard" id="liquidity-dashboard">
+            <section class="liquidity-stack panel">
+              <div class="section-head"><h2>监测仪表盘</h2><span>FRED 七线合成后的方向性评分</span></div>
+              <div id="liquidityGaugeRows"></div>
+            </section>
+            <section class="liquidity-state panel">
+              <div class="section-head"><h2>五种流动性状态</h2><span>用于资产配置与风格判断</span></div>
+              <div class="state-list">
+                <div class="state-item"><strong>宽松扩散</strong><span>Fed 扩表或财政放款，TGA/RRP 下降，准备金改善，成长和高久期资产更容易扩估值。</span></div>
+                <div class="state-item"><strong>RMP 维稳 / 温和宽松</strong><span>QT 后的准备金管理购买提供支撑，但并非主动 QE；要继续观察 TGA、准备金和回购利率是否同步改善。</span></div>
+                <div class="state-item"><strong>中性震荡 / 管道淤堵</strong><span>总量不差，但抵押品、交易商资产负债表或离岸美元价格紧，风险偏好容易反复。</span></div>
+                <div class="state-item"><strong>TGA 抽水 / RRP 枯竭</strong><span>RRP 缓冲耗尽后，TGA 回补和财政发债更容易直接冲击准备金，权益估值折现率上行。</span></div>
+                <div class="state-item"><strong>压力显性化 / SRF 常态化</strong><span>融资堵点已经进入价格或政策工具，SRF 使用本身不等于危机，但频繁高额使用说明边际准备金价格变贵。</span></div>
+              </div>
+            </section>
+          </section>
+
+          <section class="liquidity-driver-panel panel" id="liquidity-drivers">
+            <div class="section-head"><h2>驱动拆解</h2><span>最新 4 周与 13 周边际变化</span></div>
+            <div class="liquidity-driver-grid" id="liquidityDriverGrid"></div>
+          </section>
+
+          <section class="liquidity-method panel" id="liquidity-eurodollar">
+            <div class="section-head"><h2>Eurodollar 与交叉货币基差</h2><span>海外美元派生的定义与模型位置</span></div>
+            <div class="basis-readout" id="basisReadout">
+              <article class="basis-readout-card">
+                <strong>CME XEURBI EUR/USD Basis</strong>
+                <b id="basisEurUsd">未接入</b>
+                <span id="basisEurUsdNote">直接指标：CME XEURBI，需 CME OAuth 授权</span>
+              </article>
+              <article class="basis-readout-card">
+                <strong>3M JPY/USD Basis</strong>
+                <b id="basisJpyUsd">未接入</b>
+                <span id="basisJpyUsdNote">未找到稳定免授权公开日频源</span>
+              </article>
+              <article class="basis-readout-card">
+                <strong>当前代理：DXY</strong>
+                <b id="basisProxyDollar">--</b>
+                <span id="basisProxyDollarNote">用来观察美元价格压力，不等同于基差</span>
+              </article>
+              <article class="basis-readout-card">
+                <strong>当前代理：SOFR-IORB</strong>
+                <b id="basisProxySofr">--</b>
+                <span id="basisProxySofrNote">用来观察境内抵押融资边际价格</span>
+              </article>
+            </div>
+            <div class="basis-grid">
+              <article class="basis-card">
+                <h3>交叉货币基差是什么</h3>
+                <p>在无摩擦世界里，直接借美元与“借欧元/日元 + FX swap 换成美元”的成本应该一致，这就是 covered interest parity（CIP）。现实中这个等式经常失效，失效的残差就是 cross-currency basis。</p>
+                <code>合成美元成本 = 本币利率 + FX forward 隐含成本 + cross-currency basis</code>
+                <p>当 EUR/USD 或 JPY/USD 基差更负时，通常意味着非美机构通过 swap 借美元更贵，美元短缺或交易商资产负债表更稀缺。</p>
+              </article>
+              <article class="basis-card">
+                <h3>它在模型里体现在哪</h3>
+                <p>当前仪表盘尚未直接接入可用的基差序列，所以“离岸美元”只以广义美元指数和 SOFR-IORB 作代理：DXY 表示美元价格压力，SOFR-IORB 表示境内抵押融资堵点。它们不能替代基差，只能提示压力可能存在；真正的基差读数当前只展示授权状态，暂不参与模型总分。</p>
+                <code>当前代理：Offshore USD Proxy = DXY momentum + SOFR-IORB + RRP 枯竭</code>
+                <p>升级后应使用 3M EUR/USD basis、3M JPY/USD basis、FX swap implied USD rate 和 SRF 使用量，构成真正的海外美元压力分。</p>
+              </article>
+              <article class="basis-card">
+                <h3>海外美元派生怎么定义</h3>
+                <p>海外美元派生不是 Fed 直接投放准备金，而是美国境外银行、企业、基金和央行通过美元存款、美元贷款、商业票据、FX swap、cross-currency swap 创造出的美元债权债务链。</p>
+                <code>Eurodollar 派生 = 非美资产负债表上的美元负债扩张 + 衍生品合成美元融资</code>
+                <p>这套美元没有完整对应的 Fed 准备金支持，平时依靠银行资产负债表和 swap 市场滚动；压力期则体现在基差走阔、美元融资期限缩短、央行互换线或 FIMA/SRF 需求上升。</p>
+              </article>
+              <article class="basis-card">
+                <h3>读数规则</h3>
+                <p>如果 DXY 上行但基差不走阔，更多是汇率或利差驱动；如果 DXY 平稳但基差突然更负，说明真正的离岸融资管道在变贵；如果基差、SOFR-IORB、SRF 同时恶化，则说明境内外美元压力共振。</p>
+                <code>真正的红灯：basis 更负 + SOFR-IORB 上穿 + SRF 频繁使用 + 信用利差走阔</code>
+                <p>所以 Eurodollar 在模型中的角色，是“海外美元影子信用的价格阀”，不是 Fed 净流动性公式里的一个简单水桶。</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="liquidity-chart-panel panel" id="liquidity-history">
+            <div class="section-head">
+              <h2>流动性模型历史曲线</h2>
+              <span id="liquidityUpdated">等待数据</span>
+            </div>
+            <svg class="liquidity-chart" id="liquidityChart" viewBox="0 0 900 320" role="img" aria-label="美元流动性模型历史曲线"></svg>
+            <div class="liquidity-latest" id="liquidityLatest"></div>
+            <div class="liquidity-source-row">
+              <span>模型口径：0-100，越高代表美元流动性越支持风险资产。</span>
+              <span>数据源：FRED public CSV；单位统一为十亿美元。</span>
+            </div>
+          </section>
+
+          <section class="panel" id="liquidity-playbook">
+            <div class="section-head"><h2>研究动作</h2><span>把流动性状态转成投研问题</span></div>
+            <div class="liquidity-playbook">
+              <article class="playbook-card"><h3>看 RMP 与 TGA</h3><p>QT 结束后，总闸门不再只看缩表，要看 RMP 购买能否抵消 TGA 回补、发债和准备金趋势需求。</p></article>
+              <article class="playbook-card"><h3>看 SRF 与堵点价格</h3><p>观察 SOFR-IORB、SRF 使用、回购利率和信用利差，判断压力是在银行、交易商还是抵押品市场。</p></article>
+              <article class="playbook-card"><h3>看资产映射</h3><p>宽松扩散偏利好高久期成长；抽水收缩偏利好现金流确定、低杠杆、低估值资产。</p></article>
+              <article class="playbook-card"><h3>看离岸美元与关税</h3><p>贸易摩擦会让 FX swap、美元基差和非美银行融资成本独立收紧，这条线需要和货币政策管道分开观察。</p></article>
+            </div>
+          </section>
+          </section>
+
+          <section class="liquidity-study-panel panel" id="liquidity-a-share-thermal">
+            <div class="section-head">
+              <h2>A股温差分析</h2>
+              <span>ETF、两融、成交活跃度、基金集中度与红利价值吸引盆</span>
+            </div>
+            <div class="a-share-thermal-grid">
+              <article class="a-share-pulse-card">
+                <h3>不是看全市场水位，而是看热量停在哪里。</h3>
+                <p>A股内部流动性更像温度场：ETF 和两融提供边际水量，成交活跃度决定传导速度，基金集中度决定抱团惯性。这个框架把结构行情拆成科技成长、消费/茅系、小盘扩散、新能源与红利价值五类吸引盆。</p>
+                <div class="a-share-score-strip">
+                  <div><b>+1.88</b><span>科技温度，高于自身历史均值</span></div>
+                  <div><b>-1.78</b><span>消费温度，仍是冷端</span></div>
+                  <div><b>2.89万亿</b><span>沪深融资余额，杠杆回暖但未极端</span></div>
+                  <div><b>-0.19</b><span>红利价值温度，中性偏冷</span></div>
+                </div>
+                <p>当前状态是科技吸热、消费失温，红利价值更像备用蓄水池。若科技温度高位但 ETF 主力流出继续扩大，要警惕“热而不稳”；若小盘和红利同时升温，才更接近热量外溢。</p>
+                <a href="reports/liquidity/a-share-capital-enhanced-thermal.html" target="_blank" rel="noopener">打开全文归档 →</a>
+              </article>
+              <figure class="a-share-thermal-figure">
+                <img src="assets/liquidity/a-share-capital-enhanced-thermal.png" alt="A股资金增强冷热分布图">
+              </figure>
+            </div>
+            <div class="a-share-driver-grid">
+              <article class="a-share-driver hot"><strong>ETF 交易热度</strong><b>科技 69.7%</b><span>主题 ETF 成交额里科技成长占比最高，但主力净流入约 -95.9 亿，说明交易热度强于边际承接。</span></article>
+              <article class="a-share-driver hot"><strong>ETF 份额底盘</strong><b>科技 50.5%</b><span>科技成长占主题 ETF 份额约一半，是当前最强资金容器；红利价值约 23.0%，仍有防御资金底盘。</span></article>
+              <article class="a-share-driver neutral"><strong>融资余额温度</strong><b>+0.90</b><span>两融回暖但不极端。风险信号不是单独升温，而是融资温度、成交拥挤度和单一主题 ETF 同时冲高。</span></article>
+              <article class="a-share-driver cool"><strong>基金集中度</strong><b>前十约 69%</b><span>样本基金前十重仓集中度仍高，说明抱团惯性还在；主线转弱时更可能先内部切换，而不是平滑扩散。</span></article>
+            </div>
+            <div class="a-share-playbook">
+              <article class="a-share-method"><h3>1. 判断吸引盆稳定性</h3><p>红区只是历史常见状态，不等于安全。真正稳定要同时看温度、拥挤度、ETF 流入和融资温度是否共振。</p><code>稳定 = 温度高但不过热 + ETF 承接稳定 + 杠杆不极端</code></article>
+              <article class="a-share-method"><h3>2. 判断热量外溢</h3><p>小盘扩散升温代表风险偏好扩散，红利价值升温代表防御资金接力。两者同时升温，才说明市场不再只围绕科技单一吸引盆。</p><code>外溢 = 科技降温不崩 + 小盘/红利成交温度上行</code></article>
+              <article class="a-share-method"><h3>3. 判断抱团瓦解</h3><p>若科技高温、ETF 成交占比高、主力净流出扩大，同时基金集中度仍高，说明不是扩散，而可能是拥挤交易的边际松动。</p><code>瓦解风险 = 高温 + 高占比 + 净流出 + 集中度高</code></article>
+            </div>
+          </section>
+        </section>
+
+        <section class="reports-module module-view hidden" id="deep-reports-module">
+          <section class="reports-thesis panel">
+            <div>
+              <h2>深度报告：公司生命线、公司卡片与主题研究</h2>
+              <p>深度报告回答一个核心问题：一家公司如何穿越周期、业务结构如何变化、成长线索是否仍在。百年专题看长期生命脉络，公司卡片负责快速复盘业务、管理层、竞争和财务变化。</p>
+            </div>
+            <div class="numbers">
+              <div class="number"><b id="reportTotal">0</b><span>报告总数</span></div>
+              <div class="number"><b id="reportRecent">0</b><span>近 30 天更新</span></div>
+              <div class="number"><b id="reportIndustries">0</b><span>覆盖行业</span></div>
+            </div>
+          </section>
+
+          <section class="reports-filters panel">
+            <div>
+              <span class="label">Report Type</span>
+              <div class="reports-filter-row" id="reportTypeFilter"></div>
+            </div>
+            <div>
+              <span class="label">Search</span>
+              <input class="reports-search" id="reportSearch" placeholder="搜索报告标题、标签、行业...">
+            </div>
+            <div>
+              <span class="label">Confidence</span>
+              <div class="reports-filter-row" id="reportConfFilter"></div>
+            </div>
+          </section>
+
+          <section class="recent-reports panel">
+            <div class="section-head">
+              <h2>最近更新</h2>
+              <span>最新发布与复核的研究对象</span>
+            </div>
+            <div class="recent-list" id="reportRecentList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="report-grid" id="reportGrid"></div>
+          </section>
+        </section>
+
+        <section class="factor-monitor-module module-view hidden" id="factor-monitor-module">
+          <section class="factor-monitor-thesis panel">
+            <div>
+              <h2>因子监控：用近期 RankIC、拥挤度和优秀个股样本，给常用因子做体检。</h2>
+              <p>当前板块只保留代表性因子和个股展示，不接入行业映射。月频和周频数据来自已有静态 JSON，适合快速观察因子近期是否仍有效、是否拥挤，以及高分组合里具体是哪些股票。</p>
+            </div>
+            <div class="numbers">
+              <div class="number"><b>27</b><span>代表因子</span></div>
+              <div class="number"><b>20</b><span>单因子优秀个股</span></div>
+              <div class="number"><b>月 / 周</b><span>监控频率</span></div>
+            </div>
+          </section>
+
+          <section class="factor-monitor-frame-wrap panel">
+            <iframe class="factor-monitor-frame" src="factor-monitor/index.html" title="因子监控面板"></iframe>
+          </section>
+        </section>
+
       </section>
     </div>
   </main>
+  <div class="copy-toast" id="copyToast">链接已复制</div>
 
   <script>
     const data = window.CAPITAL_CYCLE_DATA;
@@ -2033,6 +3411,757 @@
     setupFilters();
     drawMarketChart();
     render();
+
+    /* ══ Module Switching ══ */
+    const capitalCycleContent = document.getElementById("capital-cycle-content");
+    const deepReportsContent = document.getElementById("deep-reports-module");
+    const liquidityContent = document.getElementById("liquidity-module");
+    const factorMonitorContent = document.getElementById("factor-monitor-module");
+    const moduleCards = document.querySelectorAll(".module-card");
+
+    function switchModule(moduleId, options = {}) {
+      const { scroll = true } = options;
+      // Toggle visibility
+      capitalCycleContent.classList.toggle("hidden", moduleId !== "capital-cycle");
+      deepReportsContent.classList.toggle("hidden", moduleId !== "deep-reports");
+      liquidityContent?.classList.toggle("hidden", moduleId !== "liquidity");
+      factorMonitorContent?.classList.toggle("hidden", moduleId !== "factor-monitor");
+
+      // Update module card active states
+      moduleCards.forEach(card => {
+        if (card.id === "capital-cycle" && moduleId === "capital-cycle") {
+          card.classList.add("active");
+        } else if (card.id === "module-reports" && moduleId === "deep-reports") {
+          card.classList.add("active");
+        } else if (card.id === "module-liquidity" && moduleId === "liquidity") {
+          card.classList.add("active");
+        } else if (card.id === "module-factor-monitor" && moduleId === "factor-monitor") {
+          card.classList.add("active");
+        } else if (card.id === "capital-cycle" || card.id === "module-reports" || card.id === "module-liquidity" || card.id === "module-factor-monitor") {
+          card.classList.remove("active");
+        }
+      });
+
+      if (scroll) {
+        document.getElementById("site-directory").scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    // Module card click handlers
+    document.getElementById("capital-cycle")?.addEventListener("click", e => { e.preventDefault(); switchModule("capital-cycle"); });
+    document.getElementById("module-reports")?.addEventListener("click", e => { e.preventDefault(); switchModule("deep-reports"); });
+    document.getElementById("module-liquidity")?.addEventListener("click", e => { e.preventDefault(); switchModule("liquidity"); });
+    document.getElementById("module-factor-monitor")?.addEventListener("click", e => { e.preventDefault(); switchModule("factor-monitor"); });
+
+    // Header pill click handlers
+    document.querySelectorAll(".header-pill").forEach(pill => {
+      pill.addEventListener("click", e => {
+        const href = pill.getAttribute("href");
+        if (href === "#capital-cycle-module") { e.preventDefault(); switchModule("capital-cycle"); }
+        else if (href === "#deep-reports-module") { e.preventDefault(); switchModule("deep-reports"); }
+        else if (href === "#liquidity-module") { e.preventDefault(); switchModule("liquidity"); }
+        else if (href === "#factor-monitor-module") { e.preventDefault(); switchModule("factor-monitor"); }
+      });
+    });
+
+    // Sidebar nav click handlers for module switching
+    sideNav?.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", e => {
+        const href = link.getAttribute("href");
+        if (href === "#capital-cycle-module" || href === "#cycle-wave" || href === "#research-radar" || href === "#pb-roe-map" || href === "#research-pool-section") {
+          switchModule("capital-cycle");
+        } else if (href === "#deep-reports-module") {
+          switchModule("deep-reports");
+        } else if (href === "#liquidity-module" || href === "#liquidity-usd-framework" || href === "#liquidity-pipes" || href === "#liquidity-dashboard" || href === "#liquidity-drivers" || href === "#liquidity-a-share-thermal" || href === "#liquidity-eurodollar" || href === "#liquidity-history" || href === "#liquidity-playbook") {
+          switchModule("liquidity");
+        } else if (href === "#factor-monitor-module") {
+          switchModule("factor-monitor");
+        }
+      });
+    });
+
+    function openModuleFromHash() {
+      const hash = window.location.hash;
+      if (hash === "#liquidity-module" || hash === "#liquidity-usd-framework" || hash === "#liquidity-pipes" || hash === "#liquidity-dashboard" || hash === "#liquidity-drivers" || hash === "#liquidity-a-share-thermal" || hash === "#liquidity-eurodollar" || hash === "#liquidity-history" || hash === "#liquidity-playbook") {
+        switchModule("liquidity", { scroll: false });
+        return true;
+      }
+      if (hash === "#deep-reports-module") {
+        switchModule("deep-reports", { scroll: false });
+        return true;
+      }
+      if (hash === "#factor-monitor-module") {
+        switchModule("factor-monitor", { scroll: false });
+        return true;
+      }
+      if (hash === "#capital-cycle-module" || hash === "#cycle-wave" || hash === "#research-radar" || hash === "#pb-roe-map" || hash === "#research-pool-section") {
+        switchModule("capital-cycle", { scroll: false });
+        return true;
+      }
+      return false;
+    }
+
+    openModuleFromHash();
+
+    const liquidityData = window.LIQUIDITY_PIPE_DATA || { history: [] };
+    const liquidityChart = document.getElementById("liquidityChart");
+    const liquidityLatest = document.getElementById("liquidityLatest");
+    const liquidityUpdated = document.getElementById("liquidityUpdated");
+    const liquidityGaugeRows = document.getElementById("liquidityGaugeRows");
+    const liquidityDriverGrid = document.getElementById("liquidityDriverGrid");
+    const liquidityHeroScore = document.getElementById("liquidityHeroScore");
+    const liquidityHeroDelta = document.getElementById("liquidityHeroDelta");
+    const liquidityHeroState = document.getElementById("liquidityHeroState");
+    const liquidityPulseScore = document.getElementById("liquidityPulseScore");
+    const liquidityPulseDate = document.getElementById("liquidityPulseDate");
+    const liquidityPulseRegime = document.getElementById("liquidityPulseRegime");
+    const liquidityPulseTitle = document.getElementById("liquidityPulseTitle");
+    const liquidityPulseText = document.getElementById("liquidityPulseText");
+    const liquidityPulseBullets = document.getElementById("liquidityPulseBullets");
+    const basisProxyDollar = document.getElementById("basisProxyDollar");
+    const basisProxyDollarNote = document.getElementById("basisProxyDollarNote");
+    const basisProxySofr = document.getElementById("basisProxySofr");
+    const basisProxySofrNote = document.getElementById("basisProxySofrNote");
+    const basisEurUsd = document.getElementById("basisEurUsd");
+    const basisEurUsdNote = document.getElementById("basisEurUsdNote");
+    const basisJpyUsd = document.getElementById("basisJpyUsd");
+    const basisJpyUsdNote = document.getElementById("basisJpyUsdNote");
+
+    function liquidityPath(rows, x, y, key) {
+      return rows.map((row, index) => `${index ? "L" : "M"} ${x(index).toFixed(1)} ${y(row[key]).toFixed(1)}`).join(" ");
+    }
+
+    function pctScale(value, min, max) {
+      if (!Number.isFinite(value)) return 2;
+      return Math.max(2, Math.min(100, ((value - min) / Math.max(.0001, max - min)) * 100));
+    }
+
+    function signed(value, digits = 1, suffix = "") {
+      if (!Number.isFinite(value)) return "n/a";
+      const sign = value > 0 ? "+" : "";
+      return `${sign}${value.toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: digits })}${suffix}`;
+    }
+
+    function findPreviousRow(rows, latest, weeks) {
+      const index = rows.findIndex(row => row.date === latest.date);
+      return rows[Math.max(0, (index >= 0 ? index : rows.length - 1) - weeks)] || rows[0];
+    }
+
+    function driverTone(kind, latest, delta13) {
+      if (!Number.isFinite(delta13)) return "neutral";
+      if (kind === "tga" || kind === "dollar" || kind === "sofr") {
+        if (delta13 > 0) return "tightening";
+        if (delta13 < 0) return "supportive";
+        return "neutral";
+      }
+      if (kind === "rrp") {
+        if (latest.rrp < 50) return "tightening";
+        if (delta13 > 0) return "supportive";
+        if (delta13 < 0) return "neutral";
+        return "neutral";
+      }
+      if (delta13 > 0) return "supportive";
+      if (delta13 < 0) return "tightening";
+      return "neutral";
+    }
+
+    function liquidityNarrative(latest, prev4, prev13) {
+      const scoreDelta13 = latest.score - prev13.score;
+      const netDelta13 = latest.netLiquidity - prev13.netLiquidity;
+      const tgaDelta13 = latest.tga - prev13.tga;
+      const rrpLevel = latest.rrp;
+      const title = `${latest.state}：${scoreDelta13 >= 0 ? "总分小幅改善" : "总分走弱"}，但要看管道结构。`;
+      const text = rrpLevel < 50
+        ? "RRP 缓冲垫已经接近耗尽，后续 TGA 回补、财政发债对准备金的影响会更直接。QT 结束后，关键不是“还在不在缩表”，而是 RMP 能否足够平滑准备金需求。"
+        : "RRP 仍有缓冲，财政抽水未必马上冲击银行准备金。QT 结束后，关键是观察 RMP 与 TGA 变化谁更强。";
+      const bullets = [
+        `13 周：模型总分 ${signed(scoreDelta13, 0)}，净流动性 ${signed(netDelta13, 1, " bn")}，TGA ${signed(tgaDelta13, 1, " bn")}。`,
+        `4 周：净流动性 ${signed(latest.netLiquidity - prev4.netLiquidity, 1, " bn")}，准备金 ${signed(latest.reserves - prev4.reserves, 1, " bn")}。`,
+        `堵点价格：SOFR-IORB ${latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`}，美元指数 ${latest.dollarIndex?.toFixed(2) || "n/a"}；SRF 与 cross-currency basis 待接入。`
+      ];
+      return { title, text, bullets };
+    }
+
+    function renderLiquidityData() {
+      const rows = (liquidityData.history || []).filter(row => row.date >= "2015-01-01");
+      const latest = liquidityData.latest || rows.at(-1);
+      if (!rows.length || !latest || !liquidityChart) return;
+      const prev4 = findPreviousRow(rows, latest, 4);
+      const prev13 = findPreviousRow(rows, latest, 13);
+      const scoreDelta13 = latest.score - prev13.score;
+
+      if (liquidityHeroScore) liquidityHeroScore.textContent = latest.score;
+      if (liquidityHeroDelta) liquidityHeroDelta.textContent = signed(scoreDelta13, 0);
+      if (liquidityHeroState) liquidityHeroState.textContent = latest.state;
+      if (liquidityPulseScore) liquidityPulseScore.textContent = latest.score;
+      if (liquidityPulseDate) liquidityPulseDate.textContent = `更新至 ${latest.date}`;
+      if (liquidityPulseRegime) liquidityPulseRegime.textContent = latest.state;
+      const narrative = liquidityNarrative(latest, prev4, prev13);
+      if (liquidityPulseTitle) liquidityPulseTitle.textContent = narrative.title;
+      if (liquidityPulseText) liquidityPulseText.textContent = narrative.text;
+      if (liquidityPulseBullets) liquidityPulseBullets.innerHTML = narrative.bullets.map(item => `<li>${item}</li>`).join("");
+      if (basisProxyDollar) basisProxyDollar.textContent = latest.dollarIndex?.toFixed(2) || "n/a";
+      if (basisProxyDollarNote) basisProxyDollarNote.textContent = `13w ${signed(latest.dollarIndex - prev13.dollarIndex, 2)}；只是美元价格压力，不是 cross-currency basis。`;
+      if (basisProxySofr) basisProxySofr.textContent = latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`;
+      if (basisProxySofrNote) basisProxySofrNote.textContent = `13w ${signed(latest.sofrIorb - prev13.sofrIorb, 3, "%")}；反映境内回购边际压力。`;
+      const eurUsdSource = liquidityData.basisSources?.eurUsd;
+      if (basisEurUsd) basisEurUsd.textContent = Number.isFinite(latest.xeurbiBasis) ? `${latest.xeurbiBasis.toFixed(2)} bp` : "需授权";
+      if (basisEurUsdNote) {
+        basisEurUsdNote.textContent = Number.isFinite(latest.xeurbiBasis)
+          ? `CME XEURBI，${latest.xeurbiDate || latest.date}，bp on ESTR leg。`
+          : `${eurUsdSource?.productCode || "XEURBI"}：${eurUsdSource?.status || "not_configured"}；${eurUsdSource?.note || "需接入 CME Cross Currency API。"}`;
+      }
+      const jpyUsdSource = liquidityData.basisSources?.jpyUsd;
+      if (basisJpyUsd) basisJpyUsd.textContent = "未接入";
+      if (basisJpyUsdNote) basisJpyUsdNote.textContent = jpyUsdSource?.note || "未找到稳定免授权公开日频源。";
+
+      const gaugeItems = [
+        { label: "模型总分", value: latest.score, text: latest.state },
+        { label: "压力分数", value: latest.pressure, text: latest.pressure >= 60 ? "偏紧" : "可控" },
+        { label: "TGA 抽水", value: Math.min(100, Math.round(latest.tga / 15)), text: `${latest.tga.toLocaleString()} bn` },
+        { label: "RRP 枯竭风险", value: Math.max(2, Math.min(100, Math.round((50 - latest.rrp) / 50 * 100))), text: `${latest.rrp.toLocaleString()} bn` },
+        { label: "SOFR-IORB", value: Math.min(100, Math.max(0, Math.round((latest.sofrIorb || 0) * 1000 + 50))), text: latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%` }
+      ];
+
+      if (liquidityGaugeRows) {
+        liquidityGaugeRows.innerHTML = gaugeItems.map(item => `<div class="liquidity-row">
+          <strong>${item.label}</strong>
+          <div class="liquidity-track"><div class="liquidity-fill" style="width:${Math.max(2, Math.min(100, item.value))}%"></div></div>
+          <span>${item.text}</span>
+        </div>`).join("");
+      }
+
+      if (liquidityUpdated) {
+        liquidityUpdated.textContent = `更新至 ${latest.date} · 生成日 ${liquidityData.updatedAt || ""}`;
+      }
+
+      if (liquidityLatest) {
+        liquidityLatest.innerHTML = [
+          ["模型总分", `${latest.score}`, latest.state],
+          ["净流动性", `${latest.netLiquidity.toLocaleString()} bn`, "Fed资产 - TGA - RRP"],
+          ["银行准备金", `${latest.reserves.toLocaleString()} bn`, "银行体系底层余额"],
+          ["TGA", `${latest.tga.toLocaleString()} bn`, "财政部现金账户"],
+          ["RRP", `${latest.rrp.toLocaleString()} bn`, "缓冲垫枯竭风险"]
+        ].map(item => `<div class="liquidity-metric"><b>${item[1]}</b><span>${item[0]}</span><span>${item[2]}</span></div>`).join("");
+      }
+
+      const pipeUpdates = [
+        ["pipeFedValue", "pipeFedMeter", latest.fedAssets, latest.fedAssets - prev13.fedAssets, "Fed Assets", " bn", pctScale(latest.fedAssets, 5500, 9000)],
+        ["pipeTgaValue", "pipeTgaMeter", latest.tga, latest.tga - prev13.tga, "TGA", " bn", pctScale(latest.tga, 0, 1500)],
+        ["pipeRrpValue", "pipeRrpMeter", latest.rrp, latest.rrp - prev13.rrp, "RRP", " bn", pctScale(latest.rrp, 0, 2500)],
+        ["pipeReserveValue", "pipeReserveMeter", latest.reserves, latest.reserves - prev13.reserves, "Reserves", " bn", pctScale(latest.reserves, 2000, 4200)],
+        ["pipeDollarValue", "pipeDollarMeter", latest.dollarIndex, latest.dollarIndex - prev13.dollarIndex, "Dollar", "", pctScale(latest.dollarIndex, 105, 125)],
+        ["pipeSofrValue", "pipeSofrMeter", latest.sofrIorb, latest.sofrIorb - prev13.sofrIorb, "SOFR-IORB", "%", pctScale((latest.sofrIorb || 0) * 100, -10, 20)]
+      ];
+      pipeUpdates.forEach(([valueId, meterId, value, delta, label, suffix, width]) => {
+        const valueEl = document.getElementById(valueId);
+        const meterEl = document.getElementById(meterId);
+        if (valueEl) {
+          const digits = suffix === "%" ? 3 : suffix ? 1 : 2;
+          valueEl.textContent = `${label}: ${Number.isFinite(value) ? value.toLocaleString(undefined, { maximumFractionDigits: digits }) : "n/a"}${suffix} · 13w ${signed(delta, digits, suffix)}`;
+        }
+        if (meterEl) meterEl.style.width = `${width}%`;
+      });
+
+      if (liquidityDriverGrid) {
+        const drivers = [
+          { kind: "net", name: "净流动性", value: `${latest.netLiquidity.toLocaleString()} bn`, d4: latest.netLiquidity - prev4.netLiquidity, d13: latest.netLiquidity - prev13.netLiquidity, note: "Fed资产 - TGA - RRP，代表总闸门方向。" },
+          { kind: "fed", name: "Fed 资产端", value: `${latest.fedAssets.toLocaleString()} bn`, d4: latest.fedAssets - prev4.fedAssets, d13: latest.fedAssets - prev13.fedAssets, note: "RMP/回购偏支撑，资产端下行才是抽水。" },
+          { kind: "tga", name: "TGA 财政账户", value: `${latest.tga.toLocaleString()} bn`, d4: latest.tga - prev4.tga, d13: latest.tga - prev13.tga, note: "上升吸走银行体系现金，下降释放财政支出。" },
+          { kind: "rrp", name: "ON RRP 枯竭风险", value: `${latest.rrp.toLocaleString()} bn`, d4: latest.rrp - prev4.rrp, d13: latest.rrp - prev13.rrp, note: "2026 年接近零，按风险开关处理，而非普通加分项。" },
+          { kind: "reserve", name: "银行准备金", value: `${latest.reserves.toLocaleString()} bn`, d4: latest.reserves - prev4.reserves, d13: latest.reserves - prev13.reserves, note: "准备金是融资稳定性的底层余额。" },
+          { kind: "dollar", name: "离岸美元代理", value: latest.dollarIndex?.toFixed(2) || "n/a", d4: latest.dollarIndex - prev4.dollarIndex, d13: latest.dollarIndex - prev13.dollarIndex, note: "暂用 DXY 代理；真正指标是 EUR/USD、JPY/USD cross-currency basis。" },
+          { kind: "sofr", name: "SOFR-IORB", value: latest.sofrIorb === null ? "n/a" : `${latest.sofrIorb.toFixed(3)}%`, d4: latest.sofrIorb - prev4.sofrIorb, d13: latest.sofrIorb - prev13.sofrIorb, note: "SRF 常态化后，这仍是边际准备金价格。" }
+        ];
+        liquidityDriverGrid.innerHTML = drivers.map(driver => {
+          const tone = driverTone(driver.kind, latest, driver.d13);
+          const unit = driver.kind === "sofr" ? "%" : (driver.kind === "dollar" ? "" : " bn");
+          const digits = driver.kind === "sofr" ? 3 : (driver.kind === "dollar" ? 2 : 1);
+          return `<article class="liquidity-driver ${tone}">
+            <strong>${driver.name}</strong>
+            <b>${driver.value}</b>
+            <span>4w ${signed(driver.d4, digits, unit)} · 13w ${signed(driver.d13, digits, unit)}</span>
+            <span>${driver.note}</span>
+          </article>`;
+        }).join("");
+      }
+
+      const width = 900;
+      const height = 320;
+      const pad = { left: 56, right: 34, top: 22, bottom: 38 };
+      const chartRows = rows.filter((_, index) => index % 2 === 0 || index === rows.length - 1);
+      const x = index => pad.left + index * ((width - pad.left - pad.right) / Math.max(1, chartRows.length - 1));
+      const yScore = value => pad.top + (100 - value) * ((height - pad.top - pad.bottom) / 100);
+      const netValues = chartRows.map(row => row.netLiquidity);
+      const netMin = Math.min(...netValues);
+      const netMax = Math.max(...netValues);
+      const yNet = value => pad.top + (netMax - value) * ((height - pad.top - pad.bottom) / Math.max(1, netMax - netMin));
+      const netArea = `${liquidityPath(chartRows, x, yNet, "netLiquidity")} L ${x(chartRows.length - 1).toFixed(1)} ${height - pad.bottom} L ${pad.left} ${height - pad.bottom} Z`;
+      const seenYears = new Set();
+      const yearTicks = chartRows.filter(row => {
+        const year = row.date.slice(0, 4);
+        if (seenYears.has(year)) return false;
+        seenYears.add(year);
+        return true;
+      });
+      const tickHtml = [25, 50, 75].map(v => `<line class="grid-line" x1="${pad.left}" y1="${yScore(v)}" x2="${width - pad.right}" y2="${yScore(v)}"></line><text x="16" y="${yScore(v) + 4}">${v}</text>`).join("");
+      const yearHtml = yearTicks.map(row => {
+        const index = chartRows.findIndex(r => r.date === row.date);
+        return `<text x="${x(index)}" y="${height - 14}" text-anchor="middle">${row.date.slice(0, 4)}</text>`;
+      }).join("");
+      const tooltipX = width - 224;
+      const tooltipY = 78;
+
+      liquidityChart.innerHTML = `
+        <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+        ${tickHtml}
+        <path class="net-area" d="${netArea}"></path>
+        <path class="score-line" d="${liquidityPath(chartRows, x, yScore, "score")}"></path>
+        <line class="axis" x1="${pad.left}" y1="${height - pad.bottom}" x2="${width - pad.right}" y2="${height - pad.bottom}"></line>
+        <line class="axis" x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
+        ${yearHtml}
+        <text x="${width - 210}" y="28">Score line: liquidity support</text>
+        <text x="${width - 210}" y="46">Area: net liquidity scale</text>
+        <g class="hover-layer" id="liquidityHoverLayer">
+          <line class="hover-line" id="liquidityHoverLine" x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${height - pad.bottom}"></line>
+          <circle class="hover-dot" id="liquidityHoverDot" cx="${pad.left}" cy="${yScore(latest.score)}" r="5"></circle>
+          <rect class="hover-box" x="${tooltipX}" y="${tooltipY}" width="190" height="74"></rect>
+          <text class="hover-text" id="liquidityHoverDate" x="${tooltipX + 12}" y="${tooltipY + 22}"></text>
+          <text class="hover-text" id="liquidityHoverScore" x="${tooltipX + 12}" y="${tooltipY + 43}"></text>
+          <text class="hover-text" id="liquidityHoverNet" x="${tooltipX + 12}" y="${tooltipY + 64}"></text>
+        </g>
+        <rect class="hover-capture" id="liquidityHoverCapture" x="${pad.left}" y="${pad.top}" width="${width - pad.left - pad.right}" height="${height - pad.top - pad.bottom}"></rect>
+      `;
+      const hoverCapture = document.getElementById("liquidityHoverCapture");
+      const hoverLine = document.getElementById("liquidityHoverLine");
+      const hoverDot = document.getElementById("liquidityHoverDot");
+      const hoverDate = document.getElementById("liquidityHoverDate");
+      const hoverScore = document.getElementById("liquidityHoverScore");
+      const hoverNet = document.getElementById("liquidityHoverNet");
+      const step = (width - pad.left - pad.right) / Math.max(1, chartRows.length - 1);
+      const updateHover = event => {
+        const rect = liquidityChart.getBoundingClientRect();
+        const px = (event.clientX - rect.left) * (width / rect.width);
+        const index = Math.max(0, Math.min(chartRows.length - 1, Math.round((px - pad.left) / step)));
+        const row = chartRows[index];
+        const cx = x(index);
+        const cy = yScore(row.score);
+        liquidityChart.classList.add("is-hovering");
+        hoverLine.setAttribute("x1", cx);
+        hoverLine.setAttribute("x2", cx);
+        hoverDot.setAttribute("cx", cx);
+        hoverDot.setAttribute("cy", cy);
+        hoverDate.textContent = row.date;
+        hoverScore.textContent = `Score ${row.score} · ${row.state}`;
+        hoverNet.textContent = `Net liquidity ${row.netLiquidity.toLocaleString()} bn`;
+      };
+      hoverCapture?.addEventListener("mousemove", updateHover);
+      hoverCapture?.addEventListener("mouseleave", () => liquidityChart.classList.remove("is-hovering"));
+    }
+
+    renderLiquidityData();
+
+    /* ══ Deep Reports Module ══ */
+    const reportsData = (window.REPORTS_DATA || {}).reports || [];
+    const reportTypeLabels = { industry: "行业报告", company: "公司报告", theme: "主题报告", century: "百年专题", "company-card": "公司卡片" };
+    const reportTypeColors = { industry: "var(--teal)", company: "var(--blue)", theme: "var(--amber)", century: "var(--charcoal)", "company-card": "var(--violet)" };
+    const reportConfLevels = ["全部", "高", "中高", "中", "低"];
+    const reportState = { type: "全部", query: "", confidence: "全部", expandedId: null };
+
+    const reportGrid = document.getElementById("reportGrid");
+    const reportTypeFilter = document.getElementById("reportTypeFilter");
+    const reportConfFilter = document.getElementById("reportConfFilter");
+    const reportSearchInput = document.getElementById("reportSearch");
+    const reportRecentList = document.getElementById("reportRecentList");
+    const copyToast = document.getElementById("copyToast");
+
+    function reportUrl(reportId) {
+      const base = window.location.origin === "null"
+        ? window.location.href.split("#")[0]
+        : `${window.location.origin}${window.location.pathname}${window.location.search}`;
+      return `${base}#${encodeURIComponent(reportId)}`;
+    }
+
+    function showCopyToast(message = "链接已复制") {
+      if (!copyToast) return;
+      copyToast.textContent = message;
+      copyToast.classList.add("show");
+      clearTimeout(showCopyToast.timer);
+      showCopyToast.timer = setTimeout(() => copyToast.classList.remove("show"), 1600);
+    }
+
+    function copyReportLink(reportId) {
+      const url = reportUrl(reportId);
+      const fallbackCopy = () => {
+        const temp = document.createElement("textarea");
+        temp.value = url;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "fixed";
+        temp.style.opacity = "0";
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => showCopyToast()).catch(() => {
+          fallbackCopy();
+          showCopyToast();
+        });
+      } else {
+        fallbackCopy();
+        showCopyToast();
+      }
+    }
+
+    function renderReportActions(r) {
+      return `<div class="report-actions"><button class="copy-report-link" type="button" data-copy-report="${r.id}">复制链接</button></div>`;
+    }
+
+    function getReportIdFromHash(hash = window.location.hash) {
+      if (!hash || !hash.startsWith("#report-")) return null;
+      const raw = decodeURIComponent(hash.slice(1));
+      if (reportsData.some(r => r.id === raw)) return raw;
+
+      // Backward compatibility for mistakenly shared links like #report-report-008.
+      const withoutExtraPrefix = raw.replace(/^report-/, "");
+      if (reportsData.some(r => r.id === withoutExtraPrefix)) return withoutExtraPrefix;
+      return null;
+    }
+
+    function setReportHash(reportId, mode = "replace") {
+      const nextHash = reportId ? `#${reportId}` : "#deep-reports-module";
+      if (window.location.hash === nextHash) return;
+      const method = mode === "push" ? "pushState" : "replaceState";
+      history[method](null, "", nextHash);
+    }
+
+    function closeReportDetail() {
+      reportState.expandedId = null;
+      setReportHash(null);
+      renderReports();
+    }
+
+    window.closeReportDetail = closeReportDetail;
+
+    function filteredReports() {
+      const q = reportState.query.trim().toLowerCase();
+      return reportsData.filter(r => {
+        if (r.status !== "published") return false;
+        const typeOk = reportState.type === "全部" || r.type === reportState.type;
+        const confOk = reportState.confidence === "全部" || r.confidence === reportState.confidence;
+        const queryOk = !q || r.title.toLowerCase().includes(q) || (r.company || "").toLowerCase().includes(q) || (r.tags || []).some(t => t.toLowerCase().includes(q)) || (r.industry || "").toLowerCase().includes(q) || (r.subtitle || "").toLowerCase().includes(q);
+        return typeOk && confOk && queryOk;
+      });
+    }
+
+    function setupReportFilters() {
+      const types = ["全部", "century", "company-card", "industry", "company", "theme"];
+      reportTypeFilter.innerHTML = types.map(t => {
+        const label = t === "全部" ? "全部" : reportTypeLabels[t];
+        return `<button class="chip ${t === reportState.type ? "active" : ""}" data-type="${t}">${label}</button>`;
+      }).join("");
+      reportTypeFilter.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => { reportState.type = btn.dataset.type; reportState.expandedId = null; setupReportFilters(); renderReports(); });
+      });
+
+      reportConfFilter.innerHTML = reportConfLevels.map(c =>
+        `<button class="chip ${c === reportState.confidence ? "active" : ""}" data-conf="${c}">${c}</button>`
+      ).join("");
+      reportConfFilter.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => { reportState.confidence = btn.dataset.conf; reportState.expandedId = null; setupReportFilters(); renderReports(); });
+      });
+    }
+
+    function renderReportCard(r) {
+      const isExpanded = reportState.expandedId === r.id;
+      const cardKpis = (r.quickStats || []).slice(0, 2).map(s => `<span class="report-card-date">${s.label}: ${s.value}</span>`).join("");
+      return `<div class="report-card ${isExpanded ? "active" : ""}" data-report-id="${r.id}">
+        <div class="report-card-head">
+          <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type] || r.type}</span>
+          <span class="report-card-date">${r.date}</span>
+          ${r.market ? `<span class="report-card-date">${r.market}</span>` : ""}
+          ${cardKpis}
+        </div>
+        <h3>${r.title}</h3>
+        <div class="report-card-subtitle">${r.subtitle || ""}</div>
+        <div class="report-card-conclusion">${r.conclusion}</div>
+        <div class="report-tags">${(r.tags || []).map(t => `<span class="report-tag">${t}</span>`).join("")}</div>
+        <div class="report-card-footer">
+          <span class="report-confidence">置信度: ${r.confidence}</span>
+          <button class="copy-report-link" type="button" data-copy-report="${r.id}">复制链接</button>
+          <span class="report-card-date">${r.author}</span>
+        </div>
+      </div>`;
+    }
+
+    function renderReportDetail(r) {
+      if (r.type === "company-card") return renderCompanyCardDetail(r);
+      if (r.type === "century") return renderCenturyDetail(r);
+
+      // If report has a full markdown file, show loading placeholder and fetch it
+      const hasFullMd = !!r.markdownFile;
+      const sectionsHtml = hasFullMd
+        ? `<div class="report-md-loading" id="mdContent-${r.id}">正在加载完整报告…</div>`
+        : (r.sections || []).map(s =>
+            `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`
+          ).join("");
+      const linksHtml = (r.linkedModules || []).includes("capital-cycle")
+        ? `<div class="report-links">
+            <button class="report-module-link" onclick="switchModule('capital-cycle')">→ 查看资本周期模块</button>
+            <button class="report-module-link" onclick="switchModule('capital-cycle');setTimeout(()=>document.getElementById('research-radar')?.scrollIntoView({behavior:'smooth'}),300)">→ 行业研究雷达</button>
+            <button class="report-module-link" onclick="switchModule('capital-cycle');setTimeout(()=>document.getElementById('pb-roe-map')?.scrollIntoView({behavior:'smooth'}),300)">→ PB-ROE 估值地图</button>
+          </div>` : "";
+
+      // Schedule markdown loading after DOM insert
+      if (hasFullMd) {
+        setTimeout(() => {
+          fetch(r.markdownFile)
+            .then(res => res.ok ? res.text() : Promise.reject('fetch failed'))
+            .then(md => {
+              const el = document.getElementById('mdContent-' + r.id);
+              if (el && typeof marked !== 'undefined') {
+                el.className = 'report-full-md';
+                el.innerHTML = marked.parse(md);
+              } else if (el) {
+                el.innerHTML = '<pre style="white-space:pre-wrap;font-size:13px;line-height:1.7">' + md.replace(/</g,'&lt;') + '</pre>';
+                el.className = 'report-full-md';
+              }
+            })
+            .catch(() => {
+              const el = document.getElementById('mdContent-' + r.id);
+              if (el) el.textContent = '报告加载失败，请刷新重试。';
+            });
+        }, 50);
+      }
+
+      return `<div class="report-detail-panel" id="reportDetail-${r.id}">
+        <div class="report-detail-header">
+          <div>
+            <h2>${r.title}</h2>
+            <div class="report-detail-meta">
+              <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type]}</span>
+              ${r.market ? `<span class="badge">${r.market}</span>` : ""}
+              ${r.industry ? `<span class="badge">${r.industry}</span>` : ""}
+              <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
+            </div>
+          </div>
+          <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
+        </div>
+        ${renderReportActions(r)}
+        ${hasFullMd ? '' : `<div class="report-evidence-box">
+          <h4>核心结论</h4>
+          <p>${r.conclusion}</p>
+          <ul class="report-evidence-list">
+            ${(r.keyEvidence || []).map(e => `<li>${e}</li>`).join("")}
+          </ul>
+        </div>`}
+        <div class="report-sections">${sectionsHtml}</div>
+        ${linksHtml}
+      </div>`;
+    }
+
+    function renderCompanyCardDetail(r) {
+      const metricsHtml = (r.quickStats || []).map(s => `<div class="snapshot-metric"><b>${s.value}</b><span>${s.label}</span></div>`).join("");
+      const businessHtml = (r.businessMix || []).map(item => `<div class="business-bar">
+        <span>${item.name}</span>
+        <div class="business-track"><div class="business-fill" style="width:${Math.max(0, Math.min(100, Number(item.share) || 0))}%"></div></div>
+        <b>${item.share}%</b>
+      </div>`).join("");
+      const timelineHtml = (r.timeline || []).map(e => `<div class="life-event"><time>${e.period}</time><div><b>${e.title}</b><p>${e.summary}</p></div></div>`).join("");
+      const sectionsHtml = (r.sections || []).map(s => `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`).join("");
+      return `<div class="report-detail-panel" id="reportDetail-${r.id}">
+        <div class="report-detail-header">
+          <div>
+            <h2>${r.title}</h2>
+            <div class="report-detail-meta">
+              <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type]}</span>
+              ${r.company ? `<span class="badge">${r.company}</span>` : ""}
+              ${r.market ? `<span class="badge">${r.market}</span>` : ""}
+              <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
+            </div>
+          </div>
+          <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
+        </div>
+        ${renderReportActions(r)}
+        <div class="company-snapshot">
+          <div class="snapshot-card">
+            <h4>公司速览</h4>
+            <div class="snapshot-grid">${metricsHtml}</div>
+          </div>
+          <div class="snapshot-card">
+            <h4>业务构成</h4>
+            <div class="business-bars">${businessHtml}</div>
+          </div>
+        </div>
+        <div class="report-evidence-box">
+          <h4>卡片结论</h4>
+          <p>${r.conclusion}</p>
+          <ul class="report-evidence-list">${(r.keyEvidence || []).map(e => `<li>${e}</li>`).join("")}</ul>
+        </div>
+        <div class="timeline-panel"><h4>业务与成长变化</h4><div class="life-timeline">${timelineHtml}</div></div>
+        <div class="report-sections">${sectionsHtml}</div>
+      </div>`;
+    }
+
+    function renderCenturyDetail(r) {
+      const timelineHtml = (r.timeline || []).map(e => `<div class="life-event"><time>${e.period}</time><div><b>${e.title}</b><p>${e.summary}</p></div></div>`).join("");
+      const sectionsHtml = (r.sections || []).map(s => `<div class="report-section-block"><h4>${s.title}</h4><div class="section-text">${s.content}</div></div>`).join("");
+      return `<div class="report-detail-panel" id="reportDetail-${r.id}">
+        <div class="report-detail-header">
+          <div>
+            <h2>${r.title}</h2>
+            <div class="report-detail-meta">
+              <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type]}</span>
+              ${r.company ? `<span class="badge">${r.company}</span>` : ""}
+              <span class="report-card-date">${r.date} · ${r.author} · 置信度 ${r.confidence}</span>
+            </div>
+          </div>
+          <button class="report-close-btn" onclick="closeReportDetail()" aria-label="关闭详情">×</button>
+        </div>
+        ${renderReportActions(r)}
+        <div class="report-evidence-box">
+          <h4>生命线结论</h4>
+          <p>${r.conclusion}</p>
+          <ul class="report-evidence-list">${(r.keyEvidence || []).map(e => `<li>${e}</li>`).join("")}</ul>
+        </div>
+        <div class="timeline-panel"><h4>公司生命脉络</h4><div class="life-timeline">${timelineHtml}</div></div>
+        <div class="report-sections">${sectionsHtml}</div>
+      </div>`;
+    }
+
+    function openReportById(reportId, mode = "push") {
+      const targetReport = reportsData.find(r => r.id === reportId && r.status === "published");
+      if (!targetReport) return;
+      reportState.expandedId = reportState.expandedId === reportId ? null : reportId;
+      setReportHash(reportState.expandedId, mode);
+      renderReports();
+      if (reportState.expandedId) {
+        const detailEl = document.getElementById("reportDetail-" + reportId);
+        if (detailEl) detailEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderRecentReports() {
+      if (!reportRecentList) return;
+      const recent = reportsData
+        .filter(r => r.status === "published")
+        .slice()
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 4);
+
+      reportRecentList.innerHTML = recent.map(r => `<div class="recent-item" role="button" tabindex="0" data-recent-report="${r.id}">
+        <span class="report-type-badge ${r.type}">${reportTypeLabels[r.type] || r.type}</span>
+        <b>${r.title}</b>
+        <span class="recent-meta">${r.date} · ${r.author || ""}</span>
+        <button class="copy-report-link" type="button" data-copy-report="${r.id}">复制链接</button>
+      </div>`).join("");
+
+      reportRecentList.querySelectorAll("[data-recent-report]").forEach(item => {
+        const open = () => openReportById(item.dataset.recentReport);
+        item.addEventListener("click", open);
+        item.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+    }
+
+    function bindReportCopyButtons() {
+      document.querySelectorAll("[data-copy-report]").forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          copyReportLink(btn.dataset.copyReport);
+        });
+      });
+    }
+
+    function renderReports() {
+      const items = filteredReports();
+      let html = "";
+      items.forEach(r => {
+        html += renderReportCard(r);
+        if (reportState.expandedId === r.id) {
+          html += renderReportDetail(r);
+        }
+      });
+      if (!items.length) {
+        html = `<div class="reports-empty">没有匹配的报告。试试调整筛选条件。</div>`;
+      }
+      reportGrid.innerHTML = html;
+
+      reportGrid.querySelectorAll(".report-card").forEach(card => {
+        card.addEventListener("click", () => {
+          openReportById(card.dataset.reportId);
+        });
+      });
+
+      // Update stats
+      const allPublished = reportsData.filter(r => r.status === "published");
+      document.getElementById("reportTotal").textContent = allPublished.length;
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      document.getElementById("reportRecent").textContent = allPublished.filter(r => new Date(r.date) >= thirtyDaysAgo).length;
+      const indSet = new Set(allPublished.map(r => r.industry).filter(Boolean));
+      document.getElementById("reportIndustries").textContent = indSet.size;
+      renderRecentReports();
+      bindReportCopyButtons();
+    }
+
+    // Sidebar subnav type filter
+    document.querySelectorAll("[data-report-type]").forEach(link => {
+      link.addEventListener("click", e => {
+        const t = link.dataset.reportType;
+        if (t) { reportState.type = t; reportState.expandedId = null; setupReportFilters(); renderReports(); }
+      });
+    });
+
+    reportSearchInput.addEventListener("input", e => {
+      reportState.query = e.target.value;
+      reportState.expandedId = null;
+      renderReports();
+    });
+
+    function openReportFromHash({ initial = false } = {}) {
+      const reportId = getReportIdFromHash();
+      if (!reportId) return false;
+
+      const targetReport = reportsData.find(r => r.id === reportId);
+      if (!targetReport) return false;
+
+      switchModule("deep-reports", { scroll: !initial });
+      reportState.type = "全部";
+      reportState.confidence = "全部";
+      reportState.query = "";
+      reportState.expandedId = reportId;
+      reportSearchInput.value = "";
+      setupReportFilters();
+      renderReports();
+
+      setReportHash(reportId);
+      setTimeout(() => {
+        const detailEl = document.getElementById("reportDetail-" + reportId);
+        if (detailEl) detailEl.scrollIntoView({ behavior: initial ? "auto" : "smooth", block: "start" });
+      }, initial ? 0 : 100);
+      return true;
+    }
+
+    const openedInitialReport = openReportFromHash({ initial: true });
+    if (!openedInitialReport) {
+      setupReportFilters();
+      renderReports();
+    }
+
+    window.addEventListener("hashchange", () => {
+      if (!openReportFromHash() && !openModuleFromHash()) {
+        reportState.expandedId = null;
+        renderReports();
+      }
+    });
   </script>
 </body>
 </html>

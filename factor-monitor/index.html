@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>因子监控面板</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">F</div>
+          <div>
+            <h1>因子监控</h1>
+            <p id="dataDate">加载中</p>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>监控频率</span>
+          <select id="frequencySelect">
+            <option value="monthly">月频</option>
+            <option value="weekly">周频</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>因子分组</span>
+          <select id="groupFilter"></select>
+        </label>
+
+        <label class="field">
+          <span>排序</span>
+          <select id="sortKey">
+            <option value="score">综合评分</option>
+            <option value="rank_ic_mean">RankIC</option>
+            <option value="size_neutral_rank_ic_mean">市值中性 RankIC</option>
+            <option value="rank_ic_ir">RankIC IR</option>
+            <option value="recent_3m_rank_ic">近期 RankIC</option>
+            <option value="long_short_mean">多空收益</option>
+            <option value="crowding_score">拥挤风险</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>搜索</span>
+          <input id="searchBox" type="search" placeholder="名称 / 代码" />
+        </label>
+
+        <div class="note-list" id="notes"></div>
+      </aside>
+
+      <main>
+        <section class="topbar">
+          <div>
+            <p class="eyebrow" id="monitorName">Monitor</p>
+            <h2>常用因子近期有效性与拥挤度</h2>
+          </div>
+          <div class="status-grid">
+            <div class="stat">
+              <span>因子数</span>
+              <strong id="factorCount">-</strong>
+            </div>
+            <div class="stat">
+              <span>最新面板</span>
+              <strong id="panelDate">-</strong>
+            </div>
+            <div class="stat">
+              <span>收益期</span>
+              <strong id="signalDate">-</strong>
+            </div>
+            <div class="stat best-factor">
+              <span>当前最佳</span>
+              <strong id="bestFactor">-</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="layout-grid">
+          <div class="table-panel">
+            <div class="panel-head">
+              <h3>因子排行</h3>
+              <span id="visibleCount"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>因子</th>
+                    <th>分组</th>
+                    <th><button class="sort-button" data-sort="score">评分</button></th>
+                    <th><button class="sort-button" data-sort="rank_ic_mean">RankIC</button></th>
+                    <th><button class="sort-button" data-sort="size_neutral_rank_ic_mean">中性IC</button></th>
+                    <th><button class="sort-button" data-sort="rank_ic_ir">IR</button></th>
+                    <th><button class="sort-button" data-sort="recent_3m_rank_ic">近期</button></th>
+                    <th><button class="sort-button" data-sort="long_short_mean">多空</button></th>
+                    <th><button class="sort-button" data-sort="crowding_score">拥挤</button></th>
+                  </tr>
+                </thead>
+                <tbody id="factorRows"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <section class="detail-panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow" id="detailGroup">-</p>
+                <h3 id="detailTitle">-</h3>
+              </div>
+              <span class="pill" id="detailCode">-</span>
+            </div>
+
+            <div class="description-title">构成与意义</div>
+            <p class="description" id="detailDescription"></p>
+
+            <div class="metric-grid">
+              <div class="metric"><span>综合评分</span><strong id="mScore">-</strong></div>
+              <div class="metric"><span>RankIC</span><strong id="mRankIc">-</strong></div>
+              <div class="metric"><span>中性 RankIC</span><strong id="mNeutralRankIc">-</strong></div>
+              <div class="metric"><span>RankIC IR</span><strong id="mRankIr">-</strong></div>
+              <div class="metric"><span id="mLongShortLabel">多空均值</span><strong id="mLongShort">-</strong></div>
+              <div class="metric"><span>拥挤分</span><strong id="mCrowding">-</strong></div>
+            </div>
+
+            <div class="chart-block">
+              <div class="chart-title">RankIC 与多空收益</div>
+              <svg id="lineChart" viewBox="0 0 760 260" role="img"></svg>
+            </div>
+
+            <div class="chart-block">
+              <div class="chart-title">五分组下期收益</div>
+              <div id="barChart" class="bar-chart"></div>
+            </div>
+
+            <div class="chart-block">
+              <div class="chart-title">拥挤度趋势</div>
+              <svg id="crowdingChart" viewBox="0 0 760 220" role="img"></svg>
+            </div>
+
+            <div class="crowding-grid">
+              <div><span>市值相关</span><strong id="cMvCorr">-</strong></div>
+              <div><span>换手相关</span><strong id="cTurnCorr">-</strong></div>
+              <div><span>PB 差</span><strong id="cPbSpread">-</strong></div>
+              <div><span>换手差</span><strong id="cTurnSpread">-</strong></div>
+            </div>
+
+            <div class="chart-block">
+              <div class="chart-title">因子值优秀个股</div>
+              <div class="stocks-wrap">
+                <table class="stocks-table">
+                  <thead>
+                    <tr>
+                      <th>股票</th>
+                      <th>原始值</th>
+                      <th>PB</th>
+                      <th>PE</th>
+                      <th>换手</th>
+                    </tr>
+                  </thead>
+                  <tbody id="topStockRows"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

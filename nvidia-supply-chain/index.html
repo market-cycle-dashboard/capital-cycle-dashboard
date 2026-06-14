@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从一个分子，到一座 AI 超算 · 英伟达 NVL72 产业链全景</title>
+<style>
+:root{
+  --bg:#0a0c10; --bg2:#0f1318; --panel:#141a22; --panel2:#1a222d;
+  --line:#243140; --txt:#e8eef5; --mut:#8ea0b5; --dim:#5d6f86;
+  --nv:#76b900; --nv2:#9ddb3a; --cyan:#27d3e6; --blue:#3b82f6;
+  --gold:#f5b301; --amber:#ff8a3d; --red:#ff5a5f; --purple:#a78bfa;
+  --copper:#c87f3a; --glass:#7fd0c8; --silicon:#9aa7c7;
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(118,185,0,.10), transparent 60%),
+    radial-gradient(900px 600px at 10% 10%, rgba(39,211,230,.08), transparent 55%),
+    var(--bg);
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.7; overflow-x:hidden;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+h1,h2,h3{line-height:1.25;letter-spacing:.2px}
+a{color:var(--cyan);text-decoration:none}
+
+#bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+  background:linear-gradient(90deg,var(--cyan),var(--nv));box-shadow:0 0 12px var(--nv)}
+
+#rail{position:fixed;top:50%;right:18px;transform:translateY(-50%);z-index:150;
+  display:flex;flex-direction:column;gap:8px}
+#rail a{position:relative;width:12px;height:12px;border-radius:50%;
+  border:1.5px solid var(--line);background:var(--panel);transition:.25s;display:block}
+#rail a .lab{position:absolute;right:21px;top:50%;transform:translateY(-50%);
+  white-space:nowrap;font-size:11px;color:var(--mut);background:var(--panel2);
+  border:1px solid var(--line);padding:3px 9px;border-radius:7px;opacity:0;
+  pointer-events:none;transition:.2s}
+#rail a:hover .lab{opacity:1}
+#rail a.on{background:var(--nv);border-color:var(--nv);box-shadow:0 0 12px var(--nv)}
+@media(max-width:920px){#rail{display:none}}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;position:relative;padding:90px 22px 60px}
+.kicker{font-size:13px;letter-spacing:4px;color:var(--nv2);text-transform:uppercase;
+  margin-bottom:18px;font-weight:600}
+.home-link{position:fixed;top:18px;left:18px;z-index:170;display:inline-flex;align-items:center;gap:8px;
+  color:var(--txt);background:rgba(20,26,34,.74);border:1px solid var(--line);
+  border-radius:999px;padding:8px 13px;font-size:12px;letter-spacing:.8px;backdrop-filter:blur(10px);
+  box-shadow:0 10px 30px rgba(0,0,0,.22);transition:.2s}
+.home-link:hover{border-color:rgba(118,185,0,.58);color:var(--nv2);transform:translateY(-1px)}
+.hero h1{font-size:clamp(30px,6vw,60px);font-weight:800;
+  background:linear-gradient(180deg,#fff,#b8c6d6);-webkit-background-clip:text;
+  background-clip:text;color:transparent;max-width:18ch}
+.hero p.sub{color:var(--mut);font-size:clamp(15px,2vw,19px);max-width:62ch;margin:22px auto 0}
+.hero .scroll{position:absolute;bottom:26px;color:var(--dim);font-size:12px;
+  letter-spacing:2px;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.herometa{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;margin-top:34px}
+.herometa div{text-align:center}
+.herometa b{display:block;font-size:clamp(20px,3vw,30px);color:var(--nv2);font-weight:800}
+.herometa span{font-size:12px;color:var(--dim);letter-spacing:1px}
+.rackwrap{margin:26px auto 0;width:min(420px,78vw)}
+
+section.stage{padding:66px 0 38px;position:relative;border-top:1px solid var(--line)}
+.tag-l{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:2px;
+  color:var(--dim);text-transform:uppercase;font-weight:600;margin-bottom:10px}
+.tag-l .num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;
+  background:var(--panel2);border:1px solid var(--line);color:var(--nv2);font-weight:800;font-size:13px}
+section.stage h2{font-size:clamp(22px,3.3vw,35px);font-weight:800;margin-bottom:10px}
+section.stage .lead{color:var(--mut);max-width:76ch;font-size:16px}
+
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:38px;align-items:center;margin-top:32px}
+@media(max-width:860px){.split{grid-template-columns:1fr;gap:24px}}
+
+.rv{opacity:0;transform:translateY(34px);transition:.8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+.scene{background:linear-gradient(160deg,var(--panel),var(--bg2));border:1px solid var(--line);
+  border-radius:20px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden;min-height:240px;display:flex;flex-direction:column;justify-content:center}
+.scene .cap{margin-top:14px;font-size:12px;color:var(--dim)}
+.scene svg{display:block;width:100%;height:auto}
+
+.proc{display:flex;flex-direction:column;gap:11px;margin-top:16px}
+.proc .step{display:flex;gap:13px;align-items:flex-start}
+.proc .d{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--panel2);
+  border:1px solid var(--line);color:var(--nv2);font-size:12px;font-weight:800;
+  display:grid;place-items:center;margin-top:2px}
+.proc .t b{color:var(--txt)}
+.proc .t{font-size:14.5px;color:var(--mut)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:13px;margin-top:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px 15px 13px;
+  position:relative;transition:.25s}
+.card:hover{transform:translateY(-3px);border-color:#33455a;box-shadow:var(--shadow)}
+.card h4{font-size:14.5px;margin-bottom:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card .role{font-size:12px;color:var(--dim);margin-bottom:10px}
+.flag{font-size:10px;padding:1px 6px;border-radius:20px;border:1px solid var(--line);color:var(--mut)}
+.flag.cn{color:var(--nv2);border-color:rgba(118,185,0,.4);background:rgba(118,185,0,.08)}
+.flag.us{color:#7fb3ff;border-color:rgba(80,130,255,.35);background:rgba(80,130,255,.08)}
+.flag.jp{color:#ff9bb0;border-color:rgba(255,90,120,.3);background:rgba(255,90,120,.08)}
+.flag.tw{color:var(--gold);border-color:rgba(245,179,1,.32);background:rgba(245,179,1,.08)}
+.flag.kr{color:var(--purple);border-color:rgba(167,139,250,.32);background:rgba(167,139,250,.08)}
+.flag.eu{color:#67e8c3;border-color:rgba(103,232,195,.3);background:rgba(103,232,195,.08)}
+.comp{display:flex;flex-wrap:wrap;gap:5px}
+.comp span{font-size:11.5px;color:var(--mut);background:var(--panel2);border:1px solid var(--line);
+  padding:2px 8px;border-radius:8px}
+.comp span.lead{color:var(--nv2);border-color:rgba(118,185,0,.4)}
+
+.metrics{display:flex;flex-direction:column;gap:8px;margin:10px 0 11px}
+.mrow{display:flex;align-items:center;gap:8px;font-size:11px}
+.mrow .ml{flex:0 0 26px;color:var(--dim)}
+.mtrack{flex:1;height:7px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.mfill{height:100%;border-radius:6px}
+.mval{flex:0 0 auto;color:var(--mut);min-width:26px;text-align:right}
+
+.kpis{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 13px}
+.kpi b{display:block;font-size:17px}
+.kpi.bn b{color:var(--amber)} .kpi.pf b{color:var(--nv2)} .kpi.loc b{color:var(--cyan)}
+.kpi span{font-size:11px;color:var(--dim);letter-spacing:.5px}
+
+.note{margin-top:20px;border-left:3px solid var(--amber);background:rgba(255,138,61,.06);
+  padding:13px 16px;border-radius:0 12px 12px 0;font-size:14px;color:var(--mut)}
+.note b{color:var(--amber)}
+.note.pf{border-color:var(--nv);background:rgba(118,185,0,.06)}
+.note.pf b{color:var(--nv2)}
+
+.matrix{width:100%;border-collapse:separate;border-spacing:4px;margin-top:26px;font-size:13px}
+.matrix th{font-size:11px;color:var(--dim);font-weight:600;padding:6px;text-align:center}
+.matrix td.lbl{text-align:left;color:var(--mut);white-space:nowrap;padding-right:10px;font-size:13px}
+.matrix td.cell{text-align:center;border-radius:8px;padding:9px 4px;font-weight:700;font-size:12px}
+.h1c{background:#33414f;color:var(--mut)} .h2c{background:#4e6a32;color:#dff5c6}
+.h3c{background:#9a7b1c;color:#fff4d0} .h4c{background:#b85a22;color:#fff}
+.h5c{background:#b3262b;color:#fff}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:11.5px;color:var(--mut)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+.smilebox{background:linear-gradient(160deg,var(--panel),var(--bg2));border:1px solid var(--line);
+  border-radius:20px;padding:26px;box-shadow:var(--shadow);margin-top:8px}
+
+footer{border-top:1px solid var(--line);padding:46px 0 70px;color:var(--dim);font-size:13px}
+footer h3{color:var(--txt);font-size:16px;margin-bottom:12px}
+footer a{color:var(--mut)}
+.disc{margin-top:18px;font-size:12px;color:#4a5a70;max-width:82ch}
+
+@keyframes flow{to{stroke-dashoffset:-1000}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rise{0%{transform:translateY(8px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes weave{to{stroke-dashoffset:0}}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+.flow{stroke-dasharray:14 10;animation:flow 18s linear infinite}
+.coolflow{stroke-dasharray:10 14;animation:flow 3.2s linear infinite}
+.fast{animation:flow 2.2s linear infinite}
+.pulse{animation:pulse 2.4s ease-in-out infinite}
+.blink{animation:blink 1.6s ease-in-out infinite}
+.spin{transform-origin:center;animation:spin 9s linear infinite}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<nav id="rail"></nav>
+<a class="home-link" href="../">← 投研首页</a>
+
+<header class="hero" id="top">
+  <div class="kicker">从一个分子 · 到一座 AI 超算 · NVIDIA NVL72</div>
+  <h1>一个分子，如何长成一座 AI 超算</h1>
+  <p class="sub">把砂子里的硅原子、石油里的碳氢分子，一路炼成晶圆、封装、光模块、机柜，最后连成吞噬整片电网的超算中心。这里按"分子 → 机柜 → 超算"的顺序，拆开每一道工序：谁在卡脖子、谁赚走利润、谁有国产替代的窗口。</p>
+
+  <div class="rackwrap" id="heroRack"></div>
+
+  <div class="herometa">
+    <div><b>11</b><span>道产业层级</span></div>
+    <div><b>72</b><span>GPU / 机柜</span></div>
+    <div><b>数万</b><span>GPU / 超算集群</span></div>
+    <div><b>GW 级</b><span>数据中心耗电</span></div>
+  </div>
+  <div class="scroll">顺流而下 · 从分子开始 ↓</div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<section class="stage" id="value">
+ <div class="wrap" style="padding:0">
+  <div class="tag-l"><span class="num">¥</span> 价值与利润 · 微笑曲线</div>
+  <h2 class="rv">钱去哪了：两端吃肉，中间喝汤</h2>
+  <p class="lead rv">把整条链按"附加值 / 议价权"摊平，会得到一条经典的微笑曲线。设计（英伟达）、设备（ASML）、最难的制造与材料（台积电、CoWoS、HBM、ABF、电子布、光芯片）以及软件生态（CUDA）拿走绝大部分利润；中间的整机组装（ODM）规模巨大但毛利常年个位数。</p>
+  <div class="smilebox rv" id="smile"></div>
+  <div class="note pf rv"><b>投研视角：</b>"卡点 = 利润"集中在——① 英伟达芯片设计与 CUDA 生态；② ASML 光刻机（卖铲子）；③ 台积电先进制程 + CoWoS 封装产能；④ HBM（海力士/三星/美光）；⑤ 味之素 ABF 载板膜；⑥ 日东纺 T-glass 电子布与高端 HVLP 铜箔；⑦ 高端 EML 光芯片与光/电 DSP。国产替代的现实窗口主要在中间材料与子系统：CCL/树脂、特气、靶材、光模块、光芯片、液冷、铜缆连接器、被动元件、刻蚀/封测设备、数据中心供配电与制冷。</p>
+ </div>
+</section>
+
+<section class="stage" id="heat">
+ <div class="wrap" style="padding:0">
+  <div class="tag-l"><span class="num">⚑</span> 卡点热力图</div>
+  <h2 class="rv">一张表看懂：谁最卡、谁最赚、国产到哪了</h2>
+  <p class="lead rv">三列分别是「供给卡点强度」「环节利润水平」「国产化难度（红=最难替代）」。颜色越红越严峻。</p>
+  <div style="overflow-x:auto" class="rv">
+    <table class="matrix" id="matrix"></table>
+  </div>
+  <div class="legend">
+    <span><i style="background:#33414f"></i>低</span>
+    <span><i style="background:#4e6a32"></i>较低</span>
+    <span><i style="background:#9a7b1c"></i>中</span>
+    <span><i style="background:#b85a22"></i>高</span>
+    <span><i style="background:#b3262b"></i>极高 / 死锁</span>
+  </div>
+ </div>
+</section>
+
+<footer>
+ <div class="wrap">
+  <h3>这张全景覆盖的链条（分子 → 超算）</h3>
+  <p>① 分子与矿石（原油/砂SiO₂/溴/磷/萤石/高纯石英砂/多晶硅/稀有气体/化合物衬底）→ ② 电子化工材料（树脂、玻纤布、HVLP铜箔、覆铜板、特气、光刻胶、光掩模、靶材、封装材料、ABF膜、湿电子化学品、涂层）→ ③ 制造与检测设备（光刻/刻蚀/沉积/量测/封测）→ ④ 晶圆与芯片（硅片、EDA/IP、台积电代工）→ ⑤ 先进封装与内存（CoWoS、HBM、载板）→ ⑥ 光互联与器件（光芯片、DSP/Retimer、光学组件、光模块、硅光）→ ⑦ 板卡（PCB/MLCC/供电/连接）→ ⑧ 散热与液冷 → ⑨ 整机柜 NVL72 → ⑩ 网络骨干、DPU 与存储 → ⑪ 超算中心（供配电、制冷设施、建筑、软件栈）。</p>
+  <h3 style="margin-top:22px">主要资料来源</h3>
+  <p>
+   <a href="https://semianalysis.com/2024/07/17/gb200-hardware-architecture-and-component/" target="_blank" rel="noopener noreferrer">SemiAnalysis · GB200 Hardware & BOM</a> ·
+   <a href="https://intuitionlabs.ai/articles/nvidia-gb200-supply-chain" target="_blank" rel="noopener noreferrer">IntuitionLabs · GB200 Supply Chain</a> ·
+   <a href="https://www.naddod.com/blog/nvidia-gb300-deep-dive-performance-breakthroughs-vs-gb200-liquid-cooling-innovations-and-copper-interconnect-advancements" target="_blank" rel="noopener noreferrer">NADDOD · GB300 Deep Dive</a> ·
+   <a href="https://www.huxiu.com/article/4850455.html" target="_blank" rel="noopener noreferrer">虎嗅 · 电子布缺口</a> ·
+   <a href="https://www.huxiu.com/article/4857874.html" target="_blank" rel="noopener noreferrer">虎嗅 · HVLP 铜箔</a> ·
+   <a href="https://caifuhao.eastmoney.com/news/20260522190759181899500" target="_blank" rel="noopener noreferrer">东方财富 · 光模块卡脖子</a> ·
+   <a href="https://www.stcn.com/article/detail/3932880.html" target="_blank" rel="noopener noreferrer">证券时报 · 光芯片国产替代</a>
+  </p>
+  <p class="disc">说明：本页用于产业链科普与投研框架梳理。公司为各环节代表性厂商（非穷举、不分先后）；卡点强度 / 利润水平 / 国产化率为基于公开资料的量级估计而非精确财务数据，会随行情与产能变化。相关判断属行业分析观点，不构成任何投资建议，请以公司财报与一手研究为准。</p>
+ </div>
+</footer>
+
+<script>
+/* ====== DATA：正向顺序 分子→超算。metric=[卡点,利润,国产化率] 0-100 ====== */
+const STAGES=[
+{
+ id:"mol", num:"01", kicker:"起点 · 分子与矿石",
+ title:"一个分子、一粒砂、一块矿石",
+ lead:"芯片的本质，是把砂子（SiO₂）里的硅原子排到极致纯净，再用石油里的碳氢分子做绝缘树脂，用溴和磷做阻燃，用萤石做含氟气体，用稀有气体点亮激光，用镓/铟做激光器衬底。一切都从原子和分子开始。",
+ scene:"oil",
+ cap:"原油裂解→芳烃/树脂原料 · 砂→多晶硅 · 溴/磷/氟/稀有气体/化合物衬底",
+ proc:[
+  ["提硅","高纯石英砂→冶金硅→多晶硅，是硅片的原料起点"],
+  ["炼化","原油→石脑油→苯/酚等芳烃，合成环氧、PPO、BT 树脂原料"],
+  ["卤素与氟","海水/盐湖提溴做阻燃剂；磷矿做电子级磷酸；萤石→氢氟酸→含氟特气"],
+  ["稀有原料","氖/氦点亮光刻激光；镓/锗/铟做 InP/GaAs 激光器衬底"]
+ ],
+ kpis:[["bn","★★→★★★★","多为资源型"],["pf","8–25%","偏低、周期性"],["loc","高","基本自给"]],
+ note:["<b>隐形的资源型卡点：</b>用于拉晶坩埚的高纯石英砂全球高度集中（石英股份掌握内层砂）；光刻激光用的氖气曾因乌克兰断供暴涨；InP/GaAs 化合物衬底是高端激光器的命门。其余基础化工国产化高、利润薄。","bn"],
+ cards:[
+  {n:"硅源：砂→多晶硅",f:["cn"],r:"硅片原料起点",c:[["协鑫科技",1],["通威/大全",1],["石英股份",1]],m:[78,30,60]},
+  {n:"原油 / 炼化芳烃",f:["us","cn"],r:"树脂/塑料原料源头",c:[["中石化",1],["巴斯夫",0],["陶氏",0]],m:[30,18,90]},
+  {n:"溴·磷·氟化工",f:["cn"],r:"阻燃剂/含氟特气源头",c:[["滨化股份",1],["云天化",1],["金石资源",1],["巨化股份",1]],m:[62,30,80]},
+  {n:"稀有气体",f:["us","cn"],r:"氖/氦/氪氙（光刻激光）",c:[["林德",0],["法液空",0],["凯美特气",1],["华特气体",1]],m:[72,35,55]},
+  {n:"稀有/贵金属",f:["cn"],r:"镓/锗/铟/金（衬底·键合）",c:[["驰宏锌锗",1],["云南锗业",1],["紫金矿业",1]],m:[78,42,70]},
+  {n:"化合物衬底 InP/GaAs",f:["jp","us","cn"],r:"激光器/光芯片衬底",c:[["住友电工",0],["AXT",0],["云南锗业",1]],m:[85,55,30]}
+ ]
+},
+{
+ id:"emat", num:"02", kicker:"电子化工材料 · 卡点密集层",
+ title:"电子材料：看不见，却处处卡脖子",
+ lead:"这一层把基础化工品做成“电子级”高纯材料：电子树脂、电子级玻纤布、HVLP 铜箔、覆铜板、电子特气、光刻胶、光掩模、溅射靶材、封装材料（塑封料/底填胶/键合金线/锡球）、ABF 载板膜、湿电子化学品与涂层。2026 年 AI 算力最尖锐的短缺就发生在这里。",
+ scene:"glass",
+ cap:"玻纤拉丝织布 + 树脂浸润 + 铜箔 → 半固化片；特气/光刻胶/掩模/靶材供前道",
+ proc:[
+  ["拉丝织布","高纯石英熔融拉成超细玻纤，织成 Low-DK 电子布（T/Q-glass）"],
+  ["配树脂制箔","碳氢/PPO/BMI/活性酯树脂 + HVLP 极低轮廓铜箔决定高频低损耗"],
+  ["供前道材料","NF₃/WF₆ 特气、光刻胶、光掩模、溅射靶材进入晶圆厂"],
+  ["供封装材料","塑封料 EMC、底填胶、键合金线、锡球、ABF 膜进入封装厂"]
+ ],
+ kpis:[["bn","★★★★★","电子布/铜箔死锁"],["pf","30–55%","高端材料肥"],["loc","低→中","结构性紧缺"]],
+ note:["<b>2026 年最硬的卡点在这层：</b>日东纺 T-glass 电子布“芯片护甲”被英伟达亲自赴日锁产能，业内称“2026 年都解决不了”；高端 HVLP 铜箔送样到量产要 1–1.5 年；ABF 载板膜由味之素独家；EUV 光刻胶与高端光掩模由日企垄断。","bn"],
+ cards:[
+  {n:"电子级玻纤布",f:["jp","tw","cn"],r:"T/Q-glass 低介电布（最紧缺）",c:[["日东纺",0],["台玻",0],["宏和电子",1],["中国巨石",1],["林州光远",1]],m:[95,50,40]},
+  {n:"HVLP 高频铜箔",f:["jp","cn"],r:"极低轮廓铜箔",c:[["三井金属",0],["福田金属",0],["嘉元科技",1],["铜冠铜箔",1],["德福科技",1]],m:[93,48,35]},
+  {n:"电子树脂",f:["jp","cn"],r:"碳氢/PPO/BMI/活性酯",c:[["三菱瓦斯",0],["SABIC",0],["圣泉集团",1],["东材科技",1]],m:[82,45,45]},
+  {n:"覆铜板 CCL",f:["tw","cn"],r:"M8/M9 超低损耗",c:[["台光电子",0],["松下",0],["生益科技",1],["建滔积层板",1]],m:[80,40,55]},
+  {n:"电子特气",f:["us","cn"],r:"NF₃/WF₆/高纯氨/含氟气",c:[["空气产品",0],["林德",0],["华特气体",1],["金宏气体",1],["中船特气",1]],m:[80,50,45]},
+  {n:"光刻胶",f:["jp","cn"],r:"KrF/ArF/EUV（EUV 死锁）",c:[["JSR",0],["信越",0],["TOK",0],["南大光电",1],["彤程新材",1]],m:[92,55,20]},
+  {n:"光掩模版",f:["us","jp","cn"],r:"光刻母版",c:[["Photronics",0],["Toppan",0],["DNP",0],["路维光电",1],["清溢光电",1]],m:[85,55,30]},
+  {n:"溅射靶材",f:["jp","us","cn"],r:"金属化镀膜耗材",c:[["JX金属",0],["霍尼韦尔",0],["江丰电子",1],["有研新材",1]],m:[70,45,55]},
+  {n:"封装材料",f:["jp","cn"],r:"塑封料/底填/键合金线/锡球",c:[["住友电木",0],["京瓷",0],["华海诚科",1],["德邦科技",1]],m:[80,48,42]},
+  {n:"ABF / BT 载板膜",f:["jp"],r:"积层封装膜（独家）",c:[["味之素",0],["三菱瓦斯",0]],m:[96,70,5]},
+  {n:"湿电子化学品/CMP",f:["us","cn"],r:"抛光液/抛光垫/清洗液",c:[["卡博特",0],["杜邦",0],["安集科技",1],["鼎龙股份",1]],m:[70,45,50]},
+  {n:"涂层 / 界面 / 阻燃",f:["us","jp","cn"],r:"共形涂层/导热/阻燃剂",c:[["汉高",0],["3M",0],["雅克科技",1]],m:[60,40,50]}
+ ]
+},
+{
+ id:"equip", num:"03", kicker:"卖铲子的人 · 制造与检测设备",
+ title:"没有这些设备，芯片造不出来",
+ lead:"半导体设备是整条链毛利最高、技术最封闭的“军火商”：光刻机决定制程上限，刻蚀/沉积/量测/封装/测试各有寡头。一台 EUV 光刻机上亿美元，ASML 全球独家——它不造芯片，却卡住所有造芯片的人。",
+ scene:"equip",
+ cap:"前道（光刻/刻蚀/沉积/离子注入/CMP/量测）+ 封装/测试设备",
+ proc:[
+  ["光刻","EUV/DUV 光刻机把电路图案投影到光刻胶上，制程的天花板"],
+  ["刻蚀沉积","刻蚀、薄膜沉积、离子注入、CMP 反复上千次造出晶体管"],
+  ["量测","KLA 等检测每一步缺陷与尺寸，良率的守门人"],
+  ["封装测试","键合机、切割机、ATE 测试机完成封装与分级"]
+ ],
+ kpis:[["bn","★★★★★","ASML 全球独家"],["pf","55–80%","设备毛利极高"],["loc","低→中","刻蚀/封测先行"]],
+ note:["<b>设备是“卡铲子”逻辑：</b>EUV 光刻机被 ASML 独家垄断（且对华受限），是国产最难突破的死锁点；但刻蚀（中微）、沉积（拓荆）、清洗（盛美）、量测（中科飞测）、封测（华峰测控/长川）等环节，国产替代正快速推进。","bn"],
+ cards:[
+  {n:"光刻机",f:["eu"],r:"EUV 独家 / DUV",c:[["ASML",0],["佳能/尼康",0],["上海微电子",1]],m:[98,80,8]},
+  {n:"刻蚀设备",f:["us","cn"],r:"等离子刻蚀",c:[["Lam",0],["AMAT",0],["中微公司",1],["北方华创",1]],m:[88,65,42]},
+  {n:"薄膜沉积 CVD/PVD",f:["us","cn"],r:"镀膜",c:[["AMAT",0],["TEL",0],["拓荆科技",1],["北方华创",1]],m:[85,60,40]},
+  {n:"离子注入/CMP/清洗",f:["us","cn"],r:"掺杂/平坦化/清洗",c:[["AMAT",0],["盛美上海",1],["华海清科",1],["至纯科技",1]],m:[80,55,45]},
+  {n:"量测/检测",f:["us","cn"],r:"缺陷/尺寸检测",c:[["KLA",0],["精测电子",1],["中科飞测",1]],m:[88,65,30]},
+  {n:"封装设备",f:["sg","cn"],r:"键合/切割/植球",c:[["ASMPT",0],["BESI",0],["K&S",0],["华峰",1]],m:[82,55,42]},
+  {n:"测试 ATE / 分选",f:["jp","us","cn"],r:"芯片功能测试",c:[["爱德万",0],["泰瑞达",0],["华峰测控",1],["长川科技",1]],m:[82,55,48]},
+  {n:"PCB / SMT / AOI",f:["de","cn"],r:"板级制造与贴装",c:[["大族数控",1],["鼎泰高科",1],["奥特维",1]],m:[60,45,60]}
+ ]
+},
+{
+ id:"wafer", num:"04", kicker:"晶圆与芯片 · 算力之源",
+ title:"把分子刻成大脑：晶圆与 GPU 制造",
+ lead:"12 吋硅片在台积电经上千道工序刻出 Blackwell GPU 与 Grace CPU（基于 ARM 架构）。背后还有 EDA 工具与 IP——设计芯片用的“语言”和“积木”。这是整链算力价值的源头。",
+ scene:"wafer",
+ cap:"硅片 → EDA/IP 设计 → 台积电 4NP 流片 → die 测试分级",
+ proc:[
+  ["拉晶成片","多晶硅拉成单晶硅锭，切磨抛成 12 吋抛光片/外延片"],
+  ["设计","用 EDA 工具 + ARM/自研 IP 设计出 Blackwell / Grace"],
+  ["流片","台积电 4NP 制程光刻刻蚀上千步刻出 die"],
+  ["测试","晶圆级测试、分 bin，良率决定成本"]
+ ],
+ kpis:[["bn","★★★★★","台积电独家先进制程"],["pf","极高","设计+代工吃肉"],["loc","极低","先进制程难替代"]],
+ note:["<b>价值与卡点的双高地：</b>英伟达的架构 + CUDA、台积电的先进制程是整条链议价权最强的两端；EDA 三巨头（Synopsys/Cadence/Siemens）与 ARM 构成“设计底座”，国产（华大九天等）仍在追赶。","bn"],
+ cards:[
+  {n:"GPU/CPU 设计",f:["us"],r:"Blackwell + Grace(ARM)",c:[["NVIDIA",1],["ARM",0]],m:[95,99,5]},
+  {n:"EDA 工具",f:["us","cn"],r:"芯片设计软件",c:[["Synopsys",0],["Cadence",0],["Siemens",0],["华大九天",1]],m:[95,75,15]},
+  {n:"晶圆代工",f:["tw"],r:"4NP 先进制程",c:[["台积电",1]],m:[96,90,5]},
+  {n:"硅片衬底",f:["jp","cn"],r:"12 吋抛光/外延片",c:[["信越",0],["SUMCO",0],["环球晶圆",0],["沪硅产业",1],["立昂微",1]],m:[80,45,45]},
+  {n:"IP 授权",f:["us","cn"],r:"CPU/接口 IP 核",c:[["ARM",0],["Synopsys",0],["芯原股份",1]],m:[85,70,25]}
+ ]
+},
+{
+ id:"pack", num:"05", kicker:"先进封装与内存 · 死锁阀门",
+ title:"把芯片缝在一起：CoWoS 与 HBM",
+ lead:"GPU die 和多颗 HBM 高带宽内存共贴在硅中介层上（CoWoS），再坐到 ABF 载板上。HBM 是单柜成本大头（$20 万+），CoWoS 先进封装产能直接决定英伟达能出多少货——这是整条链最硬的死锁阀门。",
+ scene:"pack",
+ cap:"HBM 堆叠（DRAM TSV）+ GPU die → 硅中介层 CoWoS → ABF 载板",
+ proc:[
+  ["HBM 堆叠","DRAM 裸片用 TSV 垂直堆叠成 HBM3e/HBM4 立方体"],
+  ["中介层贴合","GPU die + 多颗 HBM 共贴硅中介层（2.5D CoWoS）"],
+  ["载板封装","贴到 ABF 载板上，做凸点互联与底填"],
+  ["系统测试","封装级测试、老化，分级出货"]
+ ],
+ kpis:[["bn","★★★★★","CoWoS=出货上限"],["pf","极高","台积电+HBM 吃肉"],["loc","极低","几乎无替代"]],
+ note:["<b>三个阀门任意一个不够，英伟达就出不了货：</b>CoWoS 先进封装产能、HBM 供给、ABF 载板膜（味之素独家）。这是利润最集中、国产最难替代的环节，也是每一代芯片的产能瓶颈。","bn"],
+ cards:[
+  {n:"CoWoS 先进封装",f:["tw","us"],r:"2.5D 硅中介层封装",c:[["台积电",1],["日月光",0],["Amkor",0]],m:[97,75,10]},
+  {n:"HBM 高带宽内存",f:["kr","us"],r:"成本大头",c:[["SK海力士",1],["三星",0],["美光",0]],m:[93,80,8]},
+  {n:"ABF 载板 / IC 载板",f:["tw","jp","cn"],r:"承载芯片的高端基板",c:[["欣兴",0],["揖斐电",0],["深南电路",1],["兴森科技",1]],m:[85,55,40]},
+  {n:"DDR5 / LPDDR",f:["kr","us"],r:"系统内存",c:[["SK海力士",1],["三星",0],["美光",0]],m:[68,45,15]},
+  {n:"OSAT 封测",f:["tw","cn"],r:"传统封装测试",c:[["日月光",0],["Amkor",0],["长电科技",1],["通富微电",1],["华天科技",1]],m:[62,40,55]}
+ ]
+},
+{
+ id:"optic", num:"06", kicker:"光互联与器件 · 中国少数领先",
+ title:"让信号飞起来：光芯片、DSP 与光模块",
+ lead:"机柜内用铜缆，跨机柜/集群用 800G→1.6T 光模块。光模块是中国少数全球领先的硬科技（旭创全球第一），但它的“芯”——高端 EML 光芯片与光/电 DSP——仍被海外卡住，那才是利润最肥的地方。",
+ scene:"optic",
+ cap:"激光器（EML/DFB）→ 光学组件（透镜/隔离器/插芯）→ DSP/Retimer → OSFP 封装",
+ proc:[
+  ["发光","EML/CW-DFB 激光器把电信号变成光，1.6T 需 200G/lane"],
+  ["整形耦合","透镜准直、隔离器防反射、陶瓷插芯对准光纤"],
+  ["DSP 调制","相干/PAM4 DSP 与 Retimer 编解码，功耗与良率核心"],
+  ["封装出货","贴片、耦合、老化测试成 800G/1.6T OSFP 模块"]
+ ],
+ kpis:[["bn","★★★★★","高端 EML/DSP"],["pf","25–60%","越上游越肥"],["loc","低→中","芯片端最弱"]],
+ note:["<b>真正卡脖子的是光模块里的“芯”：</b>高端 EML 光芯片、相干/高速 DSP 国产化率仍低、利润最丰厚；成品光模块虽然中国全球第一，但毛利远不如上游光芯片。CPO（共封装光学）是下一代竞争焦点。","bn"],
+ cards:[
+  {n:"光模块成品",f:["cn"],r:"800G/1.6T OSFP",c:[["中际旭创",1],["新易盛",1],["光迅科技",1],["Coherent",0],["Fabrinet",0]],m:[55,30,85]},
+  {n:"EML/DFB 光芯片",f:["us","cn"],r:"激光器芯片（最卡）",c:[["Lumentum",0],["Coherent",0],["博通",0],["源杰科技",1],["长光华芯",1]],m:[92,60,30]},
+  {n:"光/电 DSP & Retimer",f:["us","cn"],r:"相干/PAM4 DSP、Retimer",c:[["博通",0],["Marvell",0],["Astera Labs",0],["澜起科技",1]],m:[90,55,15]},
+  {n:"光学组件",f:["cn","jp"],r:"透镜/隔离器/插芯/MPO",c:[["天孚通信",1],["腾景科技",1],["太辰光",1],["京瓷",0]],m:[55,45,60]},
+  {n:"硅光 / CPO",f:["us","cn"],r:"硅光集成、共封装光学",c:[["NVIDIA",0],["博通",0],["中际旭创",1]],m:[80,50,25]},
+  {n:"AEC 有源铜缆/连接器",f:["us","cn"],r:"短距互联",c:[["安费诺",0],["Molex",0],["立讯精密",1],["沃尔核材",1]],m:[60,42,55]}
+ ]
+},
+{
+ id:"pcb", num:"07", kicker:"板卡 · PCB / 被动 / 供电",
+ title:"PCB、电容与供电：让信号和电流跑得稳",
+ lead:"GPU 板卡是高多层、超低损耗 PCB；板上密布上千颗 MLCC 电容稳压，VRM/供电芯片把 48V 降到 GPU 需要的低压大电流。AI 服务器对 PCB 材料（高频高速、低损耗）的要求，正引爆一轮“超级周期”。",
+ scene:"pcb",
+ cap:"覆铜板压合成多层 PCB → 贴装 MLCC/电感/VRM → 高速板卡",
+ proc:[
+  ["压合钻孔","覆铜板层压成 20+ 层超低损耗 PCB，激光钻孔做高速互联"],
+  ["贴装","SMT 贴上 MLCC 电容、电感、VRM 供电芯片"],
+  ["供电","48V 母线 → 垂直供电（VRM）→ GPU 千安级低压电流"],
+  ["连接","高速背板连接器 + NVLink 铜缆连通 GPU 域"]
+ ],
+ kpis:[["bn","★★★★","M8 级 CCL/供电"],["pf","25–45%","材料端较肥"],["loc","中→高","加速替代"]],
+ note:["<b>高端覆铜板（M8/M9）与垂直供电芯片</b>仍由台光、松下、英飞凌/MPS 主导；但 PCB、MLCC、供电芯片、连接器都是国产替代的主战场，AI 需求带来确定性扩张。","bn"],
+ cards:[
+  {n:"PCB 板卡",f:["cn","tw"],r:"高多层高速板",c:[["沪电股份",1],["鹏鼎控股",1],["胜宏科技",1],["欣兴",0]],m:[60,35,70]},
+  {n:"MLCC 电容",f:["jp","cn"],r:"服务器高容电容",c:[["村田",0],["TDK",0],["三星电机",0],["三环集团",1],["风华高科",1]],m:[78,40,40]},
+  {n:"供电 / VRM 芯片",f:["us","cn"],r:"48V 垂直供电",c:[["英飞凌",0],["MPS",0],["TI",0],["纳芯微",1],["杰华特",1]],m:[82,55,30]},
+  {n:"电源 / 母线 PSU",f:["tw","cn"],r:"机柜供电与 PSU",c:[["台达",0],["光宝",0],["欧陆通",1]],m:[60,30,55]},
+  {n:"高速连接器",f:["us","cn"],r:"背板连接器",c:[["安费诺",0],["TE",0],["立讯精密",1]],m:[65,42,55]},
+  {n:"NVLink 铜缆/背板",f:["us","cn"],r:"近 5000 根/柜",c:[["安费诺",0],["Molex",0],["立讯精密",1],["沃尔核材",1]],m:[60,40,55]}
+ ]
+},
+{
+ id:"cool", num:"08", kicker:"散热子系统 · 液冷",
+ title:"液冷：120–200kW 的热量必须靠液体带走",
+ lead:"GB200/GB300 功率密度远超风冷极限，必须液冷。冷板直接贴在 GPU/CPU 上，冷却液经 Manifold、UQD 快接头流到 CDU 换热。这条线 2024 年后从“配角”变成确定性高增长赛道，也是国产替代最顺的方向之一。",
+ scene:"cool",
+ cap:"冷板 → UQD 快接头 → Manifold → CDU 闭环带走 GPU 热量",
+ proc:[
+  ["冷板贴合","铜微通道冷板压在 GPU/CPU die 上，TIM 导热界面填缝"],
+  ["快接维护","UQD 快接头实现不停机插拔，密封可靠性是关键卡点"],
+  ["分配换热","Manifold 分流到各托盘，CDU 把热量换给楼宇冷却水"],
+  ["两相演进","GB300 引入新冷板/UQD，部分走向单相/两相氟化液方案"]
+ ],
+ kpis:[["bn","★★★★","快接/CDU 可靠性"],["pf","20–35%","子系统毛利率"],["loc","中→高","国产加速"]],
+ note:["<b>UQD 快接头与氟化冷却液</b>是隐形卡点：前者关乎漏液风险与运维，后者长期被 3M/科慕的含氟材料把持。3M 退出 Novec 后，国产快接头与氟化液迎来窗口。","bn"],
+ cards:[
+  {n:"冷板 Cold Plate",f:["tw","cn"],r:"铜微通道冷板",c:[["台达",0],["奇鋐",0],["双鸿",0],["英维克",1],["飞荣达",1]],m:[55,30,70]},
+  {n:"均热板/热管/鳍片",f:["tw","cn"],r:"辅助散热件",c:[["奇鋐",0],["双鸿",0],["中石科技",1]],m:[45,28,75]},
+  {n:"CDU 冷量分配",f:["us","cn"],r:"机柜级换热单元",c:[["Vertiv",0],["Boyd",0],["英维克",1],["申菱环境",1],["高澜股份",1]],m:[70,32,60]},
+  {n:"UQD 快接头",f:["us","cn"],r:"不停机快插密封",c:[["CPC",0],["Staubli",0],["Parker",0],["中航光电",1],["强瑞技术",1]],m:[78,30,35]},
+  {n:"氟化冷却液",f:["us","cn"],r:"单相/两相介质",c:[["3M",0],["科慕",0],["巨化股份",1],["新宙邦",1]],m:[75,40,30]},
+  {n:"导热界面 TIM",f:["jp","us"],r:"液态金属/导热垫",c:[["信越",0],["霍尼韦尔",0],["3M",0]],m:[60,45,40]}
+ ]
+},
+{
+ id:"rack", num:"09", kicker:"系统集成 · 整机柜 NVL72",
+ title:"NVL72 整机柜：72 颗 GPU 装进一个液冷机柜",
+ lead:"18 个计算托盘 + 9 个 NVSwitch 托盘，靠铜背板把 72 颗 Blackwell GPU 连成“一颗巨型 GPU”。这一环把所有零件装到一起、跑通整柜液冷与供电——技术门槛在系统工程，但毛利是全链最薄的一段。",
+ scene:"rack",
+ cap:"计算托盘 + NVSwitch 托盘 + 铜背板 + 液冷 Manifold 装配",
+ proc:[
+  ["托盘组装","Bianca 计算板（2×GPU + 1×Grace）装入 1U 液冷托盘，压合冷板"],
+  ["铜背板互联","近 5000 根 NVLink 铜缆压接，连通 72 GPU 的 NVLink 域"],
+  ["整柜集成","18 计算 + 9 交换托盘上架，接入供电母线与液冷 Manifold"],
+  ["老化测试","满载跑机、查漏、热成像，整柜出货给云厂商"]
+ ],
+ kpis:[["bn","★★★","系统产能/良率"],["pf","8–15%","ODM 毛利率"],["loc","高","国产 ODM 强"]],
+ note:["<b>组装是微笑曲线的最低点：</b>门槛在整柜液冷可靠性与交付产能，而非利润。规模巨大但单位附加值低，是国产 ODM 的优势区。","bn"],
+ cards:[
+  {n:"鸿海 / 富士康",f:["tw"],r:"NVL72 最大整机柜代工",c:[["工业富联",1]],m:[35,12,80]},
+  {n:"广达 Quanta",f:["tw"],r:"计算托盘/整柜集成",c:[["云达 QCT",0]],m:[35,11,70]},
+  {n:"纬颖 Wiwynn",f:["tw"],r:"云厂商定制整柜",c:[["Wiwynn",0]],m:[35,12,0]},
+  {n:"戴尔/超微/联想",f:["us"],r:"品牌服务器 + 整柜",c:[["Dell",0],["Supermicro",0],["Lenovo",1]],m:[33,13,40]},
+  {n:"国产服务器",f:["cn"],r:"整机/整柜/白盒",c:[["浪潮信息",1],["华勤技术",1],["工业富联",1]],m:[35,11,90]},
+  {n:"机柜结构件",f:["tw","cn"],r:"滑轨/机箱/钣金",c:[["川湖",0],["营邦",0],["飞荣达",1]],m:[30,22,75]}
+ ]
+},
+{
+ id:"net", num:"10", kicker:"集群网络 · 交换 / DPU / 存储",
+ title:"把机柜连成集群：网络骨干、DPU 与存储",
+ lead:"单柜还不是超算。要把成千上万颗 GPU 连成一个集群，需要 NVIDIA Quantum-X800 InfiniBand / Spectrum-X 以太网交换机、BlueField DPU、ConnectX-8 SuperNIC，以及海量 NVMe 存储与机柜间光互联。网络拓扑直接决定大模型训练效率。",
+ scene:"net",
+ cap:"Spine-Leaf 交换骨干 + DPU/SuperNIC 卸载 + NVMe 存储 + 机柜间光互联",
+ proc:[
+  ["交换骨干","Quantum/Spectrum 交换机组成 Spine-Leaf，连通万卡集群"],
+  ["网卡卸载","BlueField DPU、ConnectX-8 SuperNIC 卸载网络/存储任务"],
+  ["机间互联","机柜之间用大量光模块/光缆 + Retimer 维持信号"],
+  ["存储","NVMe SSD 与 RDIMM 内存喂饱 GPU 的数据吞吐"]
+ ],
+ kpis:[["bn","★★★★","交换/DPU 芯片"],["pf","高","英伟达网络高毛利"],["loc","低→中","交换芯片弱"]],
+ note:["<b>网络是英伟达的“第二护城河”：</b>InfiniBand/NVLink/Spectrum-X 构成端到端互联生态，交换芯片（博通 Tomahawk）与 DPU 利润丰厚、国产化率低。存储侧（NAND/SSD/长江存储）国产相对有基础。","bn"],
+ cards:[
+  {n:"交换机/网络芯片",f:["us","cn"],r:"InfiniBand/以太网交换",c:[["NVIDIA Quantum/Spectrum",1],["博通 Tomahawk",0],["盛科通信",1]],m:[90,65,20]},
+  {n:"DPU / SuperNIC",f:["us"],r:"网络/存储卸载",c:[["NVIDIA BlueField",1],["ConnectX-8",0]],m:[88,70,10]},
+  {n:"Retimer / CXL",f:["us","cn"],r:"信号中继/内存扩展",c:[["Astera Labs",0],["澜起科技",1]],m:[85,55,25]},
+  {n:"NVMe SSD / NAND",f:["kr","jp","cn"],r:"高速存储",c:[["三星",0],["铠侠",0],["Solidigm",0],["长江存储",1]],m:[70,40,35]},
+  {n:"服务器内存 RDIMM",f:["kr","us"],r:"DDR5 模组",c:[["SK海力士",1],["三星",0],["美光",0]],m:[70,45,15]},
+  {n:"交换机 ODM / 光缆",f:["tw","cn"],r:"白盒交换/连接",c:[["智邦",0],["鸿海",0],["中天科技",1],["中际旭创",1]],m:[40,25,75]}
+ ]
+},
+{
+ id:"dc", num:"11", kicker:"终点 · 超算中心 / 数据中心",
+ title:"终点：一座吃电如怪兽的 AI 工厂",
+ lead:"几万颗 GPU 最终落在一座数据中心里——它需要电网级供配电（变压器/UPS/柴发）、整楼液冷与冷机、机房建筑，以及 CUDA/NCCL 软件栈把硬件变成算力。一个 GW 级 AI 数据中心耗电堪比一座中型城市。这才是真正的“终点”。",
+ scene:"dc",
+ cap:"电网→变压器/开关柜/UPS/柴发→机柜；冷机/冷却塔↔CDU；CUDA 软件栈统一调度",
+ proc:[
+  ["供配电","电网经变压器、开关柜、UPS、BBU、柴发、PDU、母线送到每个机柜"],
+  ["制冷设施","冷机/冷却塔/CRAH 与机柜 CDU 闭环，带走整楼热量"],
+  ["建筑机房","机房楼体、风火水电、消防与运维构成物理载体"],
+  ["软件栈","CUDA/NCCL/集群调度把数万 GPU 变成一台超级计算机"]
+ ],
+ kpis:[["bn","★★★→★★★★★","软件 CUDA 死锁"],["pf","软件极高/基建中","两极分化"],["loc","软件极低/基建高","基建国产强"]],
+ note:["<b>两极分化：</b>基建侧（供配电、制冷、建筑）国产化率高、属稳健制造；但真正的护城河在软件——CUDA/NCCL 生态让英伟达即使在硬件被追赶时仍难以被替代，这是整条链终点处最深的壁垒。","pf"],
+ cards:[
+  {n:"供配电系统",f:["us","cn"],r:"开关柜/PDU/母线",c:[["施耐德",0],["伊顿",0],["汇川技术",1],["科华数据",1]],m:[58,35,65]},
+  {n:"UPS / BBU / 柴发",f:["us","cn"],r:"不间断电源/备电",c:[["Vertiv",0],["科华数据",1],["科士达",1]],m:[55,33,70]},
+  {n:"变压器 / 开关柜",f:["us","cn"],r:"电网级配电",c:[["ABB",0],["西门子",0],["金盘科技",1],["明阳电气",1]],m:[58,35,70]},
+  {n:"冷机/冷却塔/CRAH",f:["us","cn"],r:"楼宇制冷设施",c:[["开利/约克",0],["英维克",1],["申菱环境",1]],m:[55,33,72]},
+  {n:"软件栈 CUDA/NCCL",f:["us"],r:"算力调度护城河",c:[["NVIDIA CUDA",1]],m:[97,92,5]},
+  {n:"终端运营 / 云",f:["us","cn"],r:"超算的拥有者",c:[["微软/Meta/亚马逊",0],["谷歌/xAI/Oracle",0],["阿里/字节",1]],m:[0,0,0]}
+ ]
+}
+];
+
+/* heatmap：按链条由上游到终点排列 */
+const HEAT=[
+ ["高纯石英砂 / 多晶硅",4,3,3],
+ ["稀有气体（氖/氦）",4,3,3],
+ ["InP/GaAs 化合物衬底",4,4,3],
+ ["电子级玻纤布（T-glass）",5,3,4],
+ ["HVLP 高频铜箔",5,3,4],
+ ["电子树脂 / 覆铜板 CCL",4,3,3],
+ ["电子特气",4,3,3],
+ ["光刻胶（EUV）",5,3,5],
+ ["光掩模 / 溅射靶材",4,3,3],
+ ["ABF 载板膜（味之素）",5,4,5],
+ ["封装材料（金线/锡球/底填）",4,3,3],
+ ["光刻机（ASML）",5,5,5],
+ ["刻蚀/沉积/量测设备",4,4,3],
+ ["封装/测试设备",4,4,3],
+ ["EDA / IP（ARM等）",5,4,4],
+ ["晶圆代工（台积电）",5,5,5],
+ ["GPU/CPU 设计 + CUDA",5,5,5],
+ ["CoWoS 先进封装",5,4,5],
+ ["HBM / DDR5",5,5,5],
+ ["高端 EML 光芯片 / DSP",5,4,5],
+ ["光模块成品",3,2,2],
+ ["PCB / MLCC / 供电",4,3,3],
+ ["液冷 UQD / CDU / 冷却液",4,3,3],
+ ["整机柜 ODM 组装",3,1,1],
+ ["交换芯片 / DPU / SuperNIC",5,4,4],
+ ["NAND / SSD / 存储",3,2,3],
+ ["数据中心供配电与制冷",3,2,1]
+];
+</script>
+
+<script>
+/* ====== SVG SCENES ====== */
+function rackSVG(){
+  return `<svg viewBox="0 0 360 460" xmlns="http://www.w3.org/2000/svg" style="max-width:420px;margin:0 auto">
+   <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#222c38"/><stop offset=".5" stop-color="#33424f"/><stop offset="1" stop-color="#1c242e"/></linearGradient>
+    <linearGradient id="tray" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a232e"/><stop offset="1" stop-color="#0f151c"/></linearGradient>
+   </defs>
+   <rect x="60" y="20" width="240" height="420" rx="12" fill="url(#metal)" stroke="#3b4a5a"/>
+   <rect x="70" y="30" width="220" height="400" rx="7" fill="#0c1117" stroke="#243140"/>
+   ${Array.from({length:18}).map((_,i)=>{const y=38+i*16.4;const sw=(i>=8&&i<=11);
+     return `<g><rect x="78" y="${y}" width="204" height="13" rx="2.5" fill="url(#tray)" stroke="#23303d"/>
+       <circle cx="86" cy="${y+6.5}" r="1.7" fill="${sw?'#27d3e6':'#76b900'}" class="pulse" style="animation-delay:${i*0.12}s"/>
+       ${Array.from({length:8}).map((__,j)=>`<rect x="${96+j*22}" y="${y+3}" width="15" height="7" rx="1.4" fill="${sw?'#16323a':'#1d2a16'}" stroke="${sw?'#27d3e6':'#3a5a14'}" stroke-width=".6"/>`).join('')}</g>`;}).join('')}
+   <path d="M70 30 C40 120 40 340 70 430" fill="none" stroke="#c87f3a" stroke-width="2.2" opacity=".55" class="flow"/>
+   <path d="M300 36 C326 130 326 330 300 424" fill="none" stroke="#27d3e6" stroke-width="2.4" opacity=".6" class="coolflow"/>
+   <text x="180" y="455" text-anchor="middle" fill="#5d6f86" font-size="11" font-family="monospace">NVL72 · 72 GPU · 液冷 · 铜背板</text>
+  </svg>`;
+}
+function sceneSVG(kind){
+ switch(kind){
+ case "cool": return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   <defs><linearGradient id="cp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c87f3a"/><stop offset="1" stop-color="#8a531f"/></linearGradient></defs>
+   <rect x="50" y="120" width="120" height="64" rx="8" fill="#1c2a16" stroke="#3a5a14"/><text x="110" y="205" text-anchor="middle" fill="#9ddb3a" font-size="12">GPU die</text>
+   <rect x="50" y="92" width="120" height="24" rx="5" fill="url(#cp)" stroke="#a86a2c"/>
+   ${Array.from({length:9}).map((_,i)=>`<rect x="${56+i*12.5}" y="95" width="6" height="18" fill="#6e4015" opacity=".5"/>`).join('')}
+   <text x="110" y="84" text-anchor="middle" fill="#e0995a" font-size="11">铜微通道冷板</text>
+   <path d="M170 98 H290 C320 98 320 150 350 150 H440" fill="none" stroke="#27d3e6" stroke-width="6" class="coolflow"/>
+   <path d="M440 188 H350 C320 188 320 110 290 110 H170" fill="none" stroke="#3b82f6" stroke-width="6" class="coolflow"/>
+   <circle cx="290" cy="98" r="7" fill="#0f151c" stroke="#27d3e6" stroke-width="2"/><text x="290" y="124" text-anchor="middle" fill="#27d3e6" font-size="10">UQD</text>
+   <rect x="440" y="110" width="60" height="100" rx="8" fill="#141a22" stroke="#243140"/><text x="470" y="165" text-anchor="middle" fill="#8ea0b5" font-size="11">CDU</text>
+   ${Array.from({length:3}).map((_,i)=>`<circle cx="470" cy="${130+i*22}" r="3" fill="#27d3e6" class="pulse" style="animation-delay:${i*.3}s"/>`).join('')}
+  </svg>`;
+
+ case "optic": return `<svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+   <rect x="40" y="70" width="440" height="80" rx="10" fill="#11161d" stroke="#243140"/>
+   <rect x="60" y="98" width="34" height="24" rx="4" fill="#3a1418" stroke="#ff5a5f"/><text x="77" y="165" text-anchor="middle" fill="#ff8a8f" font-size="10">EML</text>
+   <line x1="94" y1="110" x2="200" y2="110" stroke="#ff5a3d" stroke-width="3" class="pulse"/>
+   <ellipse cx="150" cy="110" rx="7" ry="16" fill="none" stroke="#7fd0c8" stroke-width="2"/><text x="150" y="165" text-anchor="middle" fill="#7fd0c8" font-size="10">透镜</text>
+   <rect x="196" y="98" width="14" height="24" rx="2" fill="#16323a" stroke="#27d3e6"/><text x="203" y="165" text-anchor="middle" fill="#27d3e6" font-size="10">隔离器</text>
+   <rect x="240" y="90" width="50" height="40" rx="5" fill="#1c2436" stroke="#a78bfa"/><text x="265" y="115" text-anchor="middle" fill="#c4b3ff" font-size="11">DSP</text>
+   <rect x="320" y="104" width="22" height="12" rx="2" fill="#2a2030" stroke="#f5b301"/><text x="331" y="165" text-anchor="middle" fill="#f5b301" font-size="10">插芯</text>
+   <line x1="342" y1="110" x2="460" y2="110" stroke="#27d3e6" stroke-width="2.5" class="flow"/>
+   <text x="250" y="60" text-anchor="middle" fill="#8ea0b5" font-size="11">800G / 1.6T OSFP 光模块</text>
+  </svg>`;
+
+ case "wafer": return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   <defs><radialGradient id="waf" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#aab6d6"/><stop offset="1" stop-color="#5a6486"/></radialGradient>
+   <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#76b900"/></marker></defs>
+   <circle cx="120" cy="120" r="78" fill="url(#waf)" stroke="#7a86a8" class="spin"/>
+   <g>${Array.from({length:11}).map((_,r)=>Array.from({length:11}).map((__,c)=>{const x=70+c*10,y=70+r*10;const dx=x-120,dy=y-120;return (dx*dx+dy*dy<5000)?`<rect x="${x}" y="${y}" width="8" height="8" fill="#1c2a16" stroke="#3a5a14" stroke-width=".5"/>`:''}).join('')).join('')}</g>
+   <text x="120" y="222" text-anchor="middle" fill="#9aa7c7" font-size="11">12 吋晶圆 · Blackwell die</text>
+   <path d="M210 120 H260" stroke="#76b900" stroke-width="2" marker-end="url(#ar)"/>
+   <g transform="translate(290,40)">
+     <rect x="0" y="120" width="180" height="16" rx="3" fill="#2a2230" stroke="#f5b301"/><text x="90" y="150" text-anchor="middle" fill="#f5b301" font-size="10">ABF 载板</text>
+     <rect x="20" y="104" width="140" height="16" rx="2" fill="#15202b" stroke="#3b82f6"/><text x="90" y="100" text-anchor="middle" fill="#7fb3ff" font-size="9">硅中介层</text>
+     <rect x="34" y="78" width="50" height="26" rx="3" fill="#1c2a16" stroke="#76b900"/><text x="59" y="95" text-anchor="middle" fill="#9ddb3a" font-size="9">GPU</text>
+     ${Array.from({length:4}).map((_,i)=>`<rect x="${96+i*16}" y="78" width="12" height="26" rx="1.5" fill="#3a1830" stroke="#a78bfa"/>`).join('')}
+     <text x="120" y="72" text-anchor="middle" fill="#c4b3ff" font-size="9">HBM</text>
+   </g>
+  </svg>`;
+
+ case "pack": return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   <rect x="120" y="170" width="280" height="22" rx="4" fill="#2a2230" stroke="#f5b301"/><text x="260" y="210" text-anchor="middle" fill="#f5b301" font-size="11">ABF 载板</text>
+   ${Array.from({length:14}).map((_,i)=>`<circle cx="${135+i*19}" cy="170" r="3" fill="#c87f3a" class="blink" style="animation-delay:${i*.1}s"/>`).join('')}
+   <rect x="150" y="140" width="220" height="24" rx="3" fill="#15202b" stroke="#3b82f6"/><text x="260" y="134" text-anchor="middle" fill="#7fb3ff" font-size="10">硅中介层 CoWoS</text>
+   <rect x="220" y="86" width="80" height="48" rx="5" fill="#1c2a16" stroke="#76b900"/><text x="260" y="115" text-anchor="middle" fill="#9ddb3a" font-size="12">GPU die</text>
+   ${Array.from({length:3}).map((_,i)=>`<g><rect x="${100+i*30}" y="92" width="22" height="42" rx="2" fill="#2a1838" stroke="#a78bfa"/>${Array.from({length:5}).map((__,k)=>`<line x1="${100+i*30}" y1="${100+k*8}" x2="${122+i*30}" y2="${100+k*8}" stroke="#6d56a8" stroke-width=".7"/>`).join('')}</g>`).join('')}
+   ${Array.from({length:3}).map((_,i)=>`<g><rect x="${300+i*30}" y="92" width="22" height="42" rx="2" fill="#2a1838" stroke="#a78bfa"/>${Array.from({length:5}).map((__,k)=>`<line x1="${300+i*30}" y1="${100+k*8}" x2="${322+i*30}" y2="${100+k*8}" stroke="#6d56a8" stroke-width=".7"/>`).join('')}</g>`).join('')}
+   <text x="155" y="84" text-anchor="middle" fill="#c4b3ff" font-size="9">HBM×</text><text x="365" y="84" text-anchor="middle" fill="#c4b3ff" font-size="9">HBM×</text>
+   <text x="260" y="56" text-anchor="middle" fill="#8ea0b5" font-size="11">2.5D 先进封装：GPU + 多颗 HBM 共封</text>
+  </svg>`;
+
+ case "pcb": return `<svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+   <rect x="40" y="30" width="440" height="160" rx="10" fill="#0e2a18" stroke="#1f5a30"/>
+   ${Array.from({length:7}).map((_,i)=>`<path d="M60 ${50+i*20} H300 C320 ${50+i*20} 320 ${90+i*13} 340 ${90+i*13} H460" fill="none" stroke="#3ad17f" stroke-width="1.4" opacity=".6" class="flow" style="animation-delay:${i*.4}s"/>`).join('')}
+   <rect x="180" y="80" width="90" height="76" rx="6" fill="#11161d" stroke="#76b900"/><text x="225" y="123" text-anchor="middle" fill="#9ddb3a" font-size="11">GPU 模组</text>
+   ${Array.from({length:24}).map((_,i)=>`<rect x="${70+(i%8)*8}" y="${150+Math.floor(i/8)*9}" width="5" height="6" rx="1" fill="#c87f3a"/>`).join('')}
+   <text x="92" y="185" text-anchor="middle" fill="#e0995a" font-size="9">MLCC 阵列</text>
+   <rect x="340" y="120" width="40" height="40" rx="4" fill="#1c2436" stroke="#f5b301"/><text x="360" y="178" text-anchor="middle" fill="#f5b301" font-size="9">VRM 供电</text>
+  </svg>`;
+
+ case "glass": return `<svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+   <path d="M40 40 L120 40 L100 100 L60 100 Z" fill="#3a1a10" stroke="#ff8a3d"/><text x="80" y="30" text-anchor="middle" fill="#ff8a3d" font-size="10">熔融拉丝</text>
+   ${Array.from({length:6}).map((_,i)=>`<line x1="${66+i*7}" y1="100" x2="${66+i*7}" y2="140" stroke="#7fd0c8" stroke-width="1" class="pulse" style="animation-delay:${i*.2}s"/>`).join('')}
+   <g transform="translate(150,55)">
+     ${Array.from({length:9}).map((_,i)=>`<line x1="${i*16}" y1="0" x2="${i*16}" y2="128" stroke="#7fd0c8" stroke-width="3" stroke-dasharray="128" stroke-dashoffset="128" style="animation:weave 2.2s ${i*.12}s forwards" opacity=".8"/>`).join('')}
+     ${Array.from({length:9}).map((_,i)=>`<line x1="0" y1="${i*16}" x2="128" y2="${i*16}" stroke="#9be0d8" stroke-width="3" stroke-dasharray="128" stroke-dashoffset="128" style="animation:weave 2.2s ${.6+i*.12}s forwards" opacity=".6"/>`).join('')}
+     <text x="64" y="150" text-anchor="middle" fill="#9be0d8" font-size="10">电子级玻纤布</text>
+   </g>
+   <g transform="translate(360,55)">
+     <ellipse cx="50" cy="60" rx="50" ry="50" fill="none" stroke="#c87f3a" stroke-width="10" class="spin"/>
+     <circle cx="50" cy="60" r="14" fill="#0f151c" stroke="#8a531f"/><text x="50" y="138" text-anchor="middle" fill="#e0995a" font-size="10">HVLP 铜箔</text>
+   </g>
+  </svg>`;
+
+ case "equip": return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   <rect x="60" y="40" width="280" height="160" rx="12" fill="#141a22" stroke="#33455a"/>
+   <text x="200" y="32" text-anchor="middle" fill="#8ea0b5" font-size="11">EUV 光刻机（示意）</text>
+   <!-- light source -->
+   <circle cx="130" cy="80" r="14" fill="#3a2a08" stroke="#f5b301"/><circle cx="130" cy="80" r="6" fill="#f5b301" class="blink"/>
+   <text x="130" y="64" text-anchor="middle" fill="#f5b301" font-size="9">光源</text>
+   <!-- beam path through mirrors -->
+   <path d="M144 80 L210 80 L210 130 L260 130 L260 170" fill="none" stroke="#27d3e6" stroke-width="2.5" class="fast"/>
+   <rect x="200" y="70" width="20" height="6" rx="2" fill="#7fd0c8"/><rect x="250" y="124" width="6" height="20" rx="2" fill="#7fd0c8"/>
+   <text x="232" y="110" fill="#7fd0c8" font-size="9">反射镜组</text>
+   <!-- wafer stage -->
+   <ellipse cx="260" cy="178" rx="34" ry="9" fill="#5a6486" stroke="#9aa7c7"/><text x="260" y="198" text-anchor="middle" fill="#9aa7c7" font-size="9">晶圆台</text>
+   <!-- other tools -->
+   <g transform="translate(370,60)">
+     ${["刻蚀","沉积","量测"].map((t,i)=>`<rect x="0" y="${i*48}" width="120" height="38" rx="7" fill="#1a222d" stroke="#243140"/><circle cx="16" cy="${i*48+19}" r="4" fill="#9ddb3a" class="pulse" style="animation-delay:${i*.3}s"/><text x="70" y="${i*48+24}" text-anchor="middle" fill="#cdd9e6" font-size="11">${t}设备</text>`).join('')}
+   </g>
+  </svg>`;
+
+ case "net": return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   ${Array.from({length:3}).map((_,i)=>`<rect x="${110+i*110}" y="30" width="70" height="22" rx="4" fill="#1c2436" stroke="#a78bfa"/><text x="${145+i*110}" y="45" text-anchor="middle" fill="#c4b3ff" font-size="10">Spine</text>`).join('')}
+   ${Array.from({length:4}).map((_,i)=>`<rect x="${60+i*110}" y="180" width="64" height="34" rx="5" fill="#11161d" stroke="#76b900"/><text x="${92+i*110}" y="201" text-anchor="middle" fill="#9ddb3a" font-size="10">GPU 机柜</text>`).join('')}
+   ${Array.from({length:3}).map((_,s)=>Array.from({length:4}).map((__,l)=>`<line x1="${145+s*110}" y1="52" x2="${92+l*110}" y2="180" stroke="#27d3e6" stroke-width="1" opacity=".5" class="fast" style="animation-delay:${(s+l)*.15}s"/>`).join('')).join('')}
+   <text x="260" y="232" text-anchor="middle" fill="#5d6f86" font-size="10">Spine-Leaf 拓扑：InfiniBand / Spectrum-X 连通万卡集群</text>
+  </svg>`;
+
+ case "dc": return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   <!-- grid + transformer -->
+   <text x="40" y="30" fill="#f5b301" font-size="10">电网</text>
+   <path d="M30 40 L30 90" stroke="#f5b301" stroke-width="2" class="fast"/>
+   <rect x="20" y="90" width="50" height="34" rx="5" fill="#2a2208" stroke="#f5b301"/><text x="45" y="112" text-anchor="middle" fill="#f5b301" font-size="9">变压器</text>
+   <rect x="20" y="132" width="50" height="30" rx="5" fill="#231a06" stroke="#ff8a3d"/><text x="45" y="151" text-anchor="middle" fill="#ff8a3d" font-size="9">UPS</text>
+   <path d="M70 110 H120" stroke="#f5b301" stroke-width="2" class="fast"/>
+   <!-- server hall -->
+   <rect x="120" y="60" width="200" height="150" rx="8" fill="#0e1620" stroke="#243140"/>
+   ${Array.from({length:3}).map((_,r)=>Array.from({length:5}).map((__,c)=>`<rect x="${134+c*36}" y="${74+r*46}" width="26" height="34" rx="3" fill="#11161d" stroke="#3a5a14"/><circle cx="${147+c*36}" cy="${80+r*46}" r="2" fill="#76b900" class="pulse" style="animation-delay:${(r+c)*.12}s"/>`).join('')).join('')}
+   <text x="220" y="226" text-anchor="middle" fill="#5d6f86" font-size="10">机房：数万 GPU 机柜</text>
+   <!-- cooling -->
+   <path d="M320 110 H370" stroke="#27d3e6" stroke-width="4" class="coolflow"/>
+   <rect x="370" y="80" width="56" height="40" rx="6" fill="#10222a" stroke="#27d3e6"/><text x="398" y="104" text-anchor="middle" fill="#27d3e6" font-size="9">冷机</text>
+   <path d="M398 80 L398 56" stroke="#27d3e6" stroke-width="2"/>
+   <path d="M430 130 H470 M470 130 L470 60" fill="none" stroke="#3b82f6" stroke-width="3" class="coolflow"/>
+   <ellipse cx="470" cy="52" rx="22" ry="10" fill="#10222a" stroke="#27d3e6"/><text x="470" y="38" text-anchor="middle" fill="#27d3e6" font-size="9">冷却塔</text>
+  </svg>`;
+
+ case "oil": default: return `<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+   <rect x="50" y="30" width="44" height="180" rx="8" fill="#1a222d" stroke="#3b4a5a"/>
+   ${Array.from({length:6}).map((_,i)=>`<line x1="50" y1="${54+i*26}" x2="94" y2="${54+i*26}" stroke="#33424f"/>`).join('')}
+   <text x="72" y="226" text-anchor="middle" fill="#8ea0b5" font-size="10">原油裂解塔</text>
+   ${[["#76b900","树脂原料",60],["#27d3e6","溴/卤素",100],["#f5b301","磷化工",140],["#a78bfa","氟/特气",180]].map((p,i)=>`<path d="M94 ${60+i*26} H250 C285 ${60+i*26} 285 ${p[2]} 320 ${p[2]} H410" fill="none" stroke="${p[0]}" stroke-width="3" class="flow" style="animation-delay:${i*.5}s"/><text x="420" y="${p[2]+4}" fill="${p[0]}" font-size="11">${p[1]}</text>`).join('')}
+   <g transform="translate(175,160)" class="spin" opacity=".85"><circle r="6" fill="#76b900"/>${[0,60,120,180,240,300].map(a=>{const x=Math.cos(a*Math.PI/180)*24,y=Math.sin(a*Math.PI/180)*24;return `<line x1="0" y1="0" x2="${x}" y2="${y}" stroke="#3a5a14" stroke-width="2"/><circle cx="${x}" cy="${y}" r="4" fill="#9ddb3a"/>`}).join('')}</g>
+   <text x="175" y="210" text-anchor="middle" fill="#5d6f86" font-size="9">芳烃 → 环氧/BT 树脂</text>
+  </svg>`;
+ }
+}
+</script>
+
+<script>
+/* ====== RENDER ====== */
+const flagName={cn:"国产",us:"美/欧",jp:"日",tw:"台",kr:"韩",eu:"欧",sg:"新",de:"德"};
+function flags(a){return a.map(f=>`<span class="flag ${f}">${flagName[f]||f}</span>`).join('')}
+function comp(a){return `<div class="comp">${a.map(([n,l])=>`<span class="${l?'lead':''}">${n}</span>`).join('')}</div>`}
+function metrics(m){
+  const bar=(v,lab,col)=>`<div class="mrow"><span class="ml">${lab}</span><div class="mtrack"><div class="mfill" style="width:${v}%;background:${col}"></div></div><span class="mval">${v}</span></div>`;
+  return `<div class="metrics">${bar(m[0],'卡点','linear-gradient(90deg,#f5b301,#ff5a5f)')}${bar(m[1],'利润','linear-gradient(90deg,#4e6a32,#9ddb3a)')}${bar(m[2],'国产','linear-gradient(90deg,#1a5a66,#27d3e6)')}</div>`;
+}
+function card(c){return `<div class="card"><h4>${c.n} ${flags(c.f)}</h4><div class="role">${c.r}</div>${metrics(c.m)}${comp(c.c)}</div>`}
+function stageHTML(s){
+  return `<section class="stage" id="${s.id}">
+    <div class="tag-l rv"><span class="num">${s.num}</span> ${s.kicker}</div>
+    <h2 class="rv">${s.title}</h2>
+    <p class="lead rv">${s.lead}</p>
+    <div class="split">
+      <div class="scene rv">${sceneSVG(s.scene)}<div class="cap">${s.cap}</div></div>
+      <div class="rv">
+        <div class="proc">${s.proc.map((p,i)=>`<div class="step"><div class="d">${i+1}</div><div class="t"><b>${p[0]}</b> · ${p[1]}</div></div>`).join('')}</div>
+        <div class="kpis">${s.kpis.map(k=>`<div class="kpi ${k[0]}"><b>${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div>
+      </div>
+    </div>
+    <div class="cards">${s.cards.map(card).join('')}</div>
+    <div class="note ${s.note[1]==='pf'?'pf':''} rv">${s.note[0]}</div>
+  </section>`;
+}
+document.getElementById('heroRack').innerHTML=rackSVG();
+document.getElementById('app').innerHTML=STAGES.map(stageHTML).join('');
+
+const hc=["","h1c","h2c","h3c","h4c","h5c"],htxt=["","低","较低","中","高","极高"];
+document.getElementById('matrix').innerHTML=
+ `<thead><tr><th style="text-align:left">环节</th><th>供给卡点</th><th>环节利润</th><th>国产化难度</th></tr></thead>
+  <tbody>${HEAT.map(r=>`<tr><td class="lbl">${r[0]}</td><td class="cell ${hc[r[1]]}">${htxt[r[1]]}</td><td class="cell ${hc[r[2]]}">${htxt[r[2]]}</td><td class="cell ${hc[r[3]]}">${htxt[r[3]]}</td></tr>`).join('')}</tbody>`;
+
+/* smile curve */
+(function(){
+  const pts=[
+   ["设计","NVIDIA",20,40,"#76b900"],
+   ["设备","ASML",95,30,"#67e8c3"],
+   ["制造","台积电",175,44,"#9ddb3a"],
+   ["封装","CoWoS",250,82,"#27d3e6"],
+   ["内存","HBM",320,74,"#a78bfa"],
+   ["材料","玻布/铜箔",390,120,"#f5b301"],
+   ["元件","PCB/电容",455,150,"#ff8a3d"],
+   ["组装","ODM",520,205,"#ff5a5f"],
+   ["软件/云","CUDA·微软",595,55,"#7fb3ff"]
+  ];
+  const path="M"+pts.map(p=>p[2]+" "+p[3]).join(" L");
+  document.getElementById('smile').innerHTML=`<svg viewBox="0 0 630 260" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+    <text x="20" y="18" fill="#8ea0b5" font-size="12">附加值 / 议价权 高 ↑</text>
+    <path d="${path}" fill="none" stroke="#33455a" stroke-width="2" stroke-dasharray="5 5"/>
+    ${pts.map((p,i)=>`<g><circle cx="${p[2]}" cy="${p[3]}" r="7" fill="${p[4]}" style="opacity:0;animation:rise .5s ${i*.1}s forwards"/>
+      <text x="${p[2]}" y="${p[3]>140?p[3]+22:p[3]-14}" text-anchor="middle" fill="#cdd9e6" font-size="11">${p[0]}</text>
+      <text x="${p[2]}" y="${p[3]>140?p[3]+36:p[3]-2}" text-anchor="middle" fill="#7d8ea3" font-size="9.5">${p[1]}</text></g>`).join('')}
+    <text x="315" y="252" text-anchor="middle" fill="#5d6f86" font-size="11">← 上游材料/设备 ········· 中游制造/封装/组装 ········· 下游软件/云 →</text>
+  </svg>`;
+})();
+
+/* reveal + rail + progress */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+const railTargets=[{id:'top',t:'封面'},...STAGES.map(s=>({id:s.id,t:(s.kicker.split('·')[1]||s.kicker).trim()})),{id:'value',t:'微笑曲线'},{id:'heat',t:'卡点热力图'}];
+const rail=document.getElementById('rail');
+rail.innerHTML=railTargets.map(r=>`<a href="#${r.id}" data-id="${r.id}"><span class="lab">${r.t}</span></a>`).join('');
+const railA=[...rail.querySelectorAll('a')];
+function onScroll(){
+  const h=document.documentElement,sc=h.scrollTop/(h.scrollHeight-h.clientHeight);
+  document.getElementById('bar').style.width=(sc*100)+'%';
+  let cur=railTargets[0].id;
+  railTargets.forEach(r=>{const el=document.getElementById(r.id);if(el&&el.getBoundingClientRect().top<160)cur=r.id});
+  railA.forEach(a=>a.classList.toggle('on',a.dataset.id===cur));
+}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+</script>
+</body>
+</html>
