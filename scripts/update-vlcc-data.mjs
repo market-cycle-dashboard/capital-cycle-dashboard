@@ -319,6 +319,8 @@ function normalizeVessel(base, update, snapshotAt) {
   if (hasObservationUpdate && !Object.hasOwn(update, "broker_rationale")) delete merged.broker_rationale;
   if (hasObservationUpdate && !Object.hasOwn(update, "assessment_confidence")) delete merged.assessment_confidence;
   if (hasObservationUpdate && !Object.hasOwn(update, "area")) delete merged.area;
+  if (hasObservationUpdate && !Object.hasOwn(update, "lon")) delete merged.lon;
+  if (hasObservationUpdate && !Object.hasOwn(update, "lat")) delete merged.lat;
   if (hasObservationUpdate && !Object.hasOwn(update, "route_name")) delete merged.route_name;
   if (hasObservationUpdate && !Object.hasOwn(update, "route_note")) delete merged.route_note;
   if (hasObservationUpdate && !Object.hasOwn(update, "route_lon")) delete merged.route_lon;
