@@ -398,6 +398,31 @@ function validateFleet(vessels) {
   if (missing.length) throw new Error(`Missing required normalized fields for ${missing.length} vessels`);
 }
 
+function validateMapConsistency(vessels) {
+  const issues = vessels.flatMap(vessel => {
+    const area = inferArea(vessel.area || vessel.position_area);
+    const center = AREA_CENTERS[area];
+    const lon = Number(vessel.lon);
+    const lat = Number(vessel.lat);
+    const vesselIssues = [];
+    if (vessel.area !== area) {
+      vesselIssues.push(`${vessel.roster_name} area=${vessel.area || "missing"} inferred=${area}`);
+    }
+    if (!center || !Number.isFinite(lon) || !Number.isFinite(lat)) {
+      vesselIssues.push(`${vessel.roster_name} has invalid map coordinates for ${area}`);
+    } else {
+      const distance = Math.hypot(lon - center[0], lat - center[1]);
+      if (distance > 8) {
+        vesselIssues.push(`${vessel.roster_name} map point ${lon},${lat} is inconsistent with ${area}`);
+      }
+    }
+    return vesselIssues;
+  });
+  if (issues.length) {
+    throw new Error(`VLCC map/record consistency failed:\n${issues.join("\n")}`);
+  }
+}
+
 async function main() {
   const existingPageData = readFleetDataJs();
   const latestSnapshotPath = listSnapshotFiles().at(-1);
@@ -416,6 +441,7 @@ async function main() {
       return normalizeVessel(base, update, snapshotAt);
     });
     validateFleet(nextVessels);
+    validateMapConsistency(nextVessels);
     currentSnapshot = {
       snapshot_at: snapshotAt,
       created_at: formatUtc(new Date()),
@@ -436,6 +462,7 @@ async function main() {
     ? currentSnapshot.vessels.map(v => normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, generatedAt))
     : existingPageData.vessels;
   validateFleet(pageVessels);
+  validateMapConsistency(pageVessels);
   const pageData = {
     generatedAt,
     positionPrecision: "AIS public-page region, visualized with deterministic offset",
