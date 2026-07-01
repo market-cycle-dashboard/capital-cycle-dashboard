@@ -11,6 +11,7 @@ const localJsonPath = path.join(dataDir, "latest-observations.json");
 const baselinePath = path.join(dataDir, "history-baselines.json");
 const marketPath = path.join(dataDir, "market.json");
 const freightJsonPath = path.join(dataDir, "freight-rates.json");
+const dispatchOverridesPath = path.join(dataDir, "dispatch-overrides.json");
 
 const COMMERCIAL_BUCKETS = new Set([
   "laden_voyage",
@@ -19,6 +20,7 @@ const COMMERCIAL_BUCKETS = new Set([
   "ballast_reposition",
   "waiting_loading",
   "waiting_orders",
+  "yard_repair",
   "unknown"
 ]);
 
@@ -153,6 +155,24 @@ function processObservationText(text, sourceName) {
   return {snapshotAt, sourceName, vessels};
 }
 
+function loadDispatchOverrides() {
+  if (!fs.existsSync(dispatchOverridesPath)) return {asOf: "", source: "", overridesByImo: new Map(), unmatched: []};
+  const payload = readJson(dispatchOverridesPath);
+  const records = Array.isArray(payload) ? payload : payload.vessels || [];
+  const overridesByImo = new Map();
+  for (const record of records) {
+    const imo = String(record.imo || "").trim();
+    if (!imo) continue;
+    overridesByImo.set(imo, record);
+  }
+  return {
+    asOf: Array.isArray(payload) ? "" : payload.as_of || "",
+    source: Array.isArray(payload) ? "" : payload.source || "",
+    overridesByImo,
+    unmatched: Array.isArray(payload) ? [] : payload.unmatched || []
+  };
+}
+
 function listSnapshotFiles() {
   return fs.readdirSync(snapshotDir)
     .filter(name => /^\d{4}-\d{2}-\d{2}-\d{4}\.json$/.test(name))
@@ -238,6 +258,9 @@ function isFresh(vessel, limitHours = 72) {
 
 function inferCommercialBucket(vessel) {
   if (COMMERCIAL_BUCKETS.has(vessel.commercial_bucket)) return vessel.commercial_bucket;
+  if (vessel.is_yard_repair || /yard|repair|坞修|维修|\(修\)|（修）/i.test([vessel.dispatch_status, vessel.voyage_destination, vessel.broker_status, vessel.analyst_note].join(" "))) {
+    return "yard_repair";
+  }
   const band = loadBand(vessel);
   const status = vessel.navigation_status || "";
   if (band === "laden" && ["At anchor", "Moored"].includes(status)) return "active_port";
@@ -262,6 +285,27 @@ function routeFor(vessel) {
       route_note: vessel.route_note || ""
     };
   }
+  if (vessel.voyage_destination || vessel.voyage_origin || vessel.voyage_eta) {
+    const destination = vessel.voyage_destination || vessel.dispatch_pool || "目的港待核";
+    const origin = vessel.voyage_origin || "始发港待核";
+    const eta = vessel.voyage_eta ? `，ETA ${vessel.voyage_eta}` : "";
+    let route_lon = 52.0;
+    let route_lat = 25.0;
+    if (/singapore|新加坡|malacca|马六甲/i.test(destination)) [route_lon, route_lat] = [104.0, 1.3];
+    if (/yanbu|延布|red sea|红海/i.test(destination)) [route_lon, route_lat] = [38.1, 24.1];
+    if (/fujairah|富查伊拉|fahle|费赫勒|oman|阿曼/i.test(destination)) [route_lon, route_lat] = [56.3, 25.1];
+    if (/galveston|loop|美湾|gulf of mexico|科珀斯|卢普/i.test(destination)) [route_lon, route_lat] = [-94.0, 28.0];
+    if (/panama|巴拿马/i.test(destination)) [route_lon, route_lat] = [-79.5, 9.0];
+    if (/angola|安哥拉|congo|刚果|as su|阿苏|brazil|巴西/i.test(destination)) [route_lon, route_lat] = [5.0, 0.5];
+    if (/ningbo|dalian|tianjin|huizhou|qinzhou|lanshan|china|中国|宁波|大连|天津|惠州|钦州|岚山|湄洲湾/i.test(destination)) [route_lon, route_lat] = [121.5, 29.0];
+    if (/japan|korea|malaysia|thailand|indonesia|日本|韩国|马来|泰国|印尼/i.test(destination)) [route_lon, route_lat] = [104.0, 2.5];
+    return {
+      route_lon,
+      route_lat,
+      route_name: destination,
+      route_note: `${origin} -> ${destination}${eta}; dispatch override, higher precision than region-level public AIS.`
+    };
+  }
   const band = loadBand(vessel);
   const text = [vessel.area, vessel.position_area, vessel.prior_area, vessel.prior_origin, vessel.prior_destination, vessel.calibrated_position, vessel.analyst_note]
     .join(" ")
@@ -281,6 +325,7 @@ function routeFor(vessel) {
 function brokerStatus(vessel) {
   if (vessel.broker_status) return vessel.broker_status;
   const bucket = inferCommercialBucket(vessel);
+  if (bucket === "yard_repair") return "在修/坞修";
   return {
     laden_voyage: "载货航次",
     active_port: "港口作业/待泊",
@@ -295,6 +340,7 @@ function brokerStatus(vessel) {
 function brokerRationale(vessel) {
   if (vessel.broker_rationale) return vessel.broker_rationale;
   const bucket = inferCommercialBucket(vessel);
+  if (bucket === "yard_repair") return "调度口径标记为修船或坞修，不计入可经营运力。";
   if (bucket === "unknown") return "公开AIS超过72小时或缺少精确时点，不能可靠区分空放、候货或港口停留。";
   if (bucket === "laden_voyage") return "吃水达到重载区间，商业上视为收入航段；AIS过旧时需复核。";
   if (bucket === "active_port") return "重载且停泊/系泊，通常处于卸货、待泊或码头作业阶段。";
@@ -347,6 +393,20 @@ function normalizeVessel(base, update, snapshotAt) {
   return merged;
 }
 
+function applyDispatchOverride(vessel, override, snapshotAt) {
+  if (!override) return vessel;
+  const update = {
+    ...override,
+    imo: vessel.imo,
+    roster_name: vessel.roster_name,
+    current_name: vessel.current_name
+  };
+  if (!update.source) update.source = "dispatch override + public AIS";
+  if (!update.source_consistency) update.source_consistency = "multi_source";
+  if (!update.position_authority) update.position_authority = "dispatch_calibrated";
+  return normalizeVessel(vessel, update, snapshotAt);
+}
+
 function snapshotMetrics(snapshot, labelOverride) {
   const vessels = snapshot.vessels;
   const coverage = vessels.length;
@@ -368,7 +428,7 @@ function snapshotMetrics(snapshot, labelOverride) {
     laden: count("laden"),
     part_laden: count("part_laden"),
     ballast: count("ballast"),
-    yard: vessels.filter(v => /yard|repair|坞修|维修/i.test([v.navigation_status, v.position_area, v.area].join(" "))).length,
+    yard: vessels.filter(v => v.commercial_bucket === "yard_repair" || /yard|repair|坞修|维修/i.test([v.navigation_status, v.position_area, v.area, v.voyage_destination, v.dispatch_status].join(" "))).length,
     commercial_rate: Math.round(operating / Math.max(coverage, 1) * 100),
     revenue_rate: Math.round(revenue / Math.max(coverage, 1) * 100),
     waiting,
@@ -377,12 +437,20 @@ function snapshotMetrics(snapshot, labelOverride) {
   };
 }
 
-function buildHistory(enrichmentByImo) {
+function buildHistory(enrichmentByImo, dispatch) {
   const baselines = fs.existsSync(baselinePath) ? readJson(baselinePath) : [];
   const fullSnapshots = listSnapshotFiles().map(readJson).map(snapshot => {
+    const snapshotDate = parseUtc(snapshot.snapshot_at || snapshot.generatedAt || snapshot.created_at);
+    const dispatchDate = parseUtc(dispatch.asOf);
+    const shouldApplyDispatch = dispatchDate && snapshotDate && snapshotDate >= dispatchDate;
     const normalized = {
       ...snapshot,
-      vessels: snapshot.vessels.map(v => normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, snapshot.snapshot_at || snapshot.created_at))
+      vessels: snapshot.vessels.map(v => {
+        const base = normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, snapshot.snapshot_at || snapshot.created_at);
+        return shouldApplyDispatch
+          ? applyDispatchOverride(base, dispatch.overridesByImo.get(String(v.imo)), snapshot.snapshot_at || snapshot.created_at)
+          : base;
+      })
     };
     return snapshotMetrics(normalized);
   });
@@ -429,6 +497,7 @@ async function main() {
   if (!latestSnapshotPath) throw new Error("No VLCC snapshots found");
   const latestSnapshot = readJson(latestSnapshotPath);
   const enrichmentByImo = new Map(existingPageData.vessels.map(v => [String(v.imo), v]));
+  const dispatch = loadDispatchOverrides();
   const feed = await loadObservationFeed();
   let currentSnapshot = latestSnapshot;
 
@@ -438,7 +507,8 @@ async function main() {
     const updatesByImo = new Map(feed.vessels.map(v => [String(v.imo || "").trim(), v]));
     const nextVessels = existingPageData.vessels.map(base => {
       const update = updatesByImo.get(String(base.imo)) || {};
-      return normalizeVessel(base, update, snapshotAt);
+      const normalized = normalizeVessel(base, update, snapshotAt);
+      return applyDispatchOverride(normalized, dispatch.overridesByImo.get(String(base.imo)), snapshotAt);
     });
     validateFleet(nextVessels);
     validateMapConsistency(nextVessels);
@@ -460,14 +530,14 @@ async function main() {
     : existingPageData.generatedAt || currentSnapshot.snapshot_at || currentSnapshot.created_at;
   const pageVessels = feed
     ? currentSnapshot.vessels.map(v => normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, generatedAt))
-    : existingPageData.vessels;
+    : existingPageData.vessels.map(v => applyDispatchOverride(v, dispatch.overridesByImo.get(String(v.imo)), generatedAt));
   validateFleet(pageVessels);
   validateMapConsistency(pageVessels);
   const pageData = {
     generatedAt,
     positionPrecision: "AIS public-page region, visualized with deterministic offset",
     vessels: pageVessels,
-    history: buildHistory(enrichmentByImo),
+    history: buildHistory(enrichmentByImo, dispatch),
     market: fs.existsSync(marketPath) ? readJson(marketPath) : existingPageData.market
   };
   writeFleetDataJs(pageData);
