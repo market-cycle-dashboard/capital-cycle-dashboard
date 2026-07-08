@@ -4,8 +4,37 @@
  * 后续可替换为从 data/manual/ 目录读取
  */
 window.REPORTS_DATA = {
-  updatedAt: "2026-05-30",
+  updatedAt: "2026-07-08",
   reports: [
+    {
+      id: "report-lever-style-2026",
+      type: "company",
+      title: "利华控股集团深度研究：轻资产服装供应链的高 ROE 与信用风险",
+      subtitle: "按价值投资框架拆解利华控股的轻资产模式、AAG 并购、现金流、EPV 与安全边际",
+      author: "NSC Research",
+      date: "2026-07-07",
+      tags: ["利华控股", "01346.HK", "服装供应链", "轻资产", "价值投资"],
+      company: "利华控股集团",
+      industry: "服装供应链服务",
+      market: "HK",
+      status: "published",
+      confidence: "中高",
+      markdownFile: "reports/lever-style-deep-report.md",
+      conclusion: "利华控股是一家轻资产服装供应链解决方案公司，2025 年主动压缩高信用风险客户，收入下降但净利率创新高。当前 1.32 港元附近估值合理偏便宜，但安全边际主要来自现金、轻资产和高股息，而不是强垄断；更舒服的买入观察区间在 1.10 港元以下。",
+      keyEvidence: [
+        "2025 年收入 2.002 亿美元、净利润 1,587.1 万美元，收入同比下降 10.2%，但净利率升至 7.9%。",
+        "公司因客户长期延迟付款和 Bonobos Chapter 11 主动压缩高风险客户，合计减少约 2,720 万美元收入，但 2025 年坏账为零且无银行借款。",
+        "基准 EPV 估算约 1.54-1.68 港元/股，当前 1.32 港元低于基准 EPV，但若关税或客户信用风险再次冲击，悲观价值可能回落到 1.05-1.25 港元。"
+      ],
+      quickStats: [
+        { label: "当前价", value: "1.32 HKD" },
+        { label: "基准 EPV", value: "1.54-1.68 HKD" },
+        { label: "股息率", value: "约 7.6%" },
+        { label: "结论", value: "观察型 Buy List" }
+      ],
+      linkedModules: ["capital-cycle"],
+      linkedIndustryId: null
+    },
     {
       id: "report-century-ge",
       type: "century",
