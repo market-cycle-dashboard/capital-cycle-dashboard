@@ -290,6 +290,7 @@ function renderMarketMonitor(){
     <article class="signal-card ${s.state}"><div class="signal-top"><span>${s.name}</span><span>${s.threshold}</span></div><strong>${s.value}</strong><p>${s.note}</p></article>`).join("");
 
   renderFreightBoard(linked);
+  renderStsBoard();
   const scenarios=[
     {name:"悲观",tce:linked.realizableTce*.78,earning:.90,logic:"可成交混合TCE再下调22%"},
     {name:"基准",tce:linked.realizableTce,earning:.93,logic:"按当前航线暴露与可成交报价"},
@@ -310,6 +311,34 @@ function renderMarketMonitor(){
     <b>Q3基准判断</b><br>
     当前船队航线暴露对应的可兑现混合TCE为 ${usdK(linked.realizableTce)}/天；
     TD3C ${usdK(market.td3c_tce_usd_day)}/天名义盘仅展示、不直接计入。基准归母净利约 ${toYi(scenarios[1].companyNet).toFixed(1)} 亿元。`;
+}
+
+function renderStsBoard(){
+  const notes = window.FLEET_DATA.stsRumorNotes || [];
+  const candidates = data
+    .filter(v => v.sts_risk_level && v.sts_risk_level !== "clear")
+    .sort((a,b)=>(b.sts_risk_score||0)-(a.sts_risk_score||0));
+  const high = candidates.filter(v => v.sts_risk_level === "high_watch").length;
+  const watch = candidates.length;
+  const freshness = document.querySelector("#stsFreshness");
+  const grid = document.querySelector("#stsGrid");
+  if(!freshness || !grid)return;
+  freshness.innerHTML = `<b>${watch} vessels flagged / ${high} high watch</b>${notes[0]?.label || "Unverified market-talk lens"}<br>${notes[0]?.note || "STS attribution requires direct counterparty evidence."}`;
+  if(!candidates.length){
+    grid.innerHTML = `<article class="sts-card good"><div class="signal-top"><span>No STS candidates</span><span>clear</span></div><strong>0</strong><p>No Oman/Fujairah STS pattern is visible in this snapshot.</p></article>`;
+    return;
+  }
+  grid.innerHTML = candidates.slice(0,8).map(v=>{
+    const cls = v.sts_risk_level === "high_watch" ? "risk" : v.sts_risk_level === "watch" ? "warn" : "good";
+    const reasons = (v.sts_risk_reasons || []).slice(0,4).map(r=>`<li>${r}</li>`).join("");
+    return `<article class="sts-card ${cls}" data-imo="${v.imo}">
+      <div class="signal-top"><span>${v.roster_name}</span><span>${v.sts_risk_score || 0}/100</span></div>
+      <strong>${v.area}</strong>
+      <p>${v.draught_m}m · ${v.navigation_status || "status n/a"} · ${v.broker_status}</p>
+      <ul>${reasons}</ul>
+      <small>${v.sts_counterparty_watch || "No counterparty attribution."}</small>
+    </article>`;
+  }).join("");
 }
 
 function renderRows(query=""){

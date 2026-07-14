@@ -13,6 +13,15 @@ const marketPath = path.join(dataDir, "market.json");
 const freightJsonPath = path.join(dataDir, "freight-rates.json");
 const dispatchOverridesPath = path.join(dataDir, "dispatch-overrides.json");
 
+const STS_RUMOR_NOTES = [
+  {
+    id: "sinokor_oman_watch",
+    label: "Sinokor Oman-area STS rumor watch",
+    status: "unverified_market_talk",
+    note: "Market talk suggests Sinokor may be using VLCCs for STS near Oman. Treat as a watch-list lens only; no vessel is attributed to Sinokor without direct fixture/AIS counterparty evidence."
+  }
+];
+
 const COMMERCIAL_BUCKETS = new Set([
   "laden_voyage",
   "part_cargo",
@@ -397,6 +406,128 @@ function normalizeVessel(base, update, snapshotAt) {
   return merged;
 }
 
+function previousByImo(snapshot) {
+  return new Map((snapshot?.vessels || []).map(v => [String(v.imo), v]));
+}
+
+function stsRiskFor(vessel, previous) {
+  const area = inferArea(vessel.area || vessel.position_area);
+  const draft = Number(vessel.draught_m);
+  const previousDraft = Number(previous?.draught_m);
+  const status = String(vessel.navigation_status || "");
+  const currentText = [
+    vessel.area,
+    vessel.position_area,
+    vessel.route_name,
+    vessel.route_note,
+    vessel.voyage_origin,
+    vessel.voyage_destination,
+    vessel.dispatch_pool,
+    vessel.dispatch_status,
+    vessel.latest_destination
+  ].join(" ").toLowerCase();
+  const contextText = [
+    currentText,
+    vessel.prior_destination,
+    vessel.calibrated_position,
+    vessel.analyst_note
+  ].join(" ").toLowerCase();
+  const reasons = [];
+  let score = 0;
+
+  if (vessel.commercial_bucket === "yard_repair" || vessel.is_yard_repair) {
+    return {
+      sts_watch_zone: "",
+      sts_risk_level: "clear",
+      sts_risk_score: 0,
+      sts_risk_reasons: [],
+      sts_counterparty_watch: ""
+    };
+  }
+
+  const directOmanSignal = /fujairah|khor fakkan|oman|fahle|muscat|富查伊拉|豪尔费坎|阿曼|费赫勒/.test(currentText);
+  const inOmanWatchZone =
+    ["Arabian Sea", "Middle East Gulf"].includes(area) ||
+    (["Indian Coast", "South East Asia"].includes(area) && directOmanSignal);
+  if (inOmanWatchZone) {
+    score += 28;
+    reasons.push("位于阿曼湾/富查伊拉/阿拉伯海观察带");
+  }
+
+  if (/at anchor|moored|drifting|constrained/i.test(status)) {
+    score += 22;
+    reasons.push(`航行状态为 ${status}，符合湾外候泊/并靠前置条件`);
+  }
+
+  if (Number.isFinite(draft) && Number.isFinite(previousDraft)) {
+    const delta = draft - previousDraft;
+    if (previousDraft <= 12.5 && draft >= 18) {
+      score += 30;
+      reasons.push(`吃水由 ${previousDraft}m 跃升至 ${draft}m，疑似完成装/接货`);
+    } else if (Math.abs(delta) >= 3) {
+      score += 14;
+      reasons.push(`吃水较上次变化 ${delta.toFixed(1)}m，需复核是否有转运/装卸`);
+    }
+  }
+
+  if (Number.isFinite(draft) && draft >= 12.5 && draft < 18 && inOmanWatchZone) {
+    score += 12;
+    reasons.push("中间吃水出现在湾外观察带，可能是部分货/转运/压载调整");
+  }
+
+  if (directOmanSignal || (/for order|for orders|待命|等指令/.test(currentText) && ["Arabian Sea", "Middle East Gulf"].includes(area))) {
+    score += 12;
+    reasons.push("目的地或调度口径指向富查伊拉/阿曼/待命");
+  }
+
+  if (!inOmanWatchZone && !directOmanSignal) {
+    score = 0;
+    reasons.length = 0;
+  }
+
+  if (vessel.position_authority === "dispatch_calibrated" || vessel.source_consistency === "multi_source") {
+    score += 8;
+    reasons.push("已有调度口径或多来源校准");
+  }
+
+  if (!["Arabian Sea", "Middle East Gulf"].includes(area)) {
+    score -= 18;
+    if (score > 0) reasons.push("当前位置尚不在阿曼湾/阿拉伯海核心观察区，降级处理");
+  }
+
+  if (
+    vessel.commercial_bucket === "laden_voyage" &&
+    /yanbu|fahle|ras tanura|juaymah|corpus|loop|angola|uruguay|延布|费赫勒|拉斯坦努拉|朱阿马|科珀斯克里斯蒂|卢普|安哥拉|乌拉圭/.test(String(vessel.voyage_origin || "").toLowerCase())
+  ) {
+    score -= 22;
+    reasons.push("已有明确常规装港来源，STS嫌疑降级");
+  }
+
+  const ageHours = Number(vessel.ais_age_hours_at_collection);
+  if (Number.isFinite(ageHours) && ageHours > 96) {
+    score -= 16;
+    reasons.push(`AIS较旧（约 ${Math.round(ageHours)}h），降低判断置信度`);
+  }
+
+  score = Math.max(0, Math.min(100, score));
+  const level = score >= 70 ? "high_watch" : score >= 45 ? "watch" : score >= 30 ? "low_watch" : "clear";
+  return {
+    sts_watch_zone: inOmanWatchZone ? "oman_fujairah_arabian_sea" : "",
+    sts_risk_level: level,
+    sts_risk_score: score,
+    sts_risk_reasons: reasons,
+    sts_counterparty_watch: level === "clear" ? "" : "Sinokor rumor watch: unverified; no counterparty attribution from current AIS snapshot"
+  };
+}
+
+function annotateStsRisks(vessels, previousSnapshot) {
+  const prev = previousByImo(previousSnapshot);
+  return vessels.map(vessel => ({
+    ...vessel,
+    ...stsRiskFor(vessel, prev.get(String(vessel.imo)))
+  }));
+}
+
 function applyDispatchOverride(vessel, override, snapshotAt) {
   if (!override) return vessel;
   const update = {
@@ -509,11 +640,12 @@ async function main() {
     const snapshotDate = feed.snapshotAt ? parseUtc(feed.snapshotAt) : new Date();
     const snapshotAt = formatUtc(snapshotDate);
     const updatesByImo = new Map(feed.vessels.map(v => [String(v.imo || "").trim(), v]));
-    const nextVessels = existingPageData.vessels.map(base => {
+    const normalizedVessels = existingPageData.vessels.map(base => {
       const update = updatesByImo.get(String(base.imo)) || {};
       const normalized = normalizeVessel(base, update, snapshotAt);
       return applyDispatchOverride(normalized, dispatch.overridesByImo.get(String(base.imo)), snapshotAt);
     });
+    const nextVessels = annotateStsRisks(normalizedVessels, latestSnapshot);
     validateFleet(nextVessels);
     validateMapConsistency(nextVessels);
     currentSnapshot = {
@@ -535,14 +667,16 @@ async function main() {
   const pageVessels = feed
     ? currentSnapshot.vessels.map(v => normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, generatedAt))
     : existingPageData.vessels.map(v => applyDispatchOverride(v, dispatch.overridesByImo.get(String(v.imo)), generatedAt));
-  validateFleet(pageVessels);
-  validateMapConsistency(pageVessels);
+  const annotatedPageVessels = annotateStsRisks(pageVessels, feed ? latestSnapshot : readJson(listSnapshotFiles().at(-2) || latestSnapshotPath));
+  validateFleet(annotatedPageVessels);
+  validateMapConsistency(annotatedPageVessels);
   const pageData = {
     generatedAt,
     positionPrecision: "AIS public-page region, visualized with deterministic offset",
-    vessels: pageVessels,
+    vessels: annotatedPageVessels,
     history: buildHistory(enrichmentByImo, dispatch),
-    market: fs.existsSync(marketPath) ? readJson(marketPath) : existingPageData.market
+    market: fs.existsSync(marketPath) ? readJson(marketPath) : existingPageData.market,
+    stsRumorNotes: STS_RUMOR_NOTES
   };
   writeFleetDataJs(pageData);
   if (fs.existsSync(freightJsonPath)) {
