@@ -271,7 +271,7 @@ function isFresh(vessel, limitHours = 72) {
 
 function inferCommercialBucket(vessel) {
   if (COMMERCIAL_BUCKETS.has(vessel.commercial_bucket)) return vessel.commercial_bucket;
-  if (vessel.is_yard_repair || /yard|repair|坞修|维修|\(修\)|（修）/i.test([vessel.dispatch_status, vessel.voyage_destination, vessel.broker_status, vessel.analyst_note].join(" "))) {
+  if (vessel.is_yard_repair || /yard|repair|坞修|维修|\(修\)|（修）/i.test([vessel.dispatch_status, vessel.voyage_destination, vessel.broker_status, vessel.navigation_status].join(" "))) {
     return "yard_repair";
   }
   const band = loadBand(vessel);
