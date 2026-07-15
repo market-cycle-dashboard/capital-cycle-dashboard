@@ -316,23 +316,34 @@ function renderMarketMonitor(){
 function renderStsBoard(){
   const notes = window.FLEET_DATA.stsRumorNotes || [];
   const candidates = data
-    .filter(v => v.sts_risk_level && v.sts_risk_level !== "clear")
-    .sort((a,b)=>(b.sts_risk_score||0)-(a.sts_risk_score||0));
+    .filter(v => v.priority_watch_group === "middle_east_oman_chain" || (v.sts_risk_level && v.sts_risk_level !== "clear"))
+    .sort((a,b)=>{
+      const ap = a.priority_watch_group === "middle_east_oman_chain" ? 1 : 0;
+      const bp = b.priority_watch_group === "middle_east_oman_chain" ? 1 : 0;
+      if(ap !== bp)return bp - ap;
+      return (b.sts_risk_score||0)-(a.sts_risk_score||0);
+    });
   const high = candidates.filter(v => v.sts_risk_level === "high_watch").length;
-  const watch = candidates.length;
+  const watch = candidates.filter(v => v.sts_risk_level && v.sts_risk_level !== "clear").length;
+  const priority = candidates.filter(v => v.priority_watch_group === "middle_east_oman_chain").length;
   const freshness = document.querySelector("#stsFreshness");
   const grid = document.querySelector("#stsGrid");
   if(!freshness || !grid)return;
-  freshness.innerHTML = `<b>${watch} vessels flagged / ${high} high watch</b>${notes[0]?.label || "Unverified market-talk lens"}<br>${notes[0]?.note || "STS attribution requires direct counterparty evidence."}`;
+  freshness.innerHTML = `<b>${priority} priority / ${watch} STS watch / ${high} high</b>${notes[0]?.label || "Unverified market-talk lens"}<br>${notes[0]?.note || "STS attribution requires direct counterparty evidence."}`;
   if(!candidates.length){
     grid.innerHTML = `<article class="sts-card good"><div class="signal-top"><span>No STS candidates</span><span>clear</span></div><strong>0</strong><p>No Oman/Fujairah STS pattern is visible in this snapshot.</p></article>`;
     return;
   }
   grid.innerHTML = candidates.slice(0,8).map(v=>{
     const cls = v.sts_risk_level === "high_watch" ? "risk" : v.sts_risk_level === "watch" ? "warn" : "good";
-    const reasons = (v.sts_risk_reasons || []).slice(0,4).map(r=>`<li>${r}</li>`).join("");
+    const reasons = [
+      v.priority_watch_reason,
+      ...(v.sts_risk_reasons || []),
+      ...((v.priority_watch_triggers || []).slice(0,2).map(t=>`触发点：${t}`))
+    ].filter(Boolean).slice(0,5).map(r=>`<li>${r}</li>`).join("");
+    const tag = v.priority_watch_label || (v.sts_risk_level || "clear");
     return `<article class="sts-card ${cls}" data-imo="${v.imo}">
-      <div class="signal-top"><span>${v.roster_name}</span><span>${v.sts_risk_score || 0}/100</span></div>
+      <div class="signal-top"><span>${v.roster_name}</span><span>${tag} · ${v.sts_risk_score || 0}/100</span></div>
       <strong>${v.area}</strong>
       <p>${v.draught_m}m · ${v.navigation_status || "status n/a"} · ${v.broker_status}</p>
       <ul>${reasons}</ul>

@@ -22,6 +22,33 @@ const STS_RUMOR_NOTES = [
   }
 ];
 
+const PRIORITY_WATCHLIST = {
+  "9706384": {
+    group: "middle_east_oman_chain",
+    label: "中东/阿曼湾重点观察",
+    reason: "富查伊拉/阿曼方向候泊或可调派，后续重点看是否转入重载东行或持续候货。",
+    triggers: ["吃水从11-12m升至18m以上", "At anchor/Moored持续超过48小时", "目的地从富查伊拉/For Orders切换为中国/韩国/东南亚卸港"]
+  },
+  "9434632": {
+    group: "middle_east_oman_chain",
+    label: "中东/阿曼湾重点观察",
+    reason: "阿拉伯海轻载、富查伊拉方向，重点判断是正常调位、候货，还是湾外接货/STS。",
+    triggers: ["吃水从11m升至18m以上", "阿拉伯海/阿曼湾停留延长", "转向东行且目的地变为亚洲卸港"]
+  },
+  "9686340": {
+    group: "middle_east_oman_chain",
+    label: "中东/阿曼湾重点观察",
+    reason: "印度沿岸轻载、富查伊拉方向，尚未进入核心区，观察是否继续西行进入阿曼湾。",
+    triggers: ["进入Arabian Sea/Middle East Gulf", "吃水上升", "富查伊拉ETA或目的地更新"]
+  },
+  "1090777": {
+    group: "middle_east_oman_chain",
+    label: "中东/阿曼湾重点观察",
+    reason: "阿拉伯海中间吃水，可能是部分货、压载调整或转运相关，需跟踪吃水是否继续变化。",
+    triggers: ["吃水升至18m以上或回落至11m附近", "长时间锚泊/漂航", "目的地切换为明确卸港"]
+  }
+};
+
 const COMMERCIAL_BUCKETS = new Set([
   "laden_voyage",
   "part_cargo",
@@ -522,10 +549,17 @@ function stsRiskFor(vessel, previous) {
 
 function annotateStsRisks(vessels, previousSnapshot) {
   const prev = previousByImo(previousSnapshot);
-  return vessels.map(vessel => ({
-    ...vessel,
-    ...stsRiskFor(vessel, prev.get(String(vessel.imo)))
-  }));
+  return vessels.map(vessel => {
+    const priority = PRIORITY_WATCHLIST[String(vessel.imo)];
+    return {
+      ...vessel,
+      ...stsRiskFor(vessel, prev.get(String(vessel.imo))),
+      priority_watch_group: priority?.group || "",
+      priority_watch_label: priority?.label || "",
+      priority_watch_reason: priority?.reason || "",
+      priority_watch_triggers: priority?.triggers || []
+    };
+  });
 }
 
 function applyDispatchOverride(vessel, override, snapshotAt) {
