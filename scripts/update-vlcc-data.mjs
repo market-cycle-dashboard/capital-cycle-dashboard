@@ -78,7 +78,8 @@ const AREA_CENTERS = {
   "South America East Coast": [-42.0, -23.0],
   "North America West Coast": [-123.0, 35.0],
   "West Mediterranean": [5.0, 38.0],
-  "North East Atlantic Ocean": [-20.0, 35.0]
+  "North East Atlantic Ocean": [-20.0, 35.0],
+  "North West Atlantic Ocean": [-55.0, 38.0]
 };
 
 function readJson(file) {
@@ -254,6 +255,7 @@ function inferArea(positionArea = "") {
   if (lower.includes("north america west")) return "North America West Coast";
   if (lower.includes("west mediterranean")) return "West Mediterranean";
   if (lower.includes("north east atlantic")) return "North East Atlantic Ocean";
+  if (lower.includes("north west atlantic")) return "North West Atlantic Ocean";
   if (lower.includes("red sea")) return "Red Sea";
   if (lower.includes("arabian") || lower.includes("middle east")) return "Middle East Gulf";
   return cleaned;
