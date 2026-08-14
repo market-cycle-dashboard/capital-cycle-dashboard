@@ -413,6 +413,14 @@ function normalizeVessel(base, update, snapshotAt) {
   if (hasObservationUpdate && !Object.hasOwn(update, "route_note")) delete merged.route_note;
   if (hasObservationUpdate && !Object.hasOwn(update, "route_lon")) delete merged.route_lon;
   if (hasObservationUpdate && !Object.hasOwn(update, "route_lat")) delete merged.route_lat;
+  if (hasObservationUpdate && update.position_authority === "public_ais") {
+    delete merged.voyage_origin;
+    delete merged.voyage_destination;
+    delete merged.voyage_eta;
+    delete merged.dispatch_pool;
+    delete merged.dispatch_status;
+    delete merged.is_yard_repair;
+  }
   if (base?.roster_name) merged.roster_name = base.roster_name;
   if (base?.build_year) merged.build_year = base.build_year;
   if (base?.dwt) merged.dwt = base.dwt;
@@ -564,8 +572,17 @@ function annotateStsRisks(vessels, previousSnapshot) {
   });
 }
 
-function applyDispatchOverride(vessel, override, snapshotAt) {
+function applyDispatchOverride(vessel, override, snapshotAt, dispatchAsOf = "") {
   if (!override) return vessel;
+  const observationDate = parseUtc(vessel.position_received_at || vessel.ais_timestamp_utc || snapshotAt);
+  const dispatchDate = parseUtc(dispatchAsOf);
+  if (observationDate && dispatchDate && observationDate > dispatchDate) {
+    const staticUpdate = {};
+    if (override.chinese_name) staticUpdate.chinese_name = override.chinese_name;
+    return Object.keys(staticUpdate).length
+      ? normalizeVessel(vessel, staticUpdate, snapshotAt)
+      : vessel;
+  }
   const update = {
     ...override,
     imo: vessel.imo,
@@ -619,7 +636,7 @@ function buildHistory(enrichmentByImo, dispatch) {
       vessels: snapshot.vessels.map(v => {
         const base = normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, snapshot.snapshot_at || snapshot.created_at);
         return shouldApplyDispatch
-          ? applyDispatchOverride(base, dispatch.overridesByImo.get(String(v.imo)), snapshot.snapshot_at || snapshot.created_at)
+          ? applyDispatchOverride(base, dispatch.overridesByImo.get(String(v.imo)), snapshot.snapshot_at || snapshot.created_at, dispatch.asOf)
           : base;
       })
     };
@@ -679,7 +696,7 @@ async function main() {
     const normalizedVessels = existingPageData.vessels.map(base => {
       const update = updatesByImo.get(String(base.imo)) || {};
       const normalized = normalizeVessel(base, update, snapshotAt);
-      return applyDispatchOverride(normalized, dispatch.overridesByImo.get(String(base.imo)), snapshotAt);
+      return applyDispatchOverride(normalized, dispatch.overridesByImo.get(String(base.imo)), snapshotAt, dispatch.asOf);
     });
     const nextVessels = annotateStsRisks(normalizedVessels, latestSnapshot);
     validateFleet(nextVessels);
@@ -702,7 +719,7 @@ async function main() {
     : existingPageData.generatedAt || currentSnapshot.snapshot_at || currentSnapshot.created_at;
   const pageVessels = feed
     ? currentSnapshot.vessels.map(v => normalizeVessel(enrichmentByImo.get(String(v.imo)) || v, v, generatedAt))
-    : existingPageData.vessels.map(v => applyDispatchOverride(v, dispatch.overridesByImo.get(String(v.imo)), generatedAt));
+    : existingPageData.vessels.map(v => applyDispatchOverride(v, dispatch.overridesByImo.get(String(v.imo)), generatedAt, dispatch.asOf));
   const annotatedPageVessels = annotateStsRisks(pageVessels, feed ? latestSnapshot : readJson(listSnapshotFiles().at(-2) || latestSnapshotPath));
   validateFleet(annotatedPageVessels);
   validateMapConsistency(annotatedPageVessels);
