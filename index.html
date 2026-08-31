@@ -2348,7 +2348,7 @@
           <svg class="mini-chart" id="marketChart" viewBox="0 0 620 260" role="img" aria-label="全A年度指标"></svg>
           <div class="market-note">
             <div><span class="dot" style="display:inline-block;background:var(--red)"></span> 年度脉冲展示当前筛选市场的资本开支、ROIC 与现金转换趋势。</div>
-            <div><span class="dot" style="display:inline-block;background:var(--teal)"></span> 最新主面板年份随数据文件更新，目前使用 2025 年报口径。</div>
+            <div><span class="dot" style="display:inline-block;background:var(--teal)"></span> 最新主面板报告期随数据文件更新，目前使用 <span id="capitalCyclePeriodNote">最新报告期</span> 口径。</div>
           </div>
         </section>
         </div>
@@ -2615,6 +2615,18 @@
 
   <script>
     const data = window.CAPITAL_CYCLE_DATA;
+    const currentPeriodLabel = data.periodLabel || (data.period ? data.period : `${data.year}年报`);
+    function periodText(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return String(value);
+      const year = Math.trunc(numeric);
+      const fraction = Math.round((numeric - year) * 100) / 100;
+      if (fraction === 0.25) return `${year}一季报`;
+      if (fraction === 0.5) return `${year}中报`;
+      if (fraction === 0.75) return `${year}三季报`;
+      return `${year}年报`;
+    }
     const industries = data.industries;
     const companies = data.companies || [];
     const companyHistory = data.companyHistory || {};
@@ -2629,6 +2641,8 @@
       "成熟现金牛": "#4f7f3f",
       "中性/待确认": "#6e587d"
     };
+    const capitalCyclePeriodNote = document.getElementById("capitalCyclePeriodNote");
+    if (capitalCyclePeriodNote) capitalCyclePeriodNote.textContent = currentPeriodLabel;
 
     const state = {
       stage: "全部",
@@ -3325,8 +3339,8 @@
           ${c.rightSide ? `<span class="right-tag">右侧候选</span>` : `<span class="badge">普通样本</span>`}
         </div>
         <div class="stock-grid">
-          <div class="stock-metric"><b>${fmt(c.roic, "%")}</b><span>${data.year} ROIC</span></div>
-          <div class="stock-metric"><b>${fmt(c.roe, "%")}</b><span>${data.year} ROE</span></div>
+          <div class="stock-metric"><b>${fmt(c.roic, "%")}</b><span>${currentPeriodLabel} ROIC</span></div>
+          <div class="stock-metric"><b>${fmt(c.roe, "%")}</b><span>${currentPeriodLabel} ROE</span></div>
           <div class="stock-metric"><b>${fmt(c.pb, "x")}</b><span>最新 PB</span></div>
           <div class="stock-metric"><b>${fmt(c.roicTrend, "pct")}</b><span>ROIC 三年变化</span></div>
           <div class="stock-metric"><b>${fmt(c.capex3y, "x")}</b><span>三年资本开支/折旧</span></div>
@@ -3335,8 +3349,8 @@
         <svg class="stock-chart" id="stockChart" viewBox="0 0 620 300" role="img" aria-label="个股年度财务指标"></svg>
         <div class="history-wrap">
           <table>
-            <thead><tr><th>年份</th><th>ROIC</th><th>ROE</th><th>资本开支/折旧</th><th>现金流/利润</th><th>负债率</th></tr></thead>
-            <tbody>${history.map(h => `<tr><td>${h.year}</td><td>${fmt(h.roic, "%")}</td><td>${fmt(h.roe, "%")}</td><td>${fmt(h.capex, "x")}</td><td>${fmt(h.cash, "%", 0)}</td><td>${fmt(h.debt, "%")}</td></tr>`).join("")}</tbody>
+            <thead><tr><th>报告期</th><th>ROIC</th><th>ROE</th><th>资本开支/折旧</th><th>现金流/利润</th><th>负债率</th></tr></thead>
+            <tbody>${history.map(h => `<tr><td>${h.periodLabel || periodText(h.year)}</td><td>${fmt(h.roic, "%")}</td><td>${fmt(h.roe, "%")}</td><td>${fmt(h.capex, "x")}</td><td>${fmt(h.cash, "%", 0)}</td><td>${fmt(h.debt, "%")}</td></tr>`).join("")}</tbody>
           </table>
         </div>
       `;
