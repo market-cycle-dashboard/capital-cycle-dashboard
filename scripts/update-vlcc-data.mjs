@@ -77,6 +77,7 @@ const AREA_CENTERS = {
   "Gulf of Mexico": [-94.0, 28.0],
   "South America East Coast": [-42.0, -23.0],
   "North America West Coast": [-123.0, 35.0],
+  "East Mediterranean": [29.0, 34.0],
   "West Mediterranean": [5.0, 38.0],
   "North East Atlantic Ocean": [-20.0, 35.0],
   "North West Atlantic Ocean": [-55.0, 38.0]
@@ -253,6 +254,7 @@ function inferArea(positionArea = "") {
   if (lower.includes("gulf of mexico")) return "Gulf of Mexico";
   if (lower.includes("south america")) return "South America East Coast";
   if (lower.includes("north america west")) return "North America West Coast";
+  if (lower.includes("east mediterranean")) return "East Mediterranean";
   if (lower.includes("west mediterranean")) return "West Mediterranean";
   if (lower.includes("north east atlantic")) return "North East Atlantic Ocean";
   if (lower.includes("north west atlantic")) return "North West Atlantic Ocean";
@@ -289,13 +291,17 @@ function loadBand(vessel) {
   return "ballast";
 }
 
-function isFresh(vessel, limitHours = 72) {
-  const age = Number(vessel.ais_age_hours_at_collection);
-  if (Number.isFinite(age)) return age <= limitHours;
+function observationAgeHours(vessel) {
   const received = parseUtc(vessel.position_received_at || vessel.ais_timestamp_utc);
-  const collected = parseUtc(vessel.collected_at_utc || vessel.position_collected_at);
-  if (!received || !collected) return false;
-  return (collected - received) / 36e5 <= limitHours;
+  const collected = parseUtc(vessel.position_collected_at || vessel.collected_at_utc);
+  if (received && collected) return (collected - received) / 36e5;
+  const age = Number(vessel.ais_age_hours_at_collection);
+  return Number.isFinite(age) ? age : null;
+}
+
+function isFresh(vessel, limitHours = 72) {
+  const age = observationAgeHours(vessel);
+  return age !== null && age >= 0 && age <= limitHours;
 }
 
 function inferCommercialBucket(vessel) {
@@ -405,6 +411,7 @@ function normalizeVessel(base, update, snapshotAt) {
   if (hasObservationUpdate && !Object.hasOwn(update, "commercial_bucket")) delete merged.commercial_bucket;
   if (hasObservationUpdate && !Object.hasOwn(update, "broker_status")) delete merged.broker_status;
   if (hasObservationUpdate && !Object.hasOwn(update, "broker_rationale")) delete merged.broker_rationale;
+  if (hasObservationUpdate && !Object.hasOwn(update, "ais_age_hours_at_collection")) delete merged.ais_age_hours_at_collection;
   if (hasObservationUpdate && !Object.hasOwn(update, "assessment_confidence")) delete merged.assessment_confidence;
   if (hasObservationUpdate && !Object.hasOwn(update, "area")) delete merged.area;
   if (hasObservationUpdate && !Object.hasOwn(update, "lon")) delete merged.lon;
@@ -540,8 +547,8 @@ function stsRiskFor(vessel, previous) {
     reasons.push("已有明确常规装港来源，STS嫌疑降级");
   }
 
-  const ageHours = Number(vessel.ais_age_hours_at_collection);
-  if (Number.isFinite(ageHours) && ageHours > 96) {
+  const ageHours = observationAgeHours(vessel);
+  if (ageHours !== null && ageHours > 96) {
     score -= 16;
     reasons.push(`AIS较旧（约 ${Math.round(ageHours)}h），降低判断置信度`);
   }
