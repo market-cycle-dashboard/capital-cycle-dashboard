@@ -4,8 +4,43 @@
  * 后续可替换为从 data/manual/ 目录读取
  */
 window.REPORTS_DATA = {
-  updatedAt: "2026-07-08",
+  updatedAt: "2026-09-06",
   reports: [
+    {
+      id: "report-gujia-tracking-2026h1",
+      type: "company",
+      title: "顾家家居跟踪 01：外销韧性加强，旧买点需要重算",
+      subtitle: "2026 半年报贝叶斯修正｜原判断逐条裁决、估值纠错与下期条件",
+      author: "NSC Research",
+      date: "2026-09-06",
+      tags: ["顾家家居", "603816", "跟踪报告", "贝叶斯修正", "2026半年报"],
+      company: "顾家家居",
+      industry: "家居用品",
+      market: "A股",
+      status: "published",
+      confidence: "中",
+      markdownFile: "reports/gujia-tracking-2026h1.md",
+      conclusion: "维持中等护城河，增强沙发与海外收入韧性的判断，削弱国内零售、多品类协同和稳定现金转化预期。纠正原AV、PB、EBIT及定增口径后，基准EPV约17.3元/股、修复情景约19.3元。9月4日收盘23.74元仍需成长兑现，暂停旧26元买入线，继续观察。",
+      keyEvidence: [
+        "2026H1境外主营收入+19.01%、境内-12.71%；沙发+13.81%，集成和定制分别-29.05%、-38.67%。",
+        "扣非归母利润同比-14.59%，新增Q2同比-18.69%；半年现金覆盖0.71倍，TTM仍为1.38倍。",
+        "定增净额18.63亿元，股数增至925,733,012股；资金、摊薄及已实施分红同时进入估值。",
+        "原AV未清楚扣负债、营业利润等同EBIT的口径已重建；纠错与经营下修分别记录。"
+      ],
+      quickStats: [
+        { label: "收盘价 09/04", value: "23.74元" },
+        { label: "基准EPV", value: "17.3元" },
+        { label: "半年现金覆盖", value: "0.71倍" },
+        { label: "研究动作", value: "继续观察" }
+      ],
+      sections: [
+        { title: "本期裁决", content: "沙发与海外收入韧性加强，国内零售及多品类协同预期下调。中等护城河评级维持，上调买入区的原条件尚未满足。" },
+        { title: "价格纪律", content: "15—16元附近进入有折价的重点复核区，仍要求无新增重大损失；17—20元为盈利稳定后讨论的观察区。旧26元买入线暂停。压力EPV约13.55元，价格区间不是本金保证。" },
+        { title: "复用框架", content: "保留先验原文，按新证据、替代解释、裁决、估值变化和下期阈值逐项更新。未披露不当成失败，相关证据不重复相乘；概率数字仅作主观敏感性演示。" }
+      ],
+      linkedModules: [],
+      linkedIndustryId: null
+    },
     {
       id: "report-lever-style-2026",
       type: "company",
@@ -500,7 +535,7 @@ window.REPORTS_DATA = {
       id: "report-010",
       type: "company",
       title: "顾家家居：地产后周期里的软体家具龙头",
-      subtitle: "软体家具品牌 × 盈峰系入主 × 中等护城河下的买入纪律",
+      subtitle: "历史档案｜估值与买点已由2026H1跟踪报告更正，原正文保留",
       author: "NSC Research",
       date: "2026-05-16",
       tags: ["顾家家居", "软体家具", "家居", "消费", "A股", "盈峰系"],
