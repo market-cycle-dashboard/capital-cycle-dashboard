@@ -285,9 +285,9 @@ function positionFor(vessel) {
 }
 
 function loadBand(vessel) {
-  if (["laden", "part_laden", "ballast"].includes(vessel.derived_load_band)) return vessel.derived_load_band;
+  if (["laden", "part_laden", "ballast", "unknown"].includes(vessel.derived_load_band)) return vessel.derived_load_band;
   const draught = Number(vessel.draught_m);
-  if (!Number.isFinite(draught)) return "ballast";
+  if (!Number.isFinite(draught) || draught < 5) return "unknown";
   if (draught >= 18) return "laden";
   if (draught >= 12.5) return "part_laden";
   return "ballast";

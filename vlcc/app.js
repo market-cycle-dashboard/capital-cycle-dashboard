@@ -1,6 +1,6 @@
 const data = window.FLEET_DATA.vessels;
-const colors = {laden:"#19a875",part_laden:"#4e9ab2",ballast:"#e4a23a"};
-const labels = {laden:"重载",part_laden:"半载",ballast:"空载"};
+const colors = {laden:"#19a875",part_laden:"#4e9ab2",ballast:"#e4a23a",unknown:"#7d8794"};
+const labels = {laden:"重载",part_laden:"半载",ballast:"空载",unknown:"待核"};
 function parseUtc(value){
   if(!value)return null;
   const parsed = Date.parse(String(value).replace(" UTC","Z"));
@@ -12,7 +12,7 @@ function positionAgeHours(v){
     if(Number.isFinite(age))return age;
   }
   const received = parseUtc(v.position_received_at || v.ais_timestamp_utc);
-  const collected = parseUtc(v.collected_at_utc || window.FLEET_DATA.generatedAt);
+  const collected = parseUtc(v.position_collected_at || v.collected_at_utc || window.FLEET_DATA.generatedAt);
   if(received && collected)return Math.max(0,(collected-received)/36e5);
   return Infinity;
 }
