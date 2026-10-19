@@ -505,7 +505,10 @@ function stsRiskFor(vessel, previous) {
     reasons.push(`航行状态为 ${status}，符合湾外候泊/并靠前置条件`);
   }
 
-  if (Number.isFinite(draft) && Number.isFinite(previousDraft)) {
+  if (Number.isFinite(draft) && draft >= 5 &&
+      Number.isFinite(previousDraft) && previousDraft >= 5 &&
+      vessel.derived_load_band !== "unknown" && previous?.derived_load_band !== "unknown" &&
+      vessel.source_consistency !== "review_required" && previous?.source_consistency !== "review_required") {
     const delta = draft - previousDraft;
     if (previousDraft <= 12.5 && draft >= 18) {
       score += 30;
