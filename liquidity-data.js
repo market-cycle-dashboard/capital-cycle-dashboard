@@ -1,5 +1,5 @@
 window.LIQUIDITY_PIPE_DATA = {
-  "updatedAt": "2026-10-30",
+  "updatedAt": "2026-10-31",
   "source": "FRED public CSV",
   "model": {
     "name": "Dollar Liquidity Pipe Score",
