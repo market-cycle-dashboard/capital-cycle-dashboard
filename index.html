@@ -3342,8 +3342,8 @@
           ${c.rightSide ? `<span class="right-tag">右侧候选</span>` : `<span class="badge">普通样本</span>`}
         </div>
         <div class="stock-grid">
-          <div class="stock-metric"><b>${fmt(c.roic, "%")}</b><span>${currentPeriodLabel} ROIC</span></div>
-          <div class="stock-metric"><b>${fmt(c.roe, "%")}</b><span>${currentPeriodLabel} ROE</span></div>
+          <div class="stock-metric"><b>${fmt(c.roic, "%")}</b><span>${c.periodLabel || currentPeriodLabel} ROIC</span></div>
+          <div class="stock-metric"><b>${fmt(c.roe, "%")}</b><span>${c.periodLabel || currentPeriodLabel} ROE</span></div>
           <div class="stock-metric"><b>${fmt(c.pb, "x")}</b><span>最新 PB</span></div>
           <div class="stock-metric"><b>${fmt(c.roicTrend, "pct")}</b><span>ROIC 三年变化</span></div>
           <div class="stock-metric"><b>${fmt(c.capex3y, "x")}</b><span>三年资本开支/折旧</span></div>
