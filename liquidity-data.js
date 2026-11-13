@@ -1,5 +1,5 @@
 window.LIQUIDITY_PIPE_DATA = {
-  "updatedAt": "2026-11-12",
+  "updatedAt": "2026-11-13",
   "source": "FRED public CSV",
   "model": {
     "name": "Dollar Liquidity Pipe Score",
@@ -50,17 +50,17 @@ window.LIQUIDITY_PIPE_DATA = {
     }
   },
   "latest": {
-    "date": "2026-11-04",
-    "score": 47,
-    "pressure": 53,
+    "date": "2026-11-11",
+    "score": 49,
+    "pressure": 51,
     "state": "中性震荡",
-    "netLiquidity": 5790.7,
-    "fedAssets": 6748.1,
-    "tga": 957.2,
+    "netLiquidity": 5844.3,
+    "fedAssets": 6758.9,
+    "tga": 914.4,
     "rrp": 0.2,
     "reserves": 2799.7,
-    "dollarIndex": 121.4,
-    "sofrIorb": 0.04,
+    "dollarIndex": 121.88,
+    "sofrIorb": -0.01,
     "xeurbiBasis": null
   },
   "history": [
@@ -8714,6 +8714,20 @@ window.LIQUIDITY_PIPE_DATA = {
       "reserves": 2799.7,
       "dollarIndex": 121.4,
       "sofrIorb": 0.04,
+      "xeurbiBasis": null
+    },
+    {
+      "date": "2026-11-11",
+      "score": 49,
+      "pressure": 51,
+      "state": "中性震荡",
+      "netLiquidity": 5844.3,
+      "fedAssets": 6758.9,
+      "tga": 914.4,
+      "rrp": 0.2,
+      "reserves": 2799.7,
+      "dollarIndex": 121.88,
+      "sofrIorb": -0.01,
       "xeurbiBasis": null
     }
   ]
