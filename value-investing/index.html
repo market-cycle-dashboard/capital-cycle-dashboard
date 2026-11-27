@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全球价值投资人物关系地图｜资本周期</title>
+<meta name="description" content="沿价值投资人物谱系和历史年表，学习八个投资理念，完成有原始出处的案例对读。">
+<link rel="canonical" href="https://capital-cycle-dashboard.pages.dev/value-investing/">
+<style>
+:root{color-scheme:light;--page:#f7f5ef;--panel:#fffefa;--ink:#1e2d29;--muted:#52635b;--line:#d8ddd3;--accent:#145744;--dark:#142e27}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);background:var(--page);font:15px/1.6 "Noto Sans CJK SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #236daa;outline-offset:3px}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+header.hero{background:var(--dark);color:#faf7e8;padding:45px 24px 40px;border-bottom:5px solid #a77f45}
+.wrap{width:min(1420px,100%);margin:auto}
+.eyebrow{font-size:12px;letter-spacing:.12em;font-weight:700;color:#b9d1c4}
+h1{font-family:"Noto Serif CJK SC","Songti SC",serif;font-size:clamp(30px,5vw,57px);font-weight:800;line-height:1.24;margin:8px 0 13px}
+.hero p:last-child{max-width:790px;color:#d8e5dc;font-size:15px}
+main{padding:24px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search{display:flex;align-items:center;gap:8px;flex:1 1 290px;max-width:435px}
+.search input{width:100%;min-width:0}
+.controls input,.controls select,.quiet{border:1px solid #b9c6ba;background:var(--panel);color:var(--ink);border-radius:5px;padding:8px 11px;min-height:42px}
+.filter{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:10px}
+.legend button{background:transparent;color:var(--ink);border:1px solid transparent;padding:5px 8px;border-radius:5px;font-size:13px;display:inline-flex;gap:7px;align-items:center;min-height:34px}
+.legend button[aria-pressed="true"]{background:#e7ede6;border-color:#a1b5a6}
+.legend svg{overflow:visible;flex:none}
+.note{margin:7px 0 14px;color:var(--muted);font-size:12px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 335px;gap:17px;align-items:start}
+.graph{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 23px;padding-right:16px;align-items:start;isolation:isolate}
+.network{position:absolute;width:100%;height:100%;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.cluster{position:relative;border:1px solid var(--line);border-top:3px solid var(--group-color);border-radius:7px;background:#fbfbf8;min-width:0;padding:10px 8px 8px}
+.cluster h2{font-size:14px;line-height:1.4;padding:0 4px 1px}
+.cluster p{font-size:11px;color:var(--muted);padding:0 4px 8px}
+.cluster ul{display:grid;align-content:start;gap:5px;list-style:none;margin:0;padding:0}
+.cluster li[hidden],.cluster[hidden]{display:none}
+.node{position:relative;z-index:2;display:block;width:100%;min-height:42px;background:var(--panel);color:var(--ink);border:1px solid #d7ded4;border-left:3px solid var(--group-color);border-radius:5px;text-align:left;padding:5px 7px;line-height:1.3;overflow-wrap:anywhere}
+.node b,.node small{display:block}
+.node b{font-size:13px}
+.node small{font-size:11px;color:var(--muted);margin-top:3px}
+.node[aria-pressed="true"]{background:#ddece3;border-color:#32735b;color:#143b2e;box-shadow:0 0 0 1px #32735b}
+.node.related{background:#edf4ed;border-color:#86a996}
+.node:hover{background:#e5f0e7}
+.edge{fill:none;stroke-width:1.25;opacity:.25;stroke-linecap:round}
+.edge.active{stroke-width:2.5;opacity:1}
+.network:not(.show-all) .edge:not(.active){display:none}
+.network.focus-peer .edge:not(.focused){opacity:.12}
+.network .edge.focused{stroke-width:3.25}
+@media(max-width:830px){.line-controls{display:none}.graph{gap:8px;padding-right:0}}
+.empty{grid-column:1/-1;padding:20px;border:1px solid var(--line);border-radius:6px}
+.detail{min-width:0;background:var(--panel);border:1px solid #c9d5c9;border-top:4px solid var(--accent);border-radius:7px;padding:16px}
+.layout>.detail{position:sticky;top:12px;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:auto;scrollbar-gutter:stable}
+.detail-section{border-top:1px solid var(--line);margin-top:12px}
+.detail-section>summary{cursor:pointer;padding:8px 0;font-size:13px;font-weight:750}
+.detail-section>summary:focus-visible,.detail h2:focus-visible{outline:2px solid #236daa;outline-offset:2px}
+.detail .relation .record{display:flex;flex-wrap:wrap;gap:2px 8px;margin:3px 0}
+.detail .relation .record span{overflow-wrap:anywhere}
+.detail .relation .evidence{align-items:center}
+.detail .relation .evidence a{margin-right:8px}
+.relation .record b{color:var(--ink);font-weight:650}
+.route-links{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:4px;font-size:12px}
+@media(max-width:830px){.detail-section>summary{padding:12px 0}}
+.detail h2{font:800 23px/1.35 "Noto Serif CJK SC","Songti SC",serif;overflow-wrap:anywhere}
+.detail .origin{color:var(--muted);font-size:12px;margin-top:3px}
+.detail .org{font-size:13px;color:var(--accent);font-weight:700;margin:6px 0 10px}
+.detail h3{font-size:13px;margin:11px 0 3px}
+.detail p{font-size:13px;line-height:1.6}
+.detail ul{list-style:none;margin:0;padding:0}
+.detail li{padding:5px 0;border-top:1px solid #ebeee6;font-size:12px}
+.detail li:first-child{border-top:0}
+.linklike{border:0;background:transparent;color:var(--accent);font-weight:750;padding:2px 0;text-align:left;text-decoration:underline;text-underline-offset:3px}
+.relation .kind{font-size:11px;font-weight:700;margin-left:6px;color:var(--muted)}
+.relation p{font-size:12px}
+.relation a{font-size:11px}
+dialog{max-width:min(550px,calc(100% - 24px));max-height:calc(100dvh - 22px);padding:0;border:0;background:var(--panel);color:var(--ink);border-radius:8px}
+dialog::backdrop{background:#11241b95}
+.dialog-bar{position:sticky;top:0;z-index:2;display:flex;justify-content:flex-end;background:var(--panel);padding:8px 11px;border-bottom:1px solid var(--line)}
+dialog .detail{border:0}
+.assessment{margin-bottom:20px;border-block:1px solid var(--line);padding:9px 0}
+.assessment summary{cursor:pointer;line-height:1.5}
+.assessment summary span,.case-controls p{font-size:12px;color:var(--muted)}
+.assessment>p{max-width:95ch;margin:9px 0;font-size:13px}
+.assessment-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 19px}
+.assessment-grid section{border-top:1px solid var(--line);padding:6px 0}
+.assessment-grid h3{font-size:14px}
+.assessment-grid p{font-size:12px;margin-bottom:3px}
+.assessment-grid a{font-size:11px;display:inline-block;margin-right:8px}
+.case-controls{display:flex;flex-wrap:wrap;gap:6px 13px;align-items:center;margin-bottom:6px}
+.case-controls select{font:inherit;background:var(--panel);color:var(--ink);border:1px solid #b9c6ba;padding:5px}
+.quiet[aria-pressed="true"]{background:#ddece3;border-color:#32735b;color:#143b2e}
+.relation .record{color:var(--muted);font-size:11px;margin-top:2px}
+.page-links{display:flex;flex-wrap:wrap;gap:4px 20px;margin:0 0 10px;font-size:13px}
+.page-links a{display:inline-flex;align-items:center;min-height:36px}
+#learn,#map-search,#history,#case-compare,#case-title,#bibliography,.lesson-panel,.history-list li{scroll-margin-top:16px}
+.learning{margin-bottom:20px}
+.learning h2{font:800 25px/1.3 "Noto Serif CJK SC","Songti SC",serif;margin:0 0 10px}
+.lesson-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.lesson-nav a{display:inline-flex;align-items:center;min-height:38px;padding:5px 10px;border:1px solid #bccbc0;border-radius:5px;background:var(--panel);font-size:13px;text-decoration:none}
+.lesson-nav a[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.lesson-panel{padding:16px;border:1px solid #c9d5c9;border-top:3px solid var(--accent);border-radius:7px;background:var(--panel)}
+.lesson-panel h3{margin-bottom:6px;font-size:20px;line-height:1.3}
+.lesson-panel>p,.lesson-review{max-width:95ch}
+.lesson-context{margin-top:5px;color:var(--muted);font-size:13px}
+.study-cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0;align-items:stretch}
+.study-card{min-width:0;padding:12px;border:1px solid var(--line);border-radius:6px;background:#f9faf4;overflow-wrap:anywhere}
+.study-card h4{font-size:14px;margin:0}
+.study-card dl{margin:6px 0;font-size:13px}
+.study-card dt{font-weight:750}
+.study-card dd{margin:0 0 6px}
+.study-card .linklike{font-size:13px}
+.lesson-links{display:flex;flex-wrap:wrap;gap:4px 13px;align-items:center;margin:8px 0;font-size:13px}
+.lesson-links a,.lesson-links button{min-height:34px;display:inline-flex;align-items:center}
+.lesson-links strong{min-width:5em}
+.lesson-quiz{margin:12px 0}
+.lesson-quiz fieldset{border:1px solid var(--line);border-radius:6px;padding:8px 12px 12px;margin:0;min-inline-size:0}
+.lesson-quiz legend{font-weight:750;padding:0 4px}
+.lesson-options{display:grid;gap:5px;margin:8px 0}
+.lesson-options label{display:flex;gap:8px;align-items:baseline;padding:3px 0;cursor:pointer;font-size:14px}
+.lesson-options input{accent-color:var(--accent);flex:none;margin-inline:0}
+.lesson-feedback{font-size:13px;font-weight:700;margin-top:5px}
+.lesson-review{padding:8px 0}
+.lesson-review summary{cursor:pointer;font-weight:750;color:var(--accent)}
+.lesson-review p{margin-top:4px;font-size:14px}
+.lesson-practice{padding-top:8px;border-top:1px solid var(--line);font-size:14px}
+.lesson-nav a:focus-visible,#compare-title:focus-visible,.lesson-review summary:focus-visible{outline:3px solid #236daa;outline-offset:3px}
+.compare-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.compare-controls .filter{display:grid;gap:4px;min-width:0}
+.compare-controls select{width:100%;min-width:0;min-height:42px;padding:5px 9px;background:var(--panel);border:1px solid #b9c6ba;border-radius:5px;color:var(--ink)}
+.section-link,.study-action{font-size:13px}
+.case-actions{display:flex;flex-wrap:wrap;gap:4px 9px;align-items:center}
+.case-actions a,.case-actions button{font-size:12px}
+.history-lesson{font-size:12px;display:inline-block;margin-top:3px}
+.lesson-pages{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px;font-size:13px}
+.lesson-pages a{min-height:36px;display:inline-flex;align-items:center}
+@media(max-width:660px){.lesson-pages a{min-height:44px}}
+@media(max-width:660px){
+  .study-cases,.compare-controls{grid-template-columns:minmax(0,1fr)}
+  .lesson-panel{padding:12px}
+  .lesson-links a,.lesson-links button,.lesson-nav a,.lesson-options label,.lesson-review summary{min-height:44px}
+  .lesson-options label{align-items:center}
+}
+@media print{.lesson-nav,.lesson-quiz,.compare-controls,.study-action,.case-actions{display:none}}
+.section{border-top:1px solid #cbd6c9;margin-top:24px;padding-top:17px}
+.history-list,.source-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 21px;list-style:none;margin:0;padding:0}
+.history-list li,.source-list li{min-width:0;border-top:1px solid var(--line);padding:8px 0;overflow-wrap:anywhere}
+.history-list li[hidden],.source-list li[hidden]{display:none}
+.history-list h3{font-size:14px}
+.history-list p,.bibliography p{font-size:13px;color:var(--muted)}
+.history-list .period,.source-meta,#source-count{font-size:12px;color:var(--muted)}
+.history-list .period{display:block;font-weight:750;color:var(--accent)}
+.history-list .linklike,.source-list a{overflow-wrap:anywhere}
+.bibliography summary{font-size:14px;font-weight:750;cursor:pointer;margin-bottom:8px}
+.bibliography .source-controls{margin:10px 0}
+.source-controls input{width:min(100%,25rem)}
+.source-list a{font-size:13px}
+@media(max-width:830px){.history-list,.source-list{grid-template-columns:repeat(2,minmax(0,1fr))}.page-links a{min-height:44px}}
+@media(max-width:550px){.history-list,.source-list{grid-template-columns:minmax(0,1fr)}.source-controls input{flex:1 1 12rem;min-width:0}}
+.section h2{font:800 23px/1.35 "Noto Serif CJK SC","Songti SC",serif;margin-bottom:10px}
+.route-list,.events{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 21px;list-style:none;margin:0;padding:0}
+.route-list li,.events li{border-top:1px solid var(--line);padding:8px 0;overflow-wrap:anywhere}
+.route-list li{border-top:2px solid var(--route-color)}
+.route-list p,.events p{font-size:13px;color:var(--muted)}
+.events em{font-style:normal;color:var(--muted);font-size:12px}
+.events a{margin-right:8px;font-size:12px}
+.cases{border-collapse:collapse;width:100%;font-size:13px}
+.cases th,.cases td{border-bottom:1px solid var(--line);padding:8px 10px 8px 0;text-align:left;vertical-align:top}
+.cases th{color:var(--muted);font-weight:700}
+.cases td:first-child{width:25%}
+.cases td:nth-child(2){width:34%}
+.cases a{font-size:12px;display:inline-block;margin-right:5px}
+footer{margin:19px 0 4px;color:var(--muted);font-size:12px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:1100px){.graph{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr) 305px}}
+@media(max-width:830px){.layout{display:block}.layout>.detail{display:none}.graph{grid-template-columns:repeat(3,minmax(0,1fr))}.route-list,.events{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){header.hero{padding:29px 14px 25px}main{padding:15px 12px}.graph{grid-template-columns:repeat(2,minmax(0,1fr))}.legend button{min-height:40px;padding:4px 5px}.controls input,.controls select{font-size:16px}.cluster{padding:8px 5px 5px}.node{min-height:44px}.cluster p{font-size:10px}.route-list,.events{gap:5px 12px}.cases td,.cases th{padding-right:6px}}
+.tools{margin:2px 0 0}
+.tools>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--muted);font-size:13px;font-weight:700}
+.tools[open]>summary{margin-bottom:4px}
+.tools>summary::before{content:"▸";display:inline-block;margin-right:6px;transition:transform .15s}
+.tools[open]>summary::before{transform:rotate(90deg)}
+@media(max-width:830px){.assessment summary{display:flex;flex-wrap:wrap;align-items:center;min-height:44px;gap:0 6px}.assessment summary::before{content:"▸";transition:transform .15s}.assessment[open] summary::before{transform:rotate(90deg)}.case-controls select{min-height:44px}}
+.deg{display:none;font-size:10px;color:var(--accent);font-weight:700;margin-top:2px}
+.cases tr[hidden]{display:none}
+@media(max-width:830px){
+.network{display:none}
+.deg{display:block}
+.node.related{background:#e6f0e8;border-color:#32735b}
+.detail li a,.relation a,.assessment-grid a,.events a,.cases a{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;margin-right:6px}
+.linklike{display:inline-flex;align-items:center;min-height:44px}
+}
+@media(max-width:550px){
+.tools .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tools .controls select,.tools .controls button{width:100%;min-width:0}
+.tools .filter{flex-direction:column;align-items:stretch;gap:4px}
+.cases,.cases tbody,.cases tr,.cases td{display:block;width:auto!important}
+.cases thead{display:none}
+.cases tr{border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:10px 12px;margin-bottom:8px}
+.cases tr[hidden]{display:none}
+.cases td{border:0;padding:3px 0}
+.cases td:first-child{padding-bottom:6px;display:flex;flex-wrap:wrap;align-items:center;gap:0 4px}
+.cases td:first-child br{display:none}
+.cases .linklike{flex:1 1 100%;min-height:40px}
+.cases a{min-height:40px}
+.cases td[data-label]::before{content:attr(data-label);display:block;font-size:11px;font-weight:700;color:var(--muted)}
+}
+@media print{header.hero{background:white;color:black;padding:8px 0;border-color:#555}header.hero p:last-child,.eyebrow{color:#333}main{padding:10px 0}.controls,.tools,.network,.layout>.detail,.legend,.note,dialog{display:none}.layout{display:block}.graph{grid-template-columns:repeat(3,minmax(0,1fr))}.cluster,.cases tr{break-inside:avoid}body{background:white}.node{min-height:0;padding:4px}}
+.site-return{display:inline-flex;align-items:center;min-height:40px;margin-bottom:6px;color:#d8e5dc;font-size:13px}
+.site-return:focus-visible{outline-color:#b9d1c4}
+@media print{.site-return{display:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <a class="site-return" href="../">← 返回资本周期</a>
+    <p class="eyebrow">学习与研究 · 人物谱系、机构与案例</p>
+    <h1>全球价值投资人物关系地图</h1>
+    <p>用历史案例学习价值投资。先读理念和证据，再做判断题，最后沿人物关系、大事年表和文献继续查证。</p>
+  </div>
+</header>
+<main class="wrap">
+  <nav class="page-links" aria-label="页面章节">
+    <a href="#learn">开始学习</a>
+    <a href="#map-search">关系地图</a>
+    <a href="#history">大事年表</a>
+    <a href="#case-compare">比较案例</a>
+    <a href="#case-title">案例库</a>
+    <a href="#bibliography" id="bibliography-link">文献索引</a>
+  </nav>
+  <section class="learning" id="learn" aria-labelledby="learn-title">
+    <h2 id="learn-title">开始学习</h2>
+    <nav class="lesson-nav" id="lesson-nav" aria-label="学习主题"></nav>
+    <div id="lesson-panels"></div>
+  </section>
+  <details class="assessment" id="assessment">
+    <summary><strong>研究方法与取样范围</strong><span> 思想史、关系证据、地域与样本偏差</span></summary>
+    <p>最重要的修正来自 GEICO。Graham–Newman 早在 1948 年就投资了这家有成本优势的保险商。巴菲特随后亲自研究它。格雷厄姆到芒格的演变，体现为商业质量、买入价格、持有期和再投资在组合中的权重变化。</p>
+    <div class="assessment-grid" id="audit"></div>
+  </details>
+  <div class="controls" id="map-search" aria-label="地图搜索">
+    <form class="search" id="search">
+      <label class="sr" for="query">搜索人物、机构或案例</label>
+      <input id="query" type="search" placeholder="搜索 Iben、TPL、Cobas、Tidewater…" autocomplete="off">
+    </form>
+  </div>
+  <details class="tools" id="tools">
+    <summary>筛选与图例</summary>
+    <div class="controls" aria-label="地图筛选">
+    <label class="filter">方法 <select id="group"><option value="">全部</option></select></label>
+    <label class="filter">地区 <select id="region"><option value="">全部</option></select></label>
+    <button class="quiet" id="neighbors" type="button" aria-pressed="false">仅保留关联节点</button>
+    <button class="quiet line-controls" id="all-lines" type="button" aria-pressed="false">显示全部连线</button>
+    <button class="quiet" id="reset" type="button">重置地图</button>
+    </div>
+    <div class="legend" id="legend" aria-label="按关系筛选"></div>
+  </details>
+  <p class="note" id="map-note"><strong id="visible-count"></strong><span class="line-controls"> · 默认显示选中节点的连线。将鼠标移到关联节点上可突出对应连线。</span> · 箭头从老师或思想来源指向受影响的人。「方法对照」标记研究比较。点击节点可查看关系时间、来源及文献日期。</p>
+  <p class="sr" id="status" aria-live="polite"></p>
+  <div class="layout">
+    <div class="graph" id="graph" role="region" aria-label="人物关系图" aria-describedby="map-note">
+      <svg class="network" id="lines" aria-hidden="true"></svg>
+      <p class="empty" id="empty" hidden>没有匹配的人物或案例。可试试英文姓氏、机构名或股票代码。</p>
+    </div>
+    <aside class="detail" id="details" aria-label="所选人物资料"></aside>
+  </div>
+  <section class="section" id="history" aria-labelledby="history-title">
+    <h2 id="history-title">大事年表</h2>
+    <div class="case-controls">
+      <label class="filter">类型 <select id="history-filter">
+        <option value="">全部</option><option>思想</option><option>机构</option><option>案例</option><option>制度</option>
+      </select></label>
+    </div>
+    <ol class="history-list" id="history-items"></ol>
+  </section>
+  <section class="section" aria-labelledby="cross-title">
+    <h2 id="cross-title">跨圈关系</h2>
+    <ul class="route-list" id="routes"></ul>
+  </section>
+  <section class="section" id="case-compare" aria-labelledby="compare-title">
+    <h2 id="compare-title" tabindex="-1">比较案例</h2>
+    <p>选两个案例并读。分别找出回报来源、价值兑现的条件，以及会推翻判断的证据。</p>
+    <div class="compare-controls">
+      <label class="filter">案例一 <select id="compare-first"></select></label>
+      <label class="filter">案例二 <select id="compare-second"></select></label>
+    </div>
+    <p class="sr" id="compare-status" aria-live="polite"></p>
+    <div id="compare-cards" class="study-cases"></div>
+    <a class="section-link" href="#case-title">浏览案例库</a>
+  </section>
+  <section class="section" aria-labelledby="case-title">
+    <h2 id="case-title">案例库</h2>
+    <div class="case-controls">
+      <label class="filter">筛选案例 <select id="case-filter"><option value="">全部</option><option value="downside">亏损或受限</option><option value="compare">同公司／同机制</option></select></label>
+      <p>用股东能拿到的现金、催化剂、退出通道和资金期限检查下行。案例中的检验问题是研究推演。</p>
+    </div>
+    <table class="cases">
+      <thead><tr><th scope="col">人物与案例</th><th scope="col">回报来自哪里</th><th scope="col">什么会推翻判断</th></tr></thead>
+      <tbody id="cases"></tbody>
+    </table>
+  </section>
+  <section class="section" aria-labelledby="forum-title">
+    <h2 id="forum-title">论坛与研究网络</h2>
+    <ul class="events" id="events"></ul>
+  </section>
+  <section class="section" id="bibliography" aria-labelledby="bibliography-title">
+    <h2 id="bibliography-title">文献索引</h2>
+    <details class="bibliography" id="source-panel">
+      <summary id="source-summary">浏览文献</summary>
+      <p>同期披露可核对合同、持仓与时间，当事人回顾有助于理解决策。用工作论文、期刊论文和数据说明核对研究口径。</p>
+      <div class="controls source-controls">
+        <label class="filter" for="source-query">搜索文献</label>
+        <input id="source-query" type="search" autocomplete="off" placeholder="搜索作者、机构、年份或来源类型">
+        <span id="source-count" aria-live="polite"></span>
+      </div>
+      <ul class="source-list" id="source-items"></ul>
+    </details>
+  </section>
+  <footer>各组按主要研究方法归纳，部分人物横跨多个方法。地区标签覆盖机构所在地、职业经历或研究市场，用于导航。关系时间记录事件或比较时期，文献日期记录出处的日期。日期待考的关系保留证据范围。当事人回顾与同期披露可交叉核对，持仓和交易均为历史记录。</footer>
+</main>
+<dialog id="person" aria-label="人物与关系详情">
+  <form method="dialog" class="dialog-bar"><button class="quiet" type="submit">关闭详情</button></form>
+  <div class="detail" id="mobile-detail"></div>
+</dialog>
+<script>
+const sources = {
+  marks:["Oaktree｜Howard Marks 履历","https://www.oaktreecapital.com/about/leadership/bio/howard-marks"],
+  karsh:["Oaktree｜Bruce Karsh 履历","https://www.oaktreecapital.com/about/leadership/bio/bruce-karsh"],
+  marks08:["Howard Marks 2008 年备忘录｜Nobody Knows","https://www.oaktreecapital.com/docs/default-source/memos/2008-09-19-nobody-knows.pdf"],
+  col:["哥伦比亚商学院｜价值投资史","https://business.columbia.edu/heilbrunn/about/valueinvestinghistory"],
+  super:["巴菲特｜《格雷厄姆—多德镇的超级投资者》","https://business.columbia.edu/insights/chazen-global-insights/superinvestors-graham-and-doddsville"],
+  schloss:["施罗斯父子访谈｜Cleveland-Cliffs","https://sabercapitalmgt.com/wp-content/uploads/2012/11/Walter-Schloss-OID-Interview.pdf"],
+  valeant:["Sequoia 2016 年度持有人信｜退出 Valeant","https://static1.squarespace.com/static/5309a1aee4b0695e51427115/t/58a29bfc414fb57a286e9db6/1487053001032/Sequoia%2BCapital%2BLetter.pdf"],
+  brk23:["伯克希尔 2023 年股东信｜芒格的角色","https://www.berkshirehathaway.com/letters/2023ltr.pdf"],
+  sees:["伯克希尔 2007 年股东信｜See’s Candy","https://www.berkshirehathaway.com/letters/2007ltr.pdf#page=6"],
+  murphy:["伯克希尔 1985 年股东信｜Capital Cities/ABC","https://www.berkshirehathaway.com/letters/1985.html"],
+  murdir:["伯克希尔 2022 年公告｜Tom Murphy 董事经历","https://www.berkshirehathaway.com/news/feb1422.pdf"],
+  murmentor:["伯克希尔 2015 年年报｜把 Murphy 当作管理榜样","https://www.berkshirehathaway.com/2015ar/2015ar.pdf"],
+  fisher:["Philip Fisher 访谈｜巴菲特与费雪","https://hedgefundalpha.com/strategies/phil-fisher-interview/"],
+  lilu:["正和岛专访李录｜芒格与二十年合作（转载）","https://finance.sina.com.cn/china/2024-12-14/doc-inczmiet8083165.shtml"],
+  brkBYD10:["2010 年伯克希尔年会｜芒格谈比亚迪","https://buffett.cnbc.com/video/2010/05/01/morning-session---2010-berkshire-hathaway-annual-meeting.html"],
+  bydClose:["MidAmerican 2009 年第三季度 10-Q｜比亚迪交易完成","https://www.sec.gov/Archives/edgar/data/1081316/000108131609000071/mehc10q_93009.htm"],
+  byd:["MidAmerican 2008 年向 SEC 提交的 10-Q｜比亚迪交易","https://www.sec.gov/Archives/edgar/data/1081316/000108131608000057/mehc10q_09302008.htm"],
+  colli:["哥伦比亚商学院｜李录与 Himalaya Capital","https://events.business.columbia.edu/event/36th-annual-graham-and-dodd-event-featuring-li-lu-96-96-cc-96-law-founder-and-chairman"],
+  pabfriend:["帕布莱访谈原文｜芒格、晚餐与桥牌","https://cdn.prod.website-files.com/691db7fda7023478951386c6/6a4b9372924a815a0b068a32_20240308_mohnish_pabrais_session_at_the_sumzero_virtual_investor_summit_2024_on_feb_8_2024_v2.pdf"],
+  lunch:["Guy Spier 自述｜与帕布莱共赴巴菲特午餐","https://time.com/archive/6904425/my-650100-lunch-with-warren-buffett/"],
+  rey:["帕布莱 FLAME University 演讲｜Reysaş","https://cdn.prod.website-files.com/691db7fda7023478951386c6/6a4b92c7f49a4628602f90a1_20240212_mohnish_pabrais_presentation_and_q_a_at_the_flame_university_on_december_25_2023.pdf"],
+  pabsleep:["帕布莱奥马哈演讲｜他与 Nick Sleep 的友谊","https://cdn.prod.website-files.com/691db7fda7023478951386c6/6a479e9f03549021968134ac_mohnish_pabrais_presentation_and_q_a_at_the_university_of_omaha_on_may_5_2023.pdf"],
+  duan:["南华早报｜段永平与巴菲特午餐","https://www.scmp.com/article/556023/no-shortage-tips-buffett-lunch"],
+  netease:["段永平问答整理｜网易","https://www.itiger.com/news/1182217896"],
+  green:["哥伦比亚商学院｜Bruce Greenwald 与 Heilbrunn 中心","https://business.columbia.edu/faculty/people/bruce-greenwald"],
+  greenbook:["哥伦比亚商学院｜《Value Investing》","https://business.columbia.edu/faculty/research/value-investing-graham-buffett-and-beyond"],
+  gotham:["Gotham｜Joel Greenblatt、哥大课程与机构史","https://www.gothamfunds.com/principals"],
+  formula:["Greenblatt｜神奇公式网站","https://magicformulainvesting.com/"],
+  marriott:["Marriott｜1993 年分拆安排","https://marriott.gcs-web.com/investor-faqs"],
+  host:["Simon & Schuster｜Greenblatt 原著书目","https://www.simonandschuster.com/books/You-Can-Be-a-Stock-Market-Genius/Joel-Greenblatt/9780684840079"],
+  vic:["TheStreet｜Greenblatt 与 Petry 发起 Value Investors Club","https://www.thestreet.com/investing/value-seekers-find-a-lucrative-forum-10290989"],
+  petry:["SEC｜John Petry 曾是 Gotham Capital 合伙人","https://www.sec.gov/Archives/edgar/data/1574085/000119312516430608/d112577dex991.htm"],
+  azrig:["azValor Internacional｜2024 年末的 Barrick、Transocean 持仓","https://www.azvalor.com/wp-content/uploads/2025/01/Azvalor-Internacional-FI-2S2024.pdf"],
+  klarman:["Klarman 访谈｜与 Max Heine、Michael Price 共事","https://www.bishoprockcap.com/assets/library/seth-klarman/August%202025%20Seth%20Klarman%20-%20Contrarian%20Investing%2C%20Discipline%2C%20and%20Building%20Baupost%20%28transcript%29"],
+  baupost:["Baupost｜机构与投资方法","https://www.baupost.com/About"],
+  robotti:["Robotti 自述｜Tweedy、Joe Reilly 和职业起点","https://advisors.robotti.com/wp-content/uploads/Robotti-WOWS-January-2025.pdf"],
+  robbio:["Robotti Advisors｜管理团队","https://advisors.robotti.com/our-team/"],
+  tdw:["Tidewater｜提名 Bob Robotti 为董事（2021）","https://investor.tdw.com/news/news-details/2021/Tidewater-to-Nominate-Robert-E.-Robotti-to-Board-of-Directors/default.aspx"],
+  tdwletter:["Robotti 致 Tidewater 董事会信","https://advisors.robotti.com/wp-content/uploads/Robotti-Company-letter-to-Tidewater-Board-002.pdf"],
+  hk:["Horizon Kinetics｜公司沿革","https://horizonkinetics.com/about/history/"],
+  stahl:["Texas Pacific Land｜Murray Stahl 与 TPL","https://www.texaspacific.com/investors/news-events/press-releases/detail/181/tpl-announces-the-passing-of-murray-stahl"],
+  tpl:["Horizon Kinetics｜TPL 研究原文","https://horizonkinetics.com/app/uploads/TPL_Primer_2023_APPROVED.pdf"],
+  secTPL:["SEC｜2019 年 TPL 与 Horizon、SoftVest 和解公告","https://www.sec.gov/Archives/edgar/data/97517/000121390019014219/f8k0719ex99-3_texas.htm"],
+  brkTPL:["2022 年伯克希尔年会｜巴菲特回忆买入 TPL 前身","https://buffett.cnbc.com/video/2022/05/02/afternoon-session---2022-meeting.html"],
+  iben:["Kopernik｜David Iben 官方履历","https://www.kopernikglobal.com/people/david-b-iben/"],
+  corcoran:["Kopernik｜Iben 与 Alissa Corcoran 联合访谈","https://www.kopernikglobal.com/wp-content/uploads/2024/02/Value-Investor-Insight-Interview_Independence-of-Mind_Dave-Iben_Alissa-Corcoran.pdf"],
+  uranium:["Kopernik｜铀行业研究与投资逻辑","https://www.kopernikglobal.com/wp-content/uploads/2024/02/Kopernik-Perspectives-Uranium-2023-FINAL-122123.pdf"],
+  russia:["SEC｜Kopernik 2022 年 7 月持仓及估值附注","https://www.sec.gov/Archives/edgar/data/890540/000175272422217506/July_Kopernik_ScheduleF.htm"],
+  london22:["Value Invest London 2022｜Iben 与 Greenblatt 议程","https://www.valueinvest.com/london/lvic-2022/"],
+  newyork:["Value Invest New York｜历届讲者","https://www.valueinvest.com/newyork/past-speakers/"],
+  cobas:["Cobas AM｜Francisco García Paramés 官方履历","https://www.cobasam.com/equipo/equipo-inversion/francisco-garcia-parames/"],
+  az:["azValor｜创始团队与 Bestinver 履历","https://www.azvalor.com/nuestro-equipo/"],
+  azsplit:["Cinco Días｜Bestinver 团队分流","https://cincodias.elpais.com/cincodias/2016/10/14/mercados/1476461035_932898.html"],
+  azrep:["azValor Internacional｜2025 年下半年组合","https://www.azvalor.com/wp-content/uploads/2026/02/Azvalor-Internacional-2S2025.pdf"],
+  golar:["Cobas AM 2025 年 6 月组合报告｜Golar LNG、BW Offshore","https://www.cobasam.com/wp-content/uploads/2025/07/Portfolio-News-Cobas-AM-June-2025.pdf"],
+  hosking:["Hosking Partners｜Jeremy Hosking 履历","https://hoskingpartners.com/people/jeremy-hosking/"],
+  hosmethod:["Hosking Partners｜资本周期方法","https://hoskingpartners.com/investment-approach/"],
+  capital:["Edward Chancellor｜《Capital Returns》","https://www.edwardchancellor.com/books/capital-returns"],
+  nomad:["Nomad 投资人信原文｜Costco、Amazon 与 Marathon","https://igyfoundation.org.uk/wp-content/uploads/2021/02/Full_Collection_Nomad_Letters_.pdf"],
+  fundsmith:["Fundsmith｜持有人手册","https://www.fundsmith.co.uk/media/mv3abv1h/fef-owners-manual-a4-2025.pdf"],
+  fsmith24:["Fundsmith｜2024 年持有人信","https://www.fundsmith.co.uk/media/pirmvyly/annual-letter-to-shareholders-2024.pdf"],
+  fox:["Fairfax｜集团与创始人","https://www.fairfax.ca/about-fairfax/"],
+  cds:["Fairfax 2008 年年报｜信用违约互换","https://www.fairfax.ca/wp-content/uploads/AR2008.pdf"],
+  cundill:["麦吉尔大学｜Peter Cundill 的加拿大价值投资路线","https://www.mcgill.ca/desautels/channels/news/desautels-alumnus-peter-cundill-was-canadian-warren-buffett-268762"],
+  eve:["哥伦比亚商学院｜Jean-Marie Eveillard 访谈","https://valueinvestingwithlegends.libsyn.com/taking-a-top-down-approach-to-value-investing"],
+  first04:["First Eagle 2004 年度报告｜共同管理和交接","https://www.sec.gov/Archives/edgar/data/906352/000095011705000078/a38861.htm"],
+  first:["SEC｜First Eagle、Eveillard 与 de Vaulx","https://www.sec.gov/Archives/edgar/data/906352/000110465907022405/a07-9025_1497.htm"],
+  temple:["Los Angeles Times｜Templeton 1939 年的低价股组合","https://www.latimes.com/archives/la-xpm-1987-08-05-fi-664-story.html"],
+  mobius:["Mark Mobius｜在 Templeton 的职业经历","https://www.markmobius.com/about"],
+  ivey:["Ivey Ben Graham Centre｜多伦多与欧洲会议档案","https://www.ivey.uwo.ca/bengrahaminvesting/events/conferences/"],
+  moirob:["MOI Global｜Bob Robotti 的投资演讲","https://securities.robotti.com/wp-content/uploads/moi201805-bob-robotti-002.pdf"],
+  om:["CNBC｜伯克希尔奥马哈年会档案","https://buffett.cnbc.com/annual-meetings/"],
+  cbsforum:["哥伦比亚｜Graham & Dodd Event","https://business.columbia.edu/heilbrunn/events/graham-dodd-event"]
+};
+const groups = [
+  ["graham","哥大源头与深度价值","资产折价、清算价值与分散"],
+  ["omaha","奥马哈与喜马拉雅","从便宜资产走向优质生意"],
+  ["credit","特殊机会与公司金融","分拆、困境证券与契约"],
+  ["resources","实物资产与供给周期","油服、铀矿、土地和特许权"],
+  ["europe","西班牙与英国","Bestinver 分流、资本周期与质量复利"],
+  ["global","跨市场价值投资","加拿大、全球逆向与新兴市场"]
+];
+const nodes = [
+  ["graham","graham","本杰明·格雷厄姆","Benjamin Graham","哥伦比亚商学院 · Graham–Newman","安全边际、净流动资产折价与证券持有人权利。把价格和价值分开，再用组合分散处理估值错误。","《证券分析》｜与 David Dodd 合著，奠定分析框架。",["col","super"]],
+  ["dodd","graham","戴维·多德","David Dodd","哥伦比亚商学院","与格雷厄姆共同建立证券分析的教学体系，将企业资产、盈利与融资结构纳入估值。","《证券分析》（1934）｜与格雷厄姆的共同著作。",["col"]],
+  ["schloss","graham","沃尔特·施罗斯","Walter Schloss","Graham–Newman → Walter & Edwin Schloss Associates","更看重资产负债表、价格和分散。与儿子 Edwin 合作，常买市场冷落的股票。","Cleveland-Cliffs｜施罗斯父子在访谈里用它说明如何观察行业地位和价格。",["super","schloss"]],
+  ["tweedy","graham","克纳普与安德森","Tom Knapp · Ed Anderson","Tweedy, Browne","Knapp 曾在 Graham–Newman 工作。与 Anderson 等人建立合伙业务，将格雷厄姆式折价投资制度化。","1984 年《超级投资者》收录的 Tweedy, Browne 合伙组合。",["super"]],
+  ["reilly","graham","乔·赖利","Joe Reilly","Tweedy, Browne","Tweedy, Browne 的合伙人。Robotti 在做外部审计时认识他，后来亲口称他是投资、商业和人生导师。","从审计底稿到投资研究｜Robotti 回忆他如何向 Tweedy 的投资人学习。",["robotti"]],
+  ["ruane","graham","比尔·鲁安","Bill Ruane","Ruane, Cunniff · Sequoia Fund","格雷厄姆课堂出身。巴菲特结束合伙企业时，请 Ruane 为原合伙人设立基金。","Valeant｜Sequoia 后任团队的集中持仓反例，2016 年退出。",["super","valeant"]],
+  ["buffett","omaha","沃伦·巴菲特","Warren Buffett","Graham–Newman → Buffett Partnership → Berkshire Hathaway","早年做资产折价与套利，后来把更多资本放到有护城河、资本回报高、能配置现金的公司。","See’s Candy｜定价权和低增量资本需求；Capital Cities/ABC｜管理层与长期资本；少年时代还买过 TPL 前身。",["super","brk23","sees","murphy","brkTPL"]],
+  ["munger","omaha","查理·芒格","Charlie Munger","Wheeler, Munger · Blue Chip Stamps · Berkshire Hathaway","推动伯克希尔把买入标准放在优质生意与合理价格上。评估激励、定价权与资本配置。","See’s Candy｜1972 年经 Blue Chip Stamps 收购，用品牌与资本需求来解释高回报。",["brk23","sees","super"]],
+  ["fisher","omaha","菲利普·费雪","Philip Fisher","Fisher & Co.","强调用客户、供应商和竞争对手验证增长的持续性，并观察研发、销售能力与管理层。对巴菲特是思想影响。","《怎样选择成长股》｜以实地访查验证长期竞争优势。",["fisher"]],
+  ["murphy","omaha","汤姆·墨菲","Tom Murphy","Capital Cities/ABC · 伯克希尔董事","媒体经营者，也是巴菲特推崇的管理榜样。和 Dan Burke 长期搭档，重视分权、成本纪律与资本配置。","Capital Cities 收购 ABC｜伯克希尔出资支持，并在一段时期把所持股票的投票权交给管理层。",["murphy","murdir","murmentor"]],
+  ["lilu","omaha","李录","Li Lu","Himalaya Capital","从格雷厄姆式安全边际出发，强调深度研究、长期集中持有和企业的长期成长。","比亚迪｜李录与芒格是理解投资来源的一条线，2008 年协议买方是伯克希尔旗下 MidAmerican。",["lilu","byd","colli"]],
+  ["pabrai","omaha","莫尼什·帕布莱","Mohnish Pabrai","Pabrai Investment Funds","研究并借鉴巴菲特合伙企业的做法，强调可复制的好点子、低下行和不对称回报。","Reysaş｜土耳其仓储资产折价，土地及仓库提供价值锚，同时承受里拉风险。",["rey","pabfriend","lunch"]],
+  ["spier","omaha","盖伊·斯皮尔","Guy Spier","Aquamarine Fund","借鉴巴菲特合伙企业与长期投资思想，尤其重视决策环境、独立判断和同行反馈。","2008 年与帕布莱共赴巴菲特慈善午餐｜其自传常用的决策环境案例。",["lunch"]],
+  ["duan","omaha","段永平","Duan Yongping","步步高 · 个人投资","把企业经营经验用于理解生意、管理层及长期现金流。参加过巴菲特慈善午餐。","网易｜他在公开问答中用对游戏业务的理解来解释早期投资。",["duan","netease"]],
+  ["greenwald","credit","布鲁斯·格林沃尔德","Bruce Greenwald","哥伦比亚商学院 · Heilbrunn Center","把资产重置价值、盈利能力价值（EPV）与增长价值分开。判断增长前，先解释进入壁垒和竞争优势。","《Value Investing》｜先比较重置成本和正常化盈利价值，再问增长是否创造价值。",["green","greenbook"]],
+  ["greenblatt","credit","乔尔·格林布拉特","Joel Greenblatt","Gotham Capital / Gotham Asset Management · 哥伦比亚商学院","神奇公式把高资本回报率与高盈利收益率结合。其早期实践还包括分拆与重组。","Host Marriott 分拆｜关注机构卖压、负债落在哪个实体、管理层激励如何变化。",["gotham","formula","host","marriott"]],
+  ["petry","credit","约翰·佩特里","John Petry","Gotham Capital → Sessa Capital · Value Investors Club","曾任 Gotham 合伙人。与 Greenblatt 创办投研交流社区，连接研究分拆、重组及冷门证券的投资者。","Value Investors Club｜机构化的同行研究交流。",["vic","petry"]],
+  ["mutual","credit","海涅与普莱斯","Max Heine · Michael Price","Mutual Shares","困境证券、套利和资产折价。Klarman 年轻时曾在这里工作。","Mutual Shares｜Klarman 回忆其早期职业训练。",["klarman"]],
+  ["klarman","credit","塞思·卡拉曼","Seth Klarman","Mutual Shares → Baupost Group","优先判断永久损失、索偿顺位、催化剂与流动性。机会不够时接受持有现金。","《Margin of Safety》｜把清算、资本结构和不同回收情景带进估值。",["klarman","baupost"]],
+  ["marks","credit","霍华德·马克斯","Howard Marks","Citi → TCW → Oaktree Capital Management","从高收益债进入困境信用，重视风险溢价、资本供给和市场情绪。把市场周期判断用于调整风险预算。","2008 年《Nobody Knows》｜在危机中评估可承受的损失、定价和部署节奏。",["marks","marks08","oaktreeHistory","oaktree2023"]],
+  ["gabelli","resources","马里奥·加贝利","Mario Gabelli","Gabelli & Company / GAMCO","私有市场价值（PMV）与催化剂。Robotti 创办自己的公司前，在 Gabelli 做过副总裁和 CFO。","职业网络｜从证券研究机构走出的 Bob Robotti。",["robbio","robotti"]],
+  ["robotti","resources","鲍勃·罗博蒂","Bob Robotti","Gabelli & Co. → Robotti & Company","关注冷门小盘股、供给退出后的产业复苏，以及管理层怎样分配复苏现金。也可参与治理。","Tidewater（TDW）｜离岸支援船，研究运力、日租金、资本开支与治理。曾获董事提名，并有公开信。",["robotti","robbio","tdw","tdwletter"]],
+  ["iben","resources","戴维·伊本","David Iben","Tradewinds → Vinik → Kopernik Global Investors","全球逆向资产价值。观察实物资产的重置成本、稀缺供给与市场假设。2013 年创办 Kopernik。","铀矿与实物铀｜Kazatomprom、Sprott Physical Uranium Trust；Gazprom｜对照股东权利、制裁和变现条件。",["iben","corcoran","uranium","russia","london22","newyork"]],
+  ["corcoran","resources","阿莉莎·科科伦","Alissa Corcoran","Kopernik Global Investors","与 Iben 在 Kopernik 共事。联合访谈给出供给退出、市场预期与反向投资的具体例子。","Kazatomprom 与 Sprott Physical Uranium Trust｜同一供给逻辑，两种资产暴露。",["corcoran","uranium"]],
+  ["stahl","resources","施塔尔与布雷格曼","Murray Stahl · Steven Bregman","Bankers Trust → Horizon Asset Management / Horizon Kinetics","长期研究稀缺资产、非传统标的与指数配置盲点。Stahl 曾任 TPL 董事。","TPL｜将土地权益、石油天然气权利金和供水服务分开估值。",["hk","tpl","stahl"]],
+  ["oliver","resources","埃里克·奥利弗","Eric Oliver","SoftVest Advisors","油气矿权投资，与 Horizon 一同参与 TPL 的治理谈判。","TPL 2019 年治理事件｜与 Horizon 联合推动对信托结构与治理的审视。",["secTPL","tpl"]],
+  ["tpl","resources","德州太平洋土地","Texas Pacific Land · TPL","案例节点 · 原为 Texas Pacific Land Trust","土地、油气权利金和水业务的经济性不同。油气开发节奏会影响兑现，需单独评估治理与资本配置。","巴菲特自述是他买过的第二只股票；Horizon 与 SoftVest 在 2019 年同属治理事件中的股东阵营。",["brkTPL","tpl","secTPL"]],
+  ["parames","europe","弗朗西斯科·加西亚·帕拉梅斯","Francisco García Paramés","Bestinver → Cobas Asset Management","自学格雷厄姆、巴菲特、彼得·林奇，结合奥地利学派商业周期视角。常看市场冷落的工业和能源资产。","Golar LNG｜Cobas 研究浮式液化设施、长期合同起始时间和项目兑现。",["cobas","azsplit","golar"]],
+  ["azvalor","europe","古斯曼与贝尔纳德","Álvaro Guzmán · Fernando Bernad","Bestinver → azValor","Bestinver 前同事，2015 年共同创办 azValor。可借组合报告观察其对矿业和能源的逆向配置。","azValor Internacional｜2024 年末持有 Barrick 与 Transocean，可比较金矿和海上钻井的资本周期。",["az","azsplit","azrig","azrep"]],
+  ["hosking","europe","杰里米·霍斯金","Jeremy Hosking","Marathon Asset Management（伦敦）→ Hosking Partners","盯产业资本开支、进入退出、供给纪律与管理层激励。关注价格何时低于补充产能所需成本。","《Capital Returns》｜可用造船订单、退役节奏和融资约束来检验航运供给。",["hosking","hosmethod","capital"]],
+  ["nomad","europe","斯利普与扎卡里亚","Nick Sleep · Qais Zakaria","Marathon（伦敦）→ Nomad Investment Partnership","从较便宜的资产走向长久的规模优势。观察公司能否把规模效益持续返还给客户，再吸引更多客户。","Costco、Amazon｜用共享规模效益解释为何早期利润率偏低仍有投资价值。",["nomad","pabsleep"]],
+  ["smith","europe","特里·史密斯","Terry Smith","Fundsmith","偏好高资本回报、可持续增长、现金转换好的企业，强调价格纪律和低换手。","Microsoft｜可在基金信中追踪持仓与贡献，结合持有人手册看质量筛选。",["fundsmith","fsmith24"]],
+  ["eveillard","global","让-马里·埃韦亚尔","Jean-Marie Eveillard","SoGen International → First Eagle","法国出身、在纽约管理全球价值基金。重资产折价与本金保护，并把黄金纳入组合风险管理。","First Eagle Global｜持有黄金以应对金融和货币风险。",["eve","first04","first"]],
+  ["vaulx","global","查尔斯·德沃","Charles de Vaulx","First Eagle → International Value Advisers","曾与 Eveillard 共同管理 First Eagle 基金，延续全球资产折价与本金保护的思路。","First Eagle 全球组合｜机构共事与管理交接的案例。",["first04","first"]],
+  ["watsa","global","普雷姆·瓦察","Prem Watsa","Fairfax Financial · 加拿大","把保险承保、浮存金、资产配置和信用对冲放在同一张资产负债表里。","2008 年信用违约互换（CDS）｜从实际年报看保护成本、名义本金与兑现。",["fox","cds"]],
+  ["cundill","global","彼得·坎迪尔","Peter Cundill","Cundill Value Fund · 加拿大","在全球找按保守资产估值仍便宜的企业，与施罗斯在资产折价上的方法接近。","Cundill Value Fund｜看加拿大经理如何在全球寻找资产折价。",["cundill"]],
+  ["templeton","global","约翰·邓普顿","John Templeton","Templeton Funds","跨市场找悲观预期和极低价格。低价组合靠分散，随后把逆向方法扩展到全球市场。","1939 年买入一篮子超低价股票｜组合承受个别破产风险。",["temple","mobius"]],
+  ["mobius","global","马克·墨比尔斯","Mark Mobius","Templeton Emerging Markets · 后创 Mobius Capital Partners","将逆向估值运用于新兴市场，重视当地调研、制度约束和股东治理。","Templeton 新兴市场业务｜全球逆向投资从成熟市场扩展到新兴市场。",["mobius"]]
+];
+const types = {
+  teacher:["授课／指导","#2a78a5","",true],
+  work:["共事／合伙","#25715d","",false],
+  friend:["公开友谊","#af4358","9 3",false],
+  influence:["思想影响","#8465a2","6 4",true],
+  contact:["活动／引荐","#94643b","2 5",false],
+  case:["交易／案例","#a46b13","7 3 2 3",false]
+};
+const edges = [
+ ["graham","dodd","work","共同教学并合著《证券分析》。","col","1928 年起共同发展课程；1934 年合著出版"],
+ ["graham","buffett","teacher","巴菲特在哥大上过格雷厄姆的课，之后加入 Graham–Newman。","super","1951 年哥大课堂；1954 年加入 Graham–Newman",["col","schloss"]],
+ ["graham","schloss","teacher","施罗斯修过格雷厄姆的夜间课程，后在 Graham–Newman 任职。","schloss","二战前修课；1946–1955 年在 Graham–Newman 任职",["super"]],
+ ["graham","tweedy","work","Tom Knapp 曾在 Graham–Newman 工作，之后成为 Tweedy, Browne 合伙人。","super","Graham–Newman 任职；起止待考"],
+ ["graham","ruane","teacher","巴菲特说他在 1951 年格雷厄姆的课上认识 Bill Ruane。","super","1951 年，哥大课堂"],
+ ["tweedy","reilly","work","Joe Reilly 是 Tweedy, Browne 的合伙人。","robotti","Robotti 早期审计经历期间；合伙起止待考"],
+ ["schloss","buffett","work","巴菲特在收录于访谈的信中回忆，他于 1954 年加入，施罗斯于 1955 年离开。","schloss","1954–1955 年有任职交集",["super"]],
+ ["buffett","ruane","contact","退出自己的合伙企业时，巴菲特请 Ruane 为原合伙人设立基金。","super","1969–1970 年，合伙企业退出与 Sequoia 筹备"],
+ ["buffett","munger","friend","巴菲特回忆两人于 1959 年相识，此后做了 64 年的朋友。","brk25","1959–2023 年"],
+ ["buffett","munger","work","巴菲特在 2023 年度股东信中回顾芒格如何共同塑造并长期经营伯克希尔。","brk23","长期合作，至 2023 年"],
+ ["fisher","buffett","influence","费雪的公司质量研究和实地访查影响了巴菲特。","fisher","影响起始年份待考"],
+ ["buffett","murphy","friend","巴菲特在公告中称，他们做了五十多年的朋友和思想伙伴。","murdir","截至 2022 年相交逾五十年"],
+ ["murphy","buffett","teacher","巴菲特将墨菲视为学习经营和管理的榜样。这是一条非正式指导关系。","murdir","多年经营交流；首次指导时间待考",["murmentor"]],
+ ["buffett","murphy","case","伯克希尔出资支持 Capital Cities 收购 ABC，并曾把所持股票的投票权交给其管理层。","murphy","1985 年宣布交易"],
+ ["munger","lilu","teacher","李录称芒格为导师，回顾了二十年的投资与生活交流。","lilu","2003 年起，据李录回忆"],
+ ["munger","lilu","work","据李录本人回忆，两人在 2003 年感恩节长谈后成为投资伙伴，其后李录管理芒格家族资产。","lilu","2003 年后，据李录回忆"],
+ ["buffett","pabrai","influence","帕布莱反复借鉴巴菲特合伙企业的运作模式。","rey","合伙企业模式的借鉴，始于其创业时期"],
+ ["buffett","pabrai","contact","2008 年与 Guy Spier 共赴慈善午餐。","lunch","2008 年，慈善午餐"],
+ ["munger","pabrai","friend","帕布莱公开回忆长期共进晚餐、打桥牌，以及芒格对他的影响。","pabfriend","芒格晚年持续往来；起始待考"],
+ ["pabrai","spier","friend","Spier 在《Time》的第一人称文章里称帕布莱为朋友。","lunch","2008 年午餐前已是朋友，据 Spier 自述"],
+ ["buffett","duan","contact","段永平曾通过慈善拍卖与巴菲特午餐。","duan","2006 年，慈善午餐"],
+ ["pabrai","nomad","friend","帕布莱在奥马哈演讲中明确称 Nick Sleep 是自己的好朋友。","pabsleep","至迟 2023 年已有公开自述"],
+ ["graham","greenwald","influence","格林沃尔德继承哥大价值投资的教学传统，发展资产价值、盈利能力与增长价值的比较框架。","greenbook","1991 年起延续哥大教学；著作汇总方法",["col"]],
+ ["greenblatt","petry","work","曾在 Gotham 共事，并共同发起 Value Investors Club。","vic","共同创办 VIC 约 2000 年；Gotham 共事起止待考",["petry"]],
+ ["mutual","klarman","work","Klarman 年轻时在 Mutual Shares 与 Max Heine、Michael Price 共事，称这段经历是职业入门的重要训练。","klarman","就读商学院前的职业早期；起止待考"],
+ ["reilly","robotti","teacher","Robotti 在审计 Tweedy 期间认识 Joe Reilly，后者成为他的导师。","robotti","1970 年代，初识及职业指导"],
+ ["gabelli","robotti","work","Robotti 创办自家机构之前，在 Gabelli & Co. 担任副总裁和 CFO。","robbio","创办 Robotti & Company 前；任职起始待考"],
+ ["graham","iben","influence","Iben 的论坛演讲以复兴格雷厄姆—多德投资为题。这里记录公开的思想认同。","london22","2022 年 5 月 19 日，演讲"],
+ ["iben","greenblatt","contact","同列 2022 年伦敦价值投资论坛议程，Greenblatt 线上参与。","london22","2022 年 5 月 19 日，会议议程"],
+ ["iben","corcoran","work","在 Kopernik 共事并联合对外阐释投资案例。","corcoran","至迟 2023 年 2 月有联合访谈记录"],
+ ["stahl","oliver","case","两方机构同列 TPL 2019 年治理和解新闻稿。","secTPL","2019 年，治理和解"],
+ ["stahl","tpl","case","Horizon 的研究材料讨论土地、权利金和水业务。TPL 的公司公告另确认了 Stahl 的董事身份。","tpl","2019 年股东治理事件；其后出任董事",["stahl","hksched"]],
+ ["oliver","tpl","case","SoftVest 与 TPL 在治理争议之后达成和解。","secTPL","2019 年，治理和解"],
+ ["buffett","tpl","case","巴菲特在 2022 年年会上回忆，TPL 前身是自己少年时代买的第二只股票。","brkTPL","少年时期，具体交易日期待考"],
+ ["buffett","parames","influence","Cobas 官方简历将其描述为自学型投资者，巴菲特是他公开认同的思想来源之一。","cobas","自学阶段；起始待考"],
+ ["parames","azvalor","work","在 Bestinver 共事。后来 Paramés 创办 Cobas，Álvaro Guzmán 和 Fernando Bernad 等创办 azValor。","azsplit","Bestinver 共事，2014–2016 年分流",["az","cobas"]],
+ ["hosking","nomad","work","共同的机构背景是伦敦 Marathon。Nomad 在早期由 Marathon 担任投资顾问，Sleep 和 Zakaria 当时任职于 Marathon。","nomad","Nomad 早期，2001 年起有持有人信记录",["hosking"]],
+ ["eveillard","vaulx","work","2004 年度信记录两人共同管理及 de Vaulx 接任，2007 年招募说明书补充文件记录 de Vaulx 离任后 Eveillard 回归。","first04","约 1999–2004 年共同管理；2005 年和 2007 年交接",["first"]],
+ ["templeton","mobius","work","Mobius 在 Templeton 的平台上发展新兴市场投资业务。该连线标示机构关系。","mobius","1987 年起，Templeton 新兴市场业务"]
+];
+const routes = [
+ ["Joe Reilly → Robotti → Tidewater","从 Tweedy 的格雷厄姆传统到油服供给周期。","robotti","teacher",["robotti","tdw"]],
+ ["帕布莱 ↔ Nick Sleep","《Dhandho Investor》和《Nomad Letters》的作者是朋友，前者在奥马哈演讲中亲自提到。","nomad","friend",["pabsleep","nomad"]],
+ ["Iben ↔ Greenblatt","2022 年 5 月 19 日同列伦敦会议议程。Iben 分享格雷厄姆—多德方法，Greenblatt 参加线上炉边对谈。","iben","forum",["london22"]],
+ ["Bestinver → Cobas / azValor","前同事各自创办机构。Golar LNG 可以从合同现金流验证投资逻辑。","parames","work",["cobas","az","golar"]],
+ ["巴菲特 → TPL ← Horizon / SoftVest","巴菲特少年时期的买入，与股东数十年后的治理事件，是同一证券的两段历史。","tpl","case",["brkTPL","secTPL"]]
+];
+const events = [
+ ["奥马哈","Berkshire Hathaway 年会","听巴菲特谈 TPL 的早期持股，也可查巴芒对历史交易与资本配置的解释。",["om","brkTPL"]],
+ ["纽约","哥大 Graham & Dodd Event","与哥大课程、Heilbrunn 中心和讲者档案相连，李录的活动有独立议程页。",["cbsforum","colli"]],
+ ["伦敦／纽约","Value Invest","伦敦 2022 年议程有 David Iben 和 Joel Greenblatt，纽约历届讲者档案也可查到 Iben。",["london22","newyork"]],
+ ["多伦多／欧洲","Ivey Ben Graham Centre","同一中心的北美及欧洲价值投资会议档案。",["ivey"]],
+ ["线上及线下","MOI Global","从演讲材料跟踪观点与案例，Robotti 有公开的演讲稿。",["moirob"]],
+ ["线上研究社区","Value Investors Club","Greenblatt 与 Petry 的投资研究交流网络。",["vic"]]
+];
+
+// Expanded historical and regional coverage.
+Object.assign(sources, {
+  kahn:["Irving Kahn 与 Robert Milne｜CFA Institute Research Foundation 的格雷厄姆传记","https://rpc.cfainstitute.org/-/media/documents/book/rf-publication/1977/rf-v1977-n1-4731-pdf.pdf"],
+  whitman:["Third Avenue｜机构沿革与 Marty Whitman","https://www.thirdave.com/our-history"],
+  kmart:["Kmart｜2003 年重组及投资协议","https://www.sec.gov/Archives/edgar/data/56824/000095012403000161/k74250exv4w1.txt"],
+  whitkm:["Washington Post｜Whitman 的 Kmart 债权转股","https://www.washingtonpost.com/archive/business/2004/05/02/valuing-safety-and-assets/b71d346c-c984-4dba-b3ff-f1d1bb12e063/"],
+  geico1951:["巴菲特 1951 年 GEICO 投资原文｜伯克希尔 2005 年报附录","https://www.berkshirehathaway.com/2005ar/2005ar.pdf"],
+  djd:["Daily Journal 2019 年委托书｜芒格与 J.P. Guerin 同任董事","https://www.sec.gov/Archives/edgar/data/783412/000143774919024933/djco20191220_def14a.htm"],
+  geico:["伯克希尔 1995 年股东信｜Graham、Davidson、GEICO 与承保失误","https://www.berkshirehathaway.com/letters/1995.html"],
+  dexter:["伯克希尔 2007 年股东信｜Dexter Shoe 与股票对价","https://www.berkshirehathaway.com/letters/2007ltr.pdf#page=8"],
+  akre:["Akre Capital｜生意、管理层和再投资","https://www.akrecapital.com/investment-approach/discerning-opportunities/"],
+  akrebio:["Akre Capital｜Chuck Akre 履历","https://www.akrecapital.com/people/chuck-akre/"],
+  russo:["Thomas Russo｜Ivey 演讲材料：Nestlé 与 Capacity to Suffer","https://www.ivey.uwo.ca/media/txmd1swc/20-thomas-russo.pdf"],
+  grahamold:["哥伦比亚商学院｜Gabelli 谈价值投资和自己的师承","https://business.columbia.edu/insights/finance-economics/insights-shifting-landscape-value-investing"],
+  gayner:["Markel 2024 股东信｜保险、投资与经营业务","https://www.sec.gov/Archives/edgar/data/1096343/000109634325000028/mkl2024shl.htm"],
+  singleton:["Leon Cooperman｜Henry Singleton 与 Teledyne 的资本配置案例","https://fundamentalfinanceplaybook.com/wp-content/uploads/2019/02/leon-cooperman-case-study-henry-singleton-teledyne.pdf"],
+  valueact:["Microsoft｜2013 年与 ValueAct 签订合作协议","https://news.microsoft.com/source/2013/08/30/microsoft-and-valueact-capital-sign-cooperation-agreement/"],
+  morfit:["Microsoft｜2014 年 Mason Morfit 加入董事会","https://news.microsoft.com/source/2014/03/11/microsoft-board-expands-to-include-mason-morfit/"],
+  chousrc:["Chou Funds｜投资哲学与资产配置","https://www.choufunds.com/aboutus.html"],
+  chouletters:["Chou Associates｜1997–2009 年持有人信","https://choufunds.com/pdf/Associates%20letter2009-1997.pdf"],
+  choufair:["Fairfax 2000 年年报｜Francis Chou 任职记录","https://www.fairfax.ca/wp-content/uploads/AR2000.pdf"],
+  keynes:["Chambers、Dimson 与 Foo｜凯恩斯与剑桥国王学院（工作论文）","https://www.nber.org/system/files/working_papers/w20421/w20421.pdf"],
+  fama:["Fama 与 French（1992）｜预期收益率的横截面","https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.1992.tb04398.x/abstract"],
+  lsv:["Lakonishok、Shleifer 与 Vishny｜逆向投资与预期外推","https://www.nber.org/papers/w4360"],
+  piotroski:["Piotroski｜用财务信号检验高账面市值比股票","https://papers.ssrn.com/sol3/papers.cfm?abstract_id=249455"],
+  asness:["Asness、Moskowitz 与 Pedersen｜跨市场价值和动量","https://www.aqr.com/insights/research/journal-article/value-and-momentum-everywhere"],
+  orbis:["Orbis｜全球策略与 Allan Gray 的机构沿革","https://www.orbis.com/sg/institutional/about-us/about-us"],
+  gray:["哈佛商学院｜Allan Gray 履历","https://www.alumni.hbs.edu/news-insights/stories/allan-w-b-gray-mba-1965"],
+  cheah:["惠理基金｜谢清海官方履历","https://www.valuepartners-group.com/en/management_team/dato-seri-cheah-cheng-hye/"],
+  vp:["惠理基金｜1993 年创立及亚洲业务沿革","https://www.valuepartners-group.com/en/about-us/company-history/"],
+  parag:["PPFAS｜机构历史及 Parag Parikh 访谈","https://amc.ppfas.com/media/interviews/parag-parikh-on-value-investing.php"],
+  ppfasco:["PPFAS｜机构沿革","https://www.ppfas.com/about/our-company/"],
+  thakkar:["PPFAS｜Rajeev Thakkar 履历","https://ppfas.com/about/bod/rajeev-thakkar/"],
+  ppffund:["PPFAS｜2024 年 12 月基金持仓","https://amc.ppfas.com/downloads/factsheet/2024/ppfas-mf-factsheet-for-December-2024.pdf?09012025_1="],
+  sparx:["SPARX｜创始人阿部修平与机构沿革","https://www.sparx.jp/growth/history.html"],
+  dynamo:["Dynamo 第 57 号信｜Natura 业务与资本市场表现","https://www.dynamo.com.br/carta-57/"],
+  natura:["Natura 2023 年 20-F｜Bruno Rocha 创办 Dynamo 与董事经历","https://www.sec.gov/Archives/edgar/data/1776967/000155485524000366/ntco-20231231.htm"],
+  hksched:["SEC｜Horizon 就 TPL 提交的 13D/A","https://www.sec.gov/Archives/edgar/data/1811074/000105682322000014/formsc13da.htm"],
+  oaktreeHistory:["Oaktree｜机构 25 周年沿革与创始人回顾","https://www.oaktreecapital.com/insights/insight-commentary/education/commemorating-25-years-of-mastering-the-market-cycle"],
+  oaktree2023:["Howard Marks 2023 年备忘录｜回顾 2008 年困境债部署","https://www.oaktreecapital.com/insights/memo/taking-the-temperature"],
+  brk25:["巴菲特 2025 年致股东信｜与芒格的友谊","https://www.berkshirehathaway.com/news/nov1025.pdf"],
+  col100:["哥伦比亚商学院｜格雷厄姆、多德、默里与证券分析课程","https://business.columbia.edu/insights/chazen-global-insights/100-years-innovation"],
+  geicoHistory:["GEICO｜公司沿革、Davidson 与早期股东","https://www.geico.com/about/corporate/history-the-full-story/"],
+  geico96:["伯克希尔 1996 年股东信｜完成 GEICO 全资收购","https://www.berkshirehathaway.com/1996ar/1996.html"],
+  dynamo117:["Dynamo 2023 年第 117 号信｜Natura 与企业复杂度","https://www.dynamo.com.br/en/carta-117/"],
+  kingsArchive:["剑桥国王学院｜馆藏目录与凯恩斯档案入口","https://www.kings.cam.ac.uk/research/archives"],
+  keynesChapter:["Chambers、Dimson 与 Foo｜剑桥捐赠基金投资档案研究","https://www.nber.org/system/files/chapters/c12860/c12860.pdf"],
+  williamsBook:["日本国立国会图书馆｜Williams 原著书目（1938 年初版）","https://ndlsearch.ndl.go.jp/books/R100000002-I000006376496"],
+  brk92:["伯克希尔 1992 年度股东信｜折现、增长与价值","https://www.berkshirehathaway.com/letters/1992.html"],
+  bpl60:["巴菲特 1960 年度合伙人信｜Sanborn Map（原信转录）","https://buffett-letters.com/en/02-letters/partnership/1960-Partnership-Letter"],
+  ringwaltDeal:["伯克希尔 2014 年年报附录｜1967 年保险收购签字文件","https://www.berkshirehathaway.com/2014ar/2014ar.pdf"],
+  brk06:["伯克希尔 2006 年度股东信｜National Indemnity 的收购与经营","https://www.berkshirehathaway.com/letters/2006ltr.pdf"],
+  gs08:["高盛 2008 年 8-K｜伯克希尔优先股和认股权证条款","https://www.sec.gov/Archives/edgar/data/886982/000095012308011720/y71480e8vk.htm"],
+  gs10k:["高盛 2008 年 10-K｜交易实际发行和资本结构","https://www.sec.gov/Archives/edgar/data/886982/000095012309001278/y74032e10vk.htm"],
+  brkJapan20:["伯克希尔 2020 年公告｜National Indemnity 持有日本五大商社","https://www.berkshirehathaway.com/news/aug3020.pdf"],
+  brkJapan24:["伯克希尔 2024 年度股东信｜日本商社、股息与日元融资","https://www.berkshirehathaway.com/letters/2024ltr.pdf"],
+  tse23:["日本交易所集团｜东证 2023 年资本成本与股价经营倡议","https://www.jpx.co.jp/english/news/1020/e20230414-01.html"],
+  tse24:["东京证券交易所｜从投资者视角说明资本成本倡议","https://www.jpx.co.jp/english/news/1020/u5j7e50000001bqd-att/240201en.pdf"],
+  yaleSwensen:["耶鲁管理学院｜张磊等人回忆 David Swensen","https://som.yale.edu/news/2021/05/faculty-and-alumni-remember-chief-investment-officer-david-swensen"],
+  yale25:["耶鲁管理学院｜2025 年 Swensen 研讨会与张磊发言","https://som.yale.edu/story/2025/swensen-symposium-celebrates-yale-cios-lasting-legacy"],
+  yaleHill:["耶鲁｜高瓴创办年份与张磊的投资背景","https://news.yale.edu/2016/06/09/yale-announces-new-trustees-senior-fellow"],
+  jd20f:["京东 2014 年度 20-F｜高瓴、今日资本及投票权","https://www.sec.gov/Archives/edgar/data/1549802/000110465915028403/a15-5694_120f.htm"],
+  magellan:["Fidelity｜Magellan 基金历任经理及时间","https://www.fidelity.com/myfidelity/InsideFidelity/NewsCenter/quickFacts/Magellan.html"],
+  bolton14:["Fidelity China Special Situations｜2014 年报与 Bolton 任期","https://investment-trusts.fidelity.co.uk/media/filer_public/bc/74/bc74d479-68aa-4596-a59f-e35f8bd6b102/china-annual-report-2014.pdf"],
+  young23:["Aberdeen｜Hugh Young 回顾亚洲研究与 Gabriel Sacks 的交接","https://www.aberdeeninvestments.com/en-gb/trusts/insights/aas-team-ethos-key-as-hugh-young-retires-december-2023"],
+  asiaChair23:["Aberdeen Asia Focus｜主席报告、团队沿革及折价","https://www.aberdeeninvestments.com/en-gb/aas/news-and-insights/insights/aas-chairmans-statement"],
+  sacksBio:["Aberdeen Asia Focus｜Gabriel Sacks 职业履历","https://www.aberdeeninvestments.com/en-gb/aas/about-us/meet-the-team"],
+  platinumHistory:["Platinum｜澳大利亚至全球投资的机构历史","https://www.platinum.com.au/about-us/our-history/"],
+  platinumASX:["澳交所存档｜Platinum 创办及首只国际基金（2025 合并材料）","https://announcements.asx.com.au/asxpdf/20250821/pdf/06n3xz2c9x13xc.pdf"],
+  platinumAsia:["澳交所｜Platinum Asia Investments 上市与募集公告","https://announcements.asx.com.au/asxpdf/20150917/pdf/431dcz4grhw3bp.pdf"],
+  monedaVote:["Patria 2021 年证券披露｜Moneda 合并议案与创始人履历","https://www.sec.gov/Archives/edgar/data/1825570/000095010321017451/dp161394_ex9901.htm"],
+  monedaClose:["Patria｜完成与智利 Moneda 的合并","https://ir.patria.com/news-releases/news-release-details/patria-investments-completes-combination-moneda-asset-management/"],
+  recmHistory:["RECM｜Piet Viljoen 与南非机构沿革","https://recm.co.za/people"],
+  lsvPaper:["Lakonishok、Shleifer 与 Vishny｜1994 年《逆向投资、外推与风险》","https://lsvasset.com/pdf/research-papers/Contrarian-Investment-Extrapolation-and-Risk.pdf"],
+  lsvFirm:["LSV Asset Management｜1994 年机构创办及投资方法","https://www.lsvasset.com/about-lsv/"],
+  frenchHML:["Kenneth French 数据库｜发达市场三因子构建方法","https://mba.tuck.dartmouth.edu/pages/faculty/Ken.french/Data_Library/f-f_3developed.html"],
+  gmoTeam:["GMO｜Jeremy Grantham 与 Ben Inker 的机构履历","https://www.gmo.com/americas/people/firm-management/"],
+  gmo19:["Ben Inker｜2019 年股东通讯回溯互联网泡沫前后组合表现","https://www.gmo.com/globalassets/articles/quarterly-letter/2019/gmo-quarterly-letter_3q19.pdf"],
+  gmo12:["Jeremy Grantham｜2012 年投资者信与客户耐心","https://www.gmo.com/globalassets/articles/quarterly-letter/2012/my-sisters-pension_jeremy-grantham_apr2012.pdf"],
+  lynchBook:["Peter Lynch 与 John Rothchild｜《One Up on Wall Street》出版方书摘","https://www.simonandschuster.com/books/One-Up-On-Wall-Street/Peter-Lynch/9780743200400"],
+  fama93:["Fama 与 French｜1993 年《Common Risk Factors in the Returns on Stocks and Bonds》","https://doi.org/10.1016/0304-405X%2893%2990023-5"],
+  doddBuffett:["哥伦比亚商学院｜巴菲特在哥大受教于格雷厄姆与多德","https://business.columbia.edu/insights/finance-economics/warren-buffett-steps-down-investing-legend-reflections"],
+  allangrayBio:["Allan Gray｜南非机构历史与 Orbis 的共同创始人","https://www.allangray.co.za/about-us/"],
+  viljoenBio:["Merchant West Investments｜Piet Viljoen 的 Allan Gray、Investec 与 RECM 履历","https://merchantwest.co.za/investments/merchant-west-investments-team-and-leadership/"],
+  recm24:["Piet Viljoen｜回顾 RECM 的 2015 年业务冲击","https://recm.co.za/letters/v2-14"],
+  prasadBio:["Pulak Prasad｜本人履历与那烂陀资本的创办","https://www.pulakprasad.com/author-bio/"],
+  prasadSummary:["Pulak Prasad｜作者自述投资框架","https://www.pulakprasad.com/book-summary/"],
+  darwinBook:["哥伦比亚大学出版社｜What I Learned About Investing from Darwin","https://cup.columbia.edu/book/what-i-learned-about-investing-from-darwin/9780231203487/"],
+  page20:["印度国家证券交易所档案｜Page Industries 2019/20 年报","https://nsearchives.nseindia.com/corporate/PAGEIND_21072020132638_AGMNOTICEANNUALREPORT2020.pdf"],
+  tdw10k24:["SEC｜Tidewater 2024 年船队、利用率和日租金","https://www.sec.gov/Archives/edgar/data/98222/000143774925005487/tdw20241231_10k.htm"],
+  rig10k24:["SEC｜Transocean 2024 年钻井合同、日租金和债务","https://www.sec.gov/Archives/edgar/data/1451505/000145150525000018/rig-20241231x10k.htm"]
+
+});
+
+groups.splice(0, groups.length,
+  ["graham","格雷厄姆谱系与深度价值","资产折价、重置成本与盈利能力"],
+  ["omaha","奥马哈与长线投资网络","从合伙企业到优质生意"],
+  ["quality","质量复利与资本配置","增量资本回报、再投资与回购"],
+  ["credit","特殊机会与困境信用","分拆、资本结构与索偿顺序"],
+  ["resources","实物资产与资本周期","供给退出、重置成本与矿权"],
+  ["governance","保险资本与股东治理","浮存金、控制权、董事会与激励"],
+  ["global","跨市场逆向投资","本地研究、国家风险与股东权利"],
+  ["factor","系统化价值","估值因子、基本面筛选与组合构建"],
+  ["regional","区域市场与选股","本地研究、市场准入与制度"]
+);
+
+const newGroups = {
+  fisher:"quality", nomad:"quality", smith:"quality", greenwald:"graham", gabelli:"governance",
+  parames:"resources", azvalor:"resources", hosking:"resources", stahl:"governance", oliver:"governance",
+  tpl:"governance", watsa:"governance", murphy:"omaha", cundill:"global", abe:"regional", cheah:"regional", yeh:"regional", parag:"regional", thakkar:"regional"
+};
+const getNode = id => nodes.find(node => node[0] === id);
+getNode("buffett")[6] = "GEICO｜定价纪律、直销成本优势与保险浮存金。See’s Candy｜低增量资本需求和定价权。Dexter Shoe｜竞争优势误判叠加股票支付的机会成本。";
+getNode("buffett")[7].push("geico", "dexter");
+getNode("graham")[6] = "《证券分析》（1934）奠定分析框架。Graham–Newman 1948 年投资 GEICO，提供了观察早期格雷厄姆与优质生意交集的案例。";
+getNode("graham")[7].push("geico1951","geico");
+getNode("gabelli")[7].push("grahamold");
+getNode("tpl")[7].push("hksched");
+
+nodes.push(
+  ["kahn","graham","欧文·卡恩","Irving Kahn","哥伦比亚商学院 → Kahn Brothers","曾担任格雷厄姆的教学助理。延续资产折价和安全边际框架，也留下了他与格雷厄姆共同工作的记录。","与 Robert Milne 合著格雷厄姆研究传记，可对照早期课堂和格雷厄姆的组合实践。",["kahn","col"]],
+  ["lorimer","omaha","洛里默·戴维森","Lorimer Davidson","GEICO","GEICO 经营者。为年轻的巴菲特讲解保险定价、直销和行业成本结构。","1951 年巴菲特拜访 GEICO；此后股东信重新评估直销低成本优势与后来的承保失误。",["geico"]],
+  ["guerin","omaha","里克·格林","Rick Guerin","Pacific Partners","出现在巴菲特 1984 年的 Graham-and-Doddsville 研究中。提供西海岸合伙制实践的一项历史样本。","Pacific Partners｜应结合绝对回撤、资金约束和样本选择理解原演讲列出的投资记录。",["super"]],
+  ["perl","graham","斯坦·珀尔梅特","Stan Perlmeter","Perlmeter Investments","巴菲特 1984 年列举的奥马哈价值投资人。以买入价格和可估价值的差额寻找机会。","Perlmeter Investments｜能从原演讲看到与施罗斯、鲁安不同的机构路径。",["super"]],
+  ["keynes","global","约翰·梅纳德·凯恩斯","John Maynard Keynes","剑桥大学国王学院捐赠基金","英国产生的一条早期实践。从宏观择时转向长期选股，投资记录可用于研究主动策略如何随市场和个人经验变化。","国王学院组合｜看持仓档案、早晚期策略变化，以及如何处理适合捐赠基金的风险。",["keynes","kingsArchive","keynesChapter"]],
+  ["whitman","credit","马蒂·惠特曼","Marty Whitman","Third Avenue Management","强调财务安全、可变现资产和证券条款。困境中可以站在债权人的位置，结合重组后股权的价值估算回收。","Kmart｜买入债权、参与重组融资并取得重组后股权。",["whitman","kmart","whitkm"]],
+  ["chou","credit","弗朗西斯·周","Francis Chou","Chou Funds · 曾在 Fairfax 任职","加拿大深度价值支线。用资产、资本结构和价格看股票与信用，机会稀少时有持有现金的空间。","Chou Associates 2009 年信｜研究金融危机后信用与股权如何在组合内切换。",["chousrc","chouletters","choufair"]],
+  ["akre","quality","查克·阿克里","Chuck Akre","Akre Capital Management","把生意本身、管理层和再投资能力看成三条支柱。高历史 ROIC 要与未来资金可以投到哪里一起研究。","三条支柱的研究法｜用增量资本回报和剩余再投资空间检验复利。",["akre","akrebio"]],
+  ["russo","quality","托马斯·鲁索","Thomas Russo","Gardner Russo & Quinn","研究全球消费品牌以及其承受短期利润压力的能力。适合比较家族控制带来的长期耐心与治理风险。","Nestlé｜用宠物食品和新兴市场投入检验当期利润下降是否换来未来现金流。",["russo"]],
+  ["singleton","quality","亨利·辛格尔顿","Henry Singleton","Teledyne · 经营者与资本配置者","比较每股价值、收购货币和回购价格。公司高估时用股权融资，便宜时再考虑用现金回购。","Teledyne｜研究不同阶段的发股与回购，以及交易对每股内在价值的影响。",["singleton"]],
+  ["gayner","governance","汤姆·盖纳","Tom Gayner","Markel Group","用保险承保、上市证券投资和自营企业配置资本。浮存金需要与承保结果、负债风险同时衡量。","Markel 股东信｜从综合成本率、投资资产和经营业务拆解回报。",["gayner"]],
+  ["morfit","governance","梅森·莫菲特","Mason Morfit","ValueAct Capital","以持股、沟通和进入董事会参与治理。管理层任命、资源投入与业务表现的因果需分别验证。","Microsoft｜2013 年签订合作协议，2014 年莫菲特进入董事会。",["valueact","morfit"]],
+  ["msft","governance","微软","Microsoft · 案例节点","ValueAct 董事会参与 · Fundsmith 持仓研究","同一公司可从两种视角估值：股东参与带来的经营选择，以及原有生意的质量和可持续再投资。","2013–2014 年的治理事件与 Fundsmith 的后期持仓是两个可独立研究的记录。",["valueact","morfit","fsmith24"]],
+  ["gray","global","艾伦·格雷","Allan Gray","南非 Allan Gray → Orbis","从南非走向全球的逆向投资机构。关注价格和内在价值偏差，用全球选股比较机会成本。","Allan Gray 与 Orbis 的机构演化｜南非本土策略如何延伸到全球市场。",["gray","orbis"]],
+  ["cheah","global","谢清海","Cheah Cheng Hye","惠理基金 · Value Partners · 香港","亚洲本地研究与价值投资。除盈利折价，也研究控股股东、关联方和财务披露。","惠理旗舰策略的历史｜亚洲价值投资在香港的机构化。",["cheah","vp"]],
+  ["parag","global","帕拉格·帕里克","Parag Parikh","PPFAS · 印度","将行为金融、企业基本面和长期价值研究引入印度的投资实践。","PPFAS 投资人访谈｜观察个人投资理念如何发展成基金机构。",["parag","ppfasco"]],
+  ["thakkar","global","拉吉夫·塔卡尔","Rajeev Thakkar","PPFAS · 印度","在 PPFAS 的职业轨迹将研究流程与机构传承连接起来。印度组合也可以纳入获准的海外企业持仓。","Parag Parikh Flexi Cap Fund｜按基金月报核实印度和海外股票配置。",["thakkar","ppffund"]],
+  ["abe","global","阿部修平","Shuhei Abe","SPARX Group · 日本","从日本个股研究、实地调研进入独立资管。早期曾接受 George Soros 委托管理日本股票。","SPARX 的日本股票与多空策略沿革｜追踪泡沫破裂后当地选股方法的演化。",["sparx"]],
+  ["rocha","governance","布鲁诺·罗沙","Bruno Rocha","Dynamo · 巴西／英国","从巴西长期持股扩展到全球投资。公开董事经历提供了研究机构投资人如何参与公司治理的窗口。","Natura｜以 20-F 核对 2023 年董事任命、独立董事角色及其 Dynamo 背景。",["dynamo","natura"]],
+  ["famafrench","factor","法马与弗伦奇","Eugene Fama · Kenneth French","芝加哥大学 · 学术研究","用账面市值比与规模研究证券回报的横截面。价值因子提供分散化的统计暴露，检验对象是组合。","1992 年论文比较规模、账面市值比与股票平均收益。1993 年论文构造股票与债券的共同因子，HML 定义可由 French 数据库复核。",["fama","fama93","frenchHML","lsv"]],
+  ["piotroski","factor","约瑟夫·皮奥特罗斯基","Joseph Piotroski","学术研究 · 财务信号","在高 B/M 股票中加入盈利、杠杆和经营效率等财务信号，检验账面价值便宜是否有经营基础。","2000 年论文｜在便宜样本内分辨财务改善与恶化。",["piotroski"]],
+  ["asness","factor","克利夫·阿斯内斯","Cliff Asness","AQR Capital Management","跨市场用规则构建价值、动量等暴露，并关注策略相关性、换手和风险预算。","《Value and Momentum Everywhere》｜把价值与动量放在跨市场组合中检验。",["asness"]],
+  ["murray","graham","罗杰·默里","Roger Murray","哥伦比亚商学院 · 《证券分析》","在哥大延续证券分析教学，并参与编写《证券分析》第五版（1988）。Mario Gabelli 是其学生。","20 世纪 90 年代初，默里应 Gabelli 邀请回校开设讲座，校方随后恢复相关课程。",["col","col100","grahamold"]],
+  ["karsh","credit","布鲁斯·卡什","Bruce Karsh","TCW → Oaktree Capital Management","在 TCW 管理特殊信用基金，后共同创办 Oaktree。研究困境中的债权顺位、企业价值与可回收金额。","2008 年 9 月至年底｜据 Marks 回顾，Karsh 团队在这一期间部署约 60 亿美元。",["karsh","oaktreeHistory","oaktree2023"]],
+  ["geico","governance","GEICO","Government Employees Insurance Company","案例节点 · 车险直销 · Berkshire Hathaway","直销能降低获客和分销成本。保险经营还取决于承保价格、赔付准备与浮存金成本。","1948 年 Graham–Newman 入股，1951 年巴菲特个人买入，1976 年伯克希尔旗下公司大举买入，1996 年完成全资收购。",["geicoHistory","kahn","geico1951","geico","geico96"]],
+  ["byd","omaha","比亚迪","BYD Company · 1211.HK · 002594.SZ","案例节点 · MidAmerican Energy Holdings","把投资想法如何形成、由谁签约，以及企业如何实现增长分开研究。","2008 年 9 月签约，2009 年 7 月完成购买。MidAmerican 以每股 8 港元认购 2.25 亿股。SEC 文件记录签约与完成，李录访谈补充早期研究。",["byd","bydClose","lilu","brkBYD10"]],
+  ["yeh","global","叶维义","V-Nee Yeh","惠理集团 · Value Partners · 香港","与谢清海于 1993 年在香港共同创办惠理。","惠理旗舰基金早期沿革｜对照机构历史与跨市场研究组织。",["vp","cheah"]],
+  ["natura","governance","Natura &Co","Natura &Co Holding · 巴西","案例节点 · Dynamo 研究与上市公司治理","Dynamo 持有人信讨论 Natura 业务复杂度。上市公司文件可以独立核对董事会成员及其任职。","2023 年 Bruno Rocha 开始担任独立董事。投资研究、任职与股东回报分别核对。",["natura","dynamo","dynamo117"]],
+  ["newman","graham","杰罗姆·纽曼","Jerome Newman","Graham–Newman","1926 年末加入格雷厄姆的联合账户，参与运营后来的 Graham–Newman。可从合伙条款、持仓分派和清算理解研究如何成为可投资的制度。","GEICO｜格雷厄姆回忆他和纽曼均参与经营，受持股监管限制后将股票分派给股东。",["kahn","geicoHistory"]],
+  ["heilbrunn","graham","罗伯特与哈丽雅特·海尔布伦","Robert & Harriet Heilbrunn","哥伦比亚商学院 · 教学支持","罗伯特曾旁听格雷厄姆课程。两人的长期资助帮助哥大将价值投资重新纳入教学。","1991 年设立的教席与 2001 年成立的研究中心，记录了思想传承背后的资金和制度。",["col","col100"]],
+  ["williams","graham","约翰·伯尔·威廉斯","John Burr Williams","《The Theory of Investment Value》","1938 年系统阐述股票未来股利的现值。估值依赖分派金额、时点和折现率，留存收益能否增厚未来分派是重要前提。","伯克希尔 1992 年度信援引他的估值思路，讨论增长创造或毁损价值的条件。",["williamsBook","brk92"]],
+  ["scott","global","弗朗西斯·斯科特","Francis Scott","Provincial Insurance · 英国","作为保险公司经营者，与任董事的凯恩斯讨论将股票纳入投资组合。保险账户需同时约束到期赔付、流动性和持仓波动。","把 Provincial Insurance 与剑桥国王学院捐赠基金并读，可以看到同一个投资人在不同资金责任下面对的选择。",["keynesChapter","kingsArchive"]],
+  ["northpipe","governance","北方管线","Northern Pipe Line","案例节点 · 公用管线与股东行动","格雷厄姆从监管文件发现铁路债券多于业务需要。可按市场价值、所需储备和股东能否推动分派三步验证折价。","1927 年股东会受阻，1928 年取得董事席位。据 1977 年传记回顾，公司随后同意每股返还 70 美元。",["kahn"]],
+  ["sanborn","governance","桑伯恩地图公司","Sanborn Map","案例节点 · Buffett Partnership","把地图业务与投资组合分别估价，再考察证券是否可分派、主业需要多少营运资本、控制权是否可取得。","1960 年度合伙人信回顾以投资组合证券换回股份的方案。投资组合价值与股价之间的差额要在税费和治理约束之后计算。",["bpl60"]],
+  ["ringwalt","governance","杰克·林沃尔特","Jack Ringwalt","National Indemnity · 保险经营","早期保险经营者。伯克希尔后来通过收购他控制的两家保险公司，获得建立保险业务的基础。","1967 年签字文件与后来股东信分别记录交易条款、总体收购价和保险持有资本的方式。",["ringwaltDeal","brk06"]],
+  ["nationalindemnity","governance","国民保险公司","National Indemnity Company","案例节点 · 伯克希尔保险资本","保险浮存金源于收取保费和支付未来赔款之间的时间差，经济价值取决于资金成本、赔付久期、风险和可投资范围。","1967 年随 National Fire & Marine 被收购。2020 年公告显示，它也是伯克希尔披露日本商社持股的主体。",["ringwaltDeal","brk06","brkJapan20"]],
+  ["goldman08","credit","高盛 2008 年优先股","Goldman Sachs · 2008 Preferred Stock","案例节点 · 伯克希尔危机融资","交易把优先股股息、偿付顺位和普通股认股权证放在一个包里。应分别判断信用、流动性和股票上行。","2008 年 9 月签约，总出资 50 亿美元。10% 累积永续优先股和五年期认股权证在 10-K 中有实际发行记录。",["gs08","gs10k"]],
+  ["jptrading","resources","日本五大商社","ITOCHU · Marubeni · Mitsubishi · Mitsui · Sumitomo","案例节点 · National Indemnity","考察综合商社分部盈利、周期资产暴露、分红与回购，并把股权现金流与日元融资放在一起评估。","2019 年开始建仓，2020 年公开披露。2024 年度信回顾买入价格、管理风格、股东回报和以日元融资的取舍。",["brkJapan20","brkJapan24"]],
+  ["tse","regional","东证资本成本倡议","Tokyo Stock Exchange · Cost of Capital","制度节点 · 日本交易所集团","要求 Prime 与 Standard 市场公司分析资本成本、资本回报及市场估值，披露改进计划并持续更新。","东证于 2023 年 3 月向公司提出披露和改进请求，随后发布投资者视角指引。可逐家核对经营计划、资本配置及管理层执行。",["tse23","tse24"]],
+  ["swensen","global","戴维·斯文森","David Swensen","耶鲁大学捐赠基金","从大学支出义务和长期资本出发，研究资产配置、管理人激励、流动性和主动管理。在本图作资金提供者与机构投资的入口。","高瓴｜耶鲁校方及张磊回顾其在耶鲁实习、与斯文森的师承，以及后来获得大学捐赠基金的启动投资。",["yaleSwensen","yale25"]],
+  ["zhanglei","quality","张磊","Lei Zhang","耶鲁 → 高瓴 Hillhouse","长期基本面研究也可用于公开市场和私募股权。研究两者时分别核对期限、估值频率和股东权利。","京东 2014 年度 20-F 披露高瓴所管理载体的持股及投票权，可由此追踪早期股东的经济权益。",["yaleHill","yaleSwensen","jd20f"]],
+  ["xuxin","quality","徐新","Kathy Xu · Xin Xu","今日资本 Capital Today","从私募成长资本视角研究中国消费企业和商业模式。依赖经营增长的价值判断要与投资轮次、条款和退出路径并读。","京东 2014 年度 20-F 列出今日资本相关载体，并说明徐新与这些载体的控制关系。",["jd20f"]],
+  ["jdcase","quality","京东集团","JD.com · 京东","案例节点 · 股权成长与表决权","验证物流与履约投入能否带来规模经济，并把所持经济权益和股东可行使的投票权分开。","2014 年度 20-F 披露高瓴与今日资本相关载体的受益持股和投票权，来源含后续申报，读表时要核对各脚注时点。",["jd20f"]],
+  ["lynch","quality","彼得·林奇","Peter Lynch","Fidelity Magellan · 美国共同基金","用个股盈利、估值、行业结构和企业成长阶段做判断。先把自己观察到的事实写成可检验的投资假设。","Magellan｜Fidelity 机构记录确认 1977–1990 年管理任期。比较基金回报时，要控制市场、组合容量和投资者实际持有期。",["magellan","lynchBook"]],
+  ["bolton","regional","安东尼·波顿","Anthony Bolton","Fidelity Special Situations → Fidelity China Special Situations","把英国特殊机会研究迁到中国主题的上市投资信托。看空、杠杆、未上市资产及公司走访的作用应以载体披露为准。","2010–2014 年中国信托｜2014 年报分列净值、股价、基准和杠杆，可以分析经理任期与股东体验。",["bolton14"]],
+  ["hughyoung","regional","休·杨","Hugh Young","Aberdeen · 新加坡与亚洲小盘股","1992 年赴新加坡建立办公室，以地区团队和公司调研覆盖亚洲小型企业。亚洲内部的股东制度和市场流动性需要分开研究。","Aberdeen Asia Focus｜在任期结束前由共同管理团队接续，上市信托股价与组合净值之间有独立的折溢价。",["young23","asiaChair23"]],
+  ["sacks","regional","加布里埃尔·萨克斯","Gabriel Sacks","Aberdeen Asia Focus","通过驻新加坡研究和后续组合管理延续亚洲小盘股工作。借此区分个人风格与团队研究流程。","Aberdeen Asia Focus｜2023 年交接材料及团队履历。",["young23","sacksBio"]],
+  ["neilson","global","克尔·尼尔森","Kerr Neilson","Platinum Asset Management · 澳大利亚","从悉尼建立全球股票研究平台，以企业估值、周期和投资者预期寻找跨市场机会。","1994 年与 Andrew Clifford 创办 Platinum，次年推出首只国际基金。",["platinumASX","platinumHistory"]],
+  ["clifford","global","安德鲁·克利福德","Andrew Clifford","Platinum Asset Management · 澳大利亚","共同建立全球股票研究团队。亚洲股票载体可用于核对跨国研究、投资条款和组合层面的限制。","Platinum Asia Investments｜澳交所上市公告可核对资金募集、证券发行与交易安排。",["platinumASX","platinumAsia"]],
+  ["echeverria","credit","巴勃罗·埃切韦里亚","Pablo Echeverría","Moneda Asset Management · 智利","从智利早期可转债产品进入资产管理，后参与建立地区资产配置平台。信用与股权机会要在各国债权执行和汇率环境中估值。","1994 年参与创办 Moneda，Patria 于 2021 年披露并完成合并。",["monedaVote","monedaClose"]],
+  ["viljoen","global","皮特·维尔容","Piet Viljoen","Allan Gray Investment Counsel → Investec → RECM · 南非","1991 年在 Allan Gray Investment Counsel 担任组合经理，1995 年转入 Investec，2003 年创办 RECM。","RECM｜由机构履历核对职业脉络，再用当事人对 2015 年业务冲击的回顾，研究管理公司的生存约束。",["recmHistory","viljoenBio","recm24"]],
+  ["lsvteam","factor","拉科尼肖克、施莱弗与维什尼","Josef Lakonishok · Andrei Shleifer · Robert Vishny","学术研究 → LSV Asset Management","将价值组合回报与投资者对历史增长的外推联系起来，以历史样本比较风险和误定价解释。","1993 年工作论文、1994 年期刊版与机构创立。用同一可投资样本检验估值信号、换手和成本。",["lsv","lsvPaper","lsvFirm","frenchHML"]],
+  ["grantham","global","杰里米·格兰瑟姆","Jeremy Grantham","GMO · 资产配置","从资产类别估值、均值回归和投资人能承受的持有期出发做配置。估值极端与价格何时修正要分别判断。","互联网泡沫前后的配置｜2012 年投资者信用客户的相对业绩容忍度讨论逆向策略的生存问题。",["gmoTeam","gmo12","gmo19"]],
+  ["inker","global","本·因克","Ben Inker","GMO · 资产配置","把跨资产估值和风险预算用于组合构建，关注投资人在相对回撤内是否能维持原配置。","2019 年回顾对照了 1990 年代后半期 GMO 策略相对基准的落后及其后阶段表现。",["gmoTeam","gmo19","gmo12"]],
+  ["allangrayfirm","global","Allan Gray 投资公司","Allan Gray · Allan Gray Investment Counsel","机构节点 · 开普敦","从南非本土选股和第三方管理业务出发，考察从业团队、客户约束和跨境投资平台。","该机构与 Orbis 有共同创始人。Piet Viljoen 的履历另可核对其在 Allan Gray Investment Counsel 的组合经理经历。",["allangrayBio","orbis","viljoenBio"]],
+  ["prasad","regional","普拉克·普拉萨德","Pulak Prasad","Warburg Pincus → 那烂陀资本 · Nalanda Capital","2007 年在新加坡创立那烂陀资本，聚焦印度上市股票。先规避重大风险，再以合理价格买入高质量公司，并给经营逻辑足够的验证时间。","2023 年出版《What I Learned About Investing from Darwin》，用达尔文和进化生物学启发风险筛查、历史观察与持有纪律。Page Industries 可用于检验这些原则。",["prasadBio","prasadSummary","darwinBook","page20"]],
+  ["pageindustry","regional","Page Industries","Page Industries · PAGEIND","案例节点 · 印度服饰制造与品牌授权","从授权条款、渠道扩张、库存和现金转化验证品牌经济性。定价权的一部分来自品牌，也受授权合同制约。","2019/20 年报列 Nalanda India Fund Limited 期末持股 7.56%。同一份年报披露 Jockey 等品牌授权及借款条款，可交叉阅读。",["page20","darwinBook"]]
+
+);
+for (const node of nodes) if (newGroups[node[0]]) node[1] = newGroups[node[0]];
+
+types.contact[0] = "引荐／交流";
+types.forum = ["同列论坛","#766341","1 4",false];
+types.method = ["方法对照","#63717f","3 4",false];
+const ibenForum = edges.find(e => e[0] === "iben" && e[1] === "greenblatt");
+ibenForum[2] = "forum";
+edges.push(
+  ["graham","dodd","teacher","按格雷厄姆的访谈回忆，多德早年听过他的课，当时已在哥大任助理教授。两人后来共同写成《证券分析》。","kahn","20 世纪 20 年代末，哥大课程"],
+  ["graham","kahn","teacher","Kahn 是格雷厄姆的早期学生和助教，后与 Robert Milne 合写格雷厄姆传记。","kahn","哥大求学及任助教时期；起止待考"],
+  ["dodd","kahn","work","Kahn 担任《证券分析》写作期间的研究助理，协助将课堂中的比较分析纳入书稿。","kahn","1930 年代初，合著准备期"],
+
+  ["munger","guerin","work","芒格与 J.P.（Rick）Guerin 曾同任 Daily Journal 董事。","djd","2019 年委托书可核对"],
+  ["munger","guerin","friend","巴菲特 1984 年演讲称 Guerin 是芒格的朋友。","super","至迟 1984 年公开提及；起始待考"],
+  ["buffett","perl","method","两人的历史合伙企业都由巴菲特收录在 1984 年的样本中，可比较各自的价格纪律与组合记录。","super","1984 年发表的若干合伙制投资记录"],
+
+  ["lorimer","buffett","teacher","1951 年 Davidson 接待巴菲特，向其解释 GEICO 的直销成本优势与保险业务。","geico","1951 年 1 月，GEICO 拜访"],
+  ["watsa","chou","work","Fairfax 2000 年报在多伦多团队及子公司管理工作中记载 Francis Chou。","choufair","2000 年年报记载任职"],
+  ["parag","thakkar","work","Thakkar 于 2001 年加入 PPFAS，后来负责公募投资。机构履历用于核对与创始人 Parag Parikh 的组织脉络。","thakkar","2001 年加入 PPFAS；2013 年起共同开展公募业务",["ppfasco"]],
+  ["morfit","msft","case","ValueAct 2013 年与微软签合作协议，Morfit 2014 年加入微软董事会。","morfit","2013 年 8 月签合作协议；2014 年 3 月任董事",["valueact"]],
+  ["smith","msft","case","Fundsmith 年度股东信记录微软持仓及对组合的影响。","fsmith24","2024 年度持仓记录"],
+  ["klarman","whitman","method","对照：Klarman 从损失与资本结构出发；Whitman 的 Kmart 案例展示债权和重组融资如何变成股权。","whitkm","Kmart 2002–2003 年重组期",["baupost","kmart"]],
+  ["nomad","akre","method","对照：Nomad 追踪客户获得的规模利益；Akre 追踪企业能够以高回报再投入的资本。","akre","Nomad 2001–2014 年信件；Akre 方法说明",["nomad"]],
+  ["russo","akre","method","对照：两者都研究再投资，Russo 重点观察品牌项目早期的利润压力及所有人的耐心。","russo","公开方法材料；单独比较再投资假设",["akre"]],
+  ["buffett","singleton","method","对照：Teledyne 的股票发行与回购可与伯克希尔股东信中的每股价值、股票对价和回购判断并读。","singleton","Teledyne 与 Berkshire 的历史资本配置实践",["brk23","dexter"]],
+  ["gayner","watsa","method","对照：两家保险资本载体的承保纪律、资金来源和资产配置。该线标记研究对照。","gayner","两家公司的历史财务披露；按报告期比较",["cds"]],
+  ["famafrench","piotroski","method","研究对照：先看高 B/M 样本的统计表现，再看能否通过财务信息剔除基本面走弱公司。","piotroski","1992 年与 2000 年论文",["fama"]],
+  ["famafrench","asness","method","研究对照：从股票横截面研究延伸到跨市场的价值与动量策略，但信号定义和权重可能不同。","asness","1992 年与 2013 年论文",["fama"]],
+  ["greenblatt","piotroski","method","对照：神奇公式用盈利收益率与资本回报，Piotroski 在高 B/M 股票中使用财务变化信号。","piotroski","神奇公式与 2000 年论文",["formula"]],
+  ["graham","keynes","method","对照：可比较安全边际与长期选股实践。凯恩斯的基金记录来自独立的英国机构。","keynes","1921–1946 年剑桥档案；1934 年《证券分析》",["col"]],
+  ["dodd","murray","influence","哥大校史记录默里延续格雷厄姆与多德的证券分析教学及后续版本的修订。","col100","哥大教学传统延续至 20 世纪 70 年代",["col"]],
+  ["murray","gabelli","teacher","Gabelli 回忆在哥大修读默里的证券分析课，研读年报与 10-K，并由此确定研究方向。","grahamold","1967 年毕业前的哥大学习时期",["col100"]],
+  ["gabelli","murray","contact","Gabelli 邀请默里回到哥大开展系列讲座，后来学校恢复价值投资课程。","col","20 世纪 90 年代初"],
+  ["marks","karsh","work","两人在 TCW 培育困境债业务，随后与其他合伙人共同创办 Oaktree。","oaktreeHistory","1988 年推出困境债基金；1995 年共同创办 Oaktree",["karsh"]],
+  ["marks","klarman","method","对照 Oaktree 的信用周期和风险预算，与 Baupost 从单个机会的下行、价格和资本结构出发的做法。","oaktree2023","2008 年信用危机回顾与 Baupost 长期方法",["baupost"]],
+  ["graham","geico","case","Graham–Newman 买入约半数股权。格雷厄姆回忆投资公司持股受监管限制，之后把股份分给其股东。","kahn","1948 年投资；之后分派持股",["geicoHistory"]],
+  ["lorimer","geico","work","公司沿革记载 Davidson 于 1948 年加入并引入新投资者，1958 年接任负责人。","geicoHistory","1948 年加入；1958 年接任"],
+  ["buffett","geico","case","巴菲特 1951 年个人买入。伯克希尔旗下公司在 1970 年代进入，1996 年完成全资收购。","geico","1951 年、1976 年及 1996 年",["geico1951","geico96"]],
+  ["lilu","byd","case","李录在访谈中回顾长期持有比亚迪的经历，以及如何判断股价下跌时公司是否继续创造价值。","lilu","至 2024 年访谈时已持有约 22 年，据李录自述"],
+  ["munger","byd","case","巴菲特在伯克希尔年会上把比亚迪投资的功劳归于芒格，芒格随后谈到集团投资判断的变化。","brkBYD10","2010 年年会回顾前期投资"],
+  ["buffett","byd","case","通过伯克希尔集团追溯交易。MidAmerican 的两份 10-Q 分别记录签约和实际购入。","byd","2008 年 9 月签约；2009 年 7 月完成",["bydClose"]],
+  ["schloss","cundill","method","比较两条资产折价路线：施罗斯聚焦证券价格与资产负债表，坎迪尔把同类思路用于跨市场选股。","cundill","历史投资方法；没有单一共同事件",["schloss"]],
+  ["graham","eveillard","influence","Eveillard 在哥大访谈中回顾，格雷厄姆的著作帮助他形成自己的投资方法。","eve","在 Société Générale 担任分析师后的早期职业阶段"],
+  ["gray","eveillard","method","对照 Orbis 的自下而上全球逆向选股与 First Eagle 将本金保护及黄金纳入组合的方式。","orbis","机构长期投资方法",["eve"]],
+  ["cheah","yeh","work","惠理公司沿革列两人为联合创始人。","vp","1993 年 2 月共同创办",["cheah"]],
+  ["abe","cheah","method","对照东京的日本个股研究和以香港为基地的亚洲股票研究。机构沿革可用于核对各自的市场进入路径。","sparx","SPARX 1989 年成立；惠理 1993 年成立",["vp","cheah"]],
+  ["rocha","natura","work","Natura &Co 的年报列出 Rocha 的 Dynamo 创办经历及其独立董事身份。","natura","2023 年开始担任独立董事"],
+  ["natura","msft","method","同为董事会参与案例，可核对任命依据、董事独立性及对经营回报的归因限制。","natura","微软 2013–2014 年；Natura 2023 年",["valueact","morfit"]],
+  ["dodd","buffett","teacher","哥大校方记载，巴菲特在求学期间同时受教于格雷厄姆和多德。","doddBuffett","1951 年毕业前的哥大学习期",["col"]],
+  ["graham","newman","work","据 Kahn 与 Milne 的传记，纽曼于 1926 年末加入联合账户，与格雷厄姆长期合作。","kahn","1926 年末至 1956 年"],
+  ["newman","geico","case","格雷厄姆在访谈中回忆，Graham–Newman 买入股份后，他和纽曼都参与了 GEICO 经营。","kahn","1948 年投资后",["geicoHistory"]],
+  ["graham","heilbrunn","teacher","据哥大校史，罗伯特曾以非学位学生身份参加格雷厄姆的课程。","col","20 世纪上半叶；修课年份待考"],
+  ["heilbrunn","greenwald","case","海尔布伦夫妇资助新教席，哥大聘任格林沃尔德，长期支持形成了制度化的课程与研究中心。","col","1991 年聘任；2001 年中心成立"],
+  ["williams","buffett","influence","1992 年度股东信直接援引 Williams 的估值框架，用未来净现金流现值讨论债券、股票和增长。","brk92","1938 年原著；1992 年度信援引",["williamsBook"]],
+  ["keynes","scott","work","档案研究记载凯恩斯担任 Provincial Insurance 董事，并向总经理 Francis Scott 提出股票投资建议。","keynesChapter","1923–1946 年"],
+  ["keynes","swensen","method","对照两个大学长期资金池的投资决策。比较支出责任、能承担的流动性风险，以及委托外部管理人的程度。","keynesChapter","剑桥 1920–1940 年代；耶鲁 1985–2021 年",["kingsArchive","yaleSwensen"]],
+  ["graham","northpipe","case","据传记，格雷厄姆以监管披露确认闲置债券，随后争取代理票并进入董事会，推动公司返还资本。","kahn","1926 年研究；1927–1928 年股东行动"],
+  ["buffett","sanborn","case","巴菲特合伙企业参与形成股票换投资证券的退出方案，1960 年度合伙人信记录了估值依据和成交机制。","bpl60","1958 年起的投资；1960 年度信回顾"],
+  ["northpipe","sanborn","method","两案都有闲置证券和资产折价。北方管线通过股东施压和返还资本兑现，Sanborn 以证券组合换回股份。","kahn","1920 年代末与 1950–1960 年代初",["bpl60"]],
+  ["northpipe","tpl","method","研究股东如何推动价值兑现：北方管线涉及剩余资本分派，TPL 涉及治理结构和权利安排。","kahn","1928 年股东行动与 2019 年治理和解",["secTPL"]],
+  ["ringwalt","buffett","case","双方签字文件记录了两家保险公司的收购。伯克希尔后来回顾投资时披露总购价及经营约束。","ringwaltDeal","1967 年 2 月签署；3 月收购",["brk06"]],
+  ["ringwalt","nationalindemnity","work","Ringwalt 经营 National Indemnity，并在 1967 年以卖方身份签署交易文件。","ringwaltDeal","1967 年收购之前及签约时",["brk06"]],
+  ["buffett","nationalindemnity","case","伯克希尔收购 National Indemnity 与 National Fire & Marine，两家公司成为其经营保险的重要起点。","brk06","1967 年 3 月 9 日",["ringwaltDeal"]],
+  ["nationalindemnity","geico","method","同属伯克希尔保险体系。比较承保品种、分销成本、赔付久期和历年浮存金成本。","brk06","1967 年后保险业务；GEICO 1996 年全资并表",["geico96"]],
+  ["buffett","goldman08","case","高盛公告和年报分别记录协议、发行及交易工具。认股权证上行与优先股信用风险应单独估价。","gs08","2008 年 9 月签约；10 月发行",["gs10k"]],
+  ["goldman08","karsh","method","同为 2008 年在流动性冲击中投入资金。比较伯克希尔的协商条款与 Oaktree 从困境债市场取得的债权。","gs08","2008 年 9 月至年底",["oaktree2023"]],
+  ["nationalindemnity","jptrading","case","2020 年公告以 National Indemnity 为持有人，报告其在五家日本商社分别跨过 5% 持股门槛。","brkJapan20","2019 年 7 月开始建仓；2020 年公开披露",["brkJapan24"]],
+  ["buffett","jptrading","case","巴菲特在年度信回顾初期估值、管理与资本配置，并讨论日元负债的作用。","brkJapan24","2019 年起；2024 年度信回顾",["brkJapan20"]],
+  ["tse","jptrading","method","伯克希尔的公开买入早于东证倡议，以两条材料分别研究低估、公司行为和市场制度的变化。","brkJapan20","2019–2020 年建仓与披露；2023 年东证倡议",["tse23","tse24"]],
+  ["tse","abe","method","近年东证倡议提供衡量董事会资本配置的公开材料。SPARX 的早期底层研究历史说明在倡议之前已存在日本本地选股实践。","tse23","1989 年 SPARX 创立；2023 年制度倡议",["sparx","tse24"]],
+  ["swensen","zhanglei","teacher","耶鲁记载张磊曾在斯文森手下实习，之后回顾其导师角色，并翻译斯文森的机构投资著作。","yale25","2000 年代初的耶鲁学习与实习阶段",["yaleSwensen"]],
+  ["swensen","zhanglei","case","耶鲁和张磊的回顾记录其捐赠基金向新创高瓴投入启动资金。","yaleSwensen","2005 年高瓴创办阶段",["yale25","yaleHill"]],
+  ["zhanglei","jdcase","case","京东 20-F 披露高瓴所管理载体的受益持股，并区分张磊的控制关系、经济利益和投票权。","jd20f","2014 年度报告；持股脚注引用 2015 年申报"],
+  ["xuxin","jdcase","case","京东 20-F 的主要股东表列出今日资本相关载体，并说明徐新的控制关系。","jd20f","2014 年度报告；持股脚注引用 2015 年申报"],
+  ["lynch","bolton","method","比较美国共同基金与英国上市信托里的个股研究。各自的证券范围、赎回机制、杠杆和基准不同。","magellan","1977–1990 年 Magellan；2010–2014 年中国信托",["lynchBook","bolton14"]],
+  ["lynch","fisher","method","对照从产品和消费者现场观察形成研究线索，与费雪向供应商、客户及竞争者交叉核验的方式。","lynchBook","代表著作与访谈中的研究方法",["fisher"]],
+  ["hughyoung","sacks","work","两人在亚洲小盘股团队共事，机构材料记录 Hugh Young 退休后由 Sacks 接续管理。","young23","2023 年公布交接",["asiaChair23","sacksBio"]],
+  ["hughyoung","cheah","method","对照以新加坡为基地的亚洲小盘研究和以香港为基地的惠理研究平台。","young23","Aberdeen 1992 年设新加坡办公室；惠理 1993 年成立",["vp"]],
+  ["neilson","clifford","work","Platinum 的交易所公告列出两位共同创办者及首只国际基金的推出时间。","platinumASX","1994 年创办；1995 年推出首只基金",["platinumHistory"]],
+  ["neilson","gray","method","从澳大利亚和南非分别扩展全球股票研究，比较管理人如何搭建本地和跨境的研究能力。","platinumHistory","Orbis 1989 年创办；Platinum 1994 年创办",["orbis","platinumASX"]],
+  ["echeverria","whitman","method","比较智利可转债基金与美国重整债权转为权益的路径。两者需分别研究转股条款、债权顺位与司法程序。","monedaVote","1989–1994 年智利经历与 2002–2003 年 Kmart 重组",["kmart"]],
+  ["gray","allangrayfirm","work","南非 Allan Gray 与境外投资机构 Orbis 的历史相连。Allan Gray 的公司资料明确记载两者拥有同一创始人。","allangrayBio","1973 年起的南非业务与 1989 年开始的 Orbis 平台",["orbis"]],
+  ["allangrayfirm","viljoen","work","Viljoen 于 1991 年在 Allan Gray Investment Counsel 担任组合经理，后赴 Investec。机构履历用于核对任职。","viljoenBio","1991–1995 年",["recmHistory"]],
+  ["famafrench","lsvteam","method","横截面关系与因子论文提出风险因子框架，LSV 论文研究投资者外推与逆向收益。两类解释需在同一样本复核。","lsvPaper","1992–1994 年论文",["fama","fama93","frenchHML"]],
+  ["lsvteam","piotroski","method","对照逆向风格组合与 Piotroski 在价值样本内利用财务信息排序的做法。","lsvPaper","1994 年与 2000 年论文",["piotroski"]],
+  ["grantham","inker","work","GMO 履历记载两人共同参与资产配置团队，投资者通讯记录其对互联网泡沫和相对回撤的回顾。","gmoTeam","Inker 1992 年加入 GMO，此后共事",["gmo12","gmo19"]],
+  ["inker","asness","method","对照基于估值的资产类别权重调整与跨市场价值、动量组合。两者的信号、持有期和基准不同。","gmo19","研究材料分别发表于 2019 年与 2013 年",["asness"]],
+  ["bolton","hughyoung","method","比较聚焦中国的英国投资信托和覆盖亚洲小盘的信托。在期限、可投资地域、公司调研、杠杆和净值折溢价上逐项对照。","bolton14","2010–2014 年中国信托；1995 年起的亚洲小盘信托",["young23","asiaChair23"]],
+  ["prasad","pageindustry","case","Page Industries 2019/20 年报记录 Nalanda India Fund Limited 期末持股 7.56%。持股比例用于复核历史持仓。","page20","截至 2020 年 3 月 31 日",["prasadBio","darwinBook"]],
+  ["prasad","parag","method","对照两种印度市场的长期基本面投资。那烂陀集中研究印度上市公司，PPFAS 的投资理念和产品有自己的组合约束。","darwinBook","2000 年代以来的印度价值投资实践",["prasadBio","parag","ppffund"]],
+  ["prasad","fisher","method","对照以历史经营质量和长期持有筛选候选公司，与费雪看经营成长、客户及供应商的取证方式。","darwinBook","研究方法对照",["prasadSummary","fisher"]]
+
+);
+
+routes.push(
+  ["格雷厄姆 → GEICO ← 巴菲特","1948 年机构投资、1951 年巴菲特个人买入、1970 年代伯克希尔入场与 1996 年全资收购。","geico","case",["geicoHistory","geico","geico96"]],
+  ["Fairfax ↔ Francis Chou","加拿大的支线把保险资产负债表与公开市场的困境证券接在一起。","chou","work",["choufair","chouletters"]],
+  ["Greenblatt ↔ Piotroski ↔ 价值因子","价格、经营质量与组合暴露各有定义。比较信号、持仓期限和换手成本。","piotroski","method",["formula","piotroski","fama"]],
+  ["ValueAct → Microsoft ← Fundsmith","同一公司，一条线看董事会及治理，一条线看质量和资本回报。","msft","case",["morfit","fsmith24"]],
+  ["哥大 → Roger Murray → Mario Gabelli","证券分析的课堂传承，以及 1990 年代价值投资课程重新开设。","murray","teacher",["col","col100","grahamold"]],
+  ["TCW → Oaktree → 困境债","1988 年的困境债基金、1995 年共同创办 Oaktree，以及 2008 年的资金部署。","karsh","work",["oaktreeHistory","marks08","oaktree2023"]],
+  ["李录／芒格／MidAmerican · 比亚迪","李录回顾长期持仓，巴菲特在年会上肯定芒格的贡献，SEC 文件核对 MidAmerican 的签约与购入。","byd","case",["lilu","byd","bydClose","brkBYD10"]],
+  ["Dynamo ↔ Rocha ↔ Natura","结合公司年报与持有人信，分别核对董事任职和对经营复杂度的研究。","natura","work",["natura","dynamo117"]],
+  ["北方管线、Sanborn Map 与 TPL","把可见的资产折价和实际可行的兑现路径拆开。比较代理票、换股、税负与董事会权利。","northpipe","method",["kahn","bpl60","secTPL"]],
+  ["GEICO ↔ National Indemnity → 日本商社","从保险经营、承保风险和浮存金，到跨境持仓与日元融资。","nationalindemnity","case",["geico96","brk06","brkJapan20","brkJapan24"]],
+  ["凯恩斯 ↔ 斯文森 → 张磊 → 京东","从大学资金的责任和期限，走到委托管理、早期股东和公开披露的资本结构。","swensen","method",["keynesChapter","yale25","jd20f"]],
+  ["Fama–French ↔ LSV ↔ Piotroski","区分因子暴露、外推行为解释与财务信号，再检查公开复现口径。","lsvteam","method",["fama93","lsvPaper","piotroski","frenchHML"]],
+  ["波顿 ↔ 休·杨的在地研究","分别读两个上市投资信托的报告，比较净值、股价折溢价、管理限制和基准。","bolton","method",["bolton14","young23","asiaChair23"]],
+  ["Allan Gray 投资公司 → Viljoen → RECM","从南非本土机构的职业流动，追踪到后来创立的管理公司及客户资金约束。","viljoen","work",["allangrayBio","viljoenBio","recm24"]],
+  ["那烂陀资本 · Page Industries","把普拉萨德的风险筛查、长期质量和价格纪律放到同一份公司年报中检验。","prasad","case",["prasadBio","darwinBook","page20"]]
+
+);
+
+const regionNames = {
+  us:"美国", uk:"英国", ca:"加拿大", eu:"欧洲大陆", cn:"中国内地",
+  in:"印度", jp:"日本", za:"南非", br:"巴西", gl:"跨国投资／案例",
+  hk:"中国香港",
+  sg:"新加坡",
+  au:"澳大利亚",
+  cl:"智利"
+
+};
+const footprints = {
+  graham:["us"], dodd:["us"], schloss:["us"], tweedy:["us"], reilly:["us"], ruane:["us"], kahn:["us"], perl:["us"], greenwald:["us"],
+  buffett:["us"], munger:["us"], murphy:["us"], lorimer:["us"], guerin:["us"], lilu:["us","cn"], pabrai:["us","in","gl"], spier:["eu","gl"], duan:["cn","us"],
+  fisher:["us"], nomad:["uk","gl"], smith:["uk","gl"], akre:["us"], russo:["us","gl"], singleton:["us"],
+  greenblatt:["us"], petry:["us"], mutual:["us"], klarman:["us"], marks:["us","gl"], whitman:["us"], chou:["ca"],
+  robotti:["us"], iben:["us","gl"], corcoran:["us","gl"], parames:["eu","gl"], azvalor:["eu","gl"], hosking:["uk","gl"],
+  gabelli:["us"], stahl:["us"], oliver:["us"], tpl:["us"], watsa:["ca","gl"], gayner:["us"], morfit:["us"], msft:["us"], rocha:["br","uk"],
+  eveillard:["eu","us","gl"], vaulx:["eu","us","gl"], cundill:["ca","gl"], templeton:["us","gl"], mobius:["us","gl"], keynes:["uk"], gray:["za","gl"],
+  cheah:["hk"], yeh:["hk"], murray:["us"], karsh:["us","gl"], geico:["us"], byd:["cn","hk"], natura:["br"], parag:["in"], thakkar:["in","gl"], abe:["jp"], famafrench:["us"], piotroski:["us"], asness:["us","gl"],
+  newman:["us"],
+  heilbrunn:["us"],
+  williams:["us"],
+  scott:["uk"],
+  northpipe:["us"],
+  sanborn:["us"],
+  ringwalt:["us"],
+  nationalindemnity:["us"],
+  goldman08:["us"],
+  jptrading:["jp","us","gl"],
+  tse:["jp"],
+  swensen:["us"],
+  zhanglei:["cn","hk","us","gl"],
+  xuxin:["cn","hk"],
+  jdcase:["cn","us"],
+  lynch:["us"],
+  bolton:["uk","cn","hk"],
+  hughyoung:["sg","uk","gl"],
+  sacks:["sg","uk"],
+  neilson:["au","gl"],
+  clifford:["au","gl"],
+  echeverria:["cl","gl"],
+  viljoen:["za"], allangrayfirm:["za"], prasad:["in","sg"], pageindustry:["in"],
+  lsvteam:["us","gl"],
+  grantham:["us","uk","gl"],
+  inker:["us","gl"]
+
+};
+const recordKinds = {
+  super:"本人回溯", brk23:"本人回溯", murdir:"公司公告／本人自述", murphy:"当期股东信", lilu:"当事人访谈", lunch:"当事人自述",
+  pabfriend:"当事人访谈", pabsleep:"当事人演讲", robotti:"当事人访谈", london22:"主办方议程", azsplit:"同期媒体",
+  secTPL:"证券披露", hksched:"证券披露", geico:"股东信／本人回溯", morfit:"当期公司公告",
+  kahn:"本人参与撰写的历史研究", choufair:"当期年报", djd:"董事任职披露", cobas:"机构履历", first:"基金披露", brkTPL:"年会实录", vic:"媒体报道",
+  robbio:"机构履历", corcoran:"当事人访谈", nomad:"持有人信", russia:"基金披露", piotroski:"学术原文", keynes:"档案研究",
+  first04:"当期股东信", brkBYD10:"年会实录", byd:"证券申报", bydClose:"证券申报", col:"院校沿革", col100:"院校沿革", grahamold:"院校采访",
+  brk25:"本人回顾", murmentor:"年度报告", fisher:"当事人访谈", rey:"当事人演讲", duan:"同期报道",
+  greenbook:"院校书目", klarman:"当事人访谈", baupost:"机构方法", marks08:"同期备忘录",
+  petry:"证券披露", tpl:"持股机构研究", stahl:"公司公告", az:"机构履历", hosking:"机构履历",
+  mobius:"本人履历", thakkar:"机构履历", ppfasco:"机构沿革", valueact:"当期公司公告", fsmith24:"持有人信",
+  whitkm:"媒体采访", kmart:"证券披露／投资协议", akre:"机构方法", russo:"当事人演讲", singleton:"案例研究",
+  dexter:"股东信／本人回顾", gayner:"股东信", cds:"年度报告", fama:"学术论文", asness:"学术论文", formula:"方法网站",
+  oaktreeHistory:"机构沿革／当事人回顾", oaktree2023:"备忘录／当事人回顾", karsh:"机构履历",
+  geicoHistory:"公司沿革", geico1951:"当事人同期文章", geico96:"股东信", cundill:"院校人物报道", schloss:"当事人访谈",
+  orbis:"机构方法", eve:"当事人访谈", vp:"机构沿革", cheah:"机构履历", sparx:"机构沿革",
+  natura:"年度报告", dynamo117:"持有人信",
+  kingsArchive:"档案目录",
+  keynesChapter:"基于档案的研究原文",
+  williamsBook:"原著书目",
+  brk92:"股东信／本人论述",
+  bpl60:"当期合伙人信／转录",
+  ringwaltDeal:"同期文件重印",
+  brk06:"股东信／本人回顾",
+  gs08:"同期证券申报",
+  gs10k:"年度证券申报",
+  brkJapan20:"当期公司公告",
+  brkJapan24:"股东信／本人回顾",
+  tse23:"交易所公告",
+  tse24:"交易所指导材料",
+  yaleSwensen:"院校发布／当事人回顾",
+  yale25:"院校活动记录",
+  yaleHill:"院校公告",
+  jd20f:"年度证券申报",
+  magellan:"机构历史记录",
+  bolton14:"年度报告",
+  young23:"机构发布／当事人回顾",
+  asiaChair23:"当期报告",
+  sacksBio:"机构履历",
+  platinumHistory:"机构沿革",
+  platinumASX:"交易所公告／机构回顾",
+  platinumAsia:"交易所公告",
+  monedaVote:"同期证券申报与履历",
+  monedaClose:"当期公司公告",
+  recmHistory:"机构沿革",
+  lsvPaper:"学术论文原文",
+  lsvFirm:"机构沿革",
+  frenchHML:"作者方法说明",
+  gmoTeam:"机构履历",
+  gmo19:"机构信／当事人回顾",
+  gmo12:"机构信／当事人回顾",
+  lynchBook:"原著书摘",
+  fama93:"学术论文原文",
+  doddBuffett:"院校记录",
+  allangrayBio:"机构沿革",
+  viljoenBio:"机构履历",
+  recm24:"当事人回顾",
+  prasadBio:"当事人履历",
+  prasadSummary:"作者书摘与方法",
+  darwinBook:"原著书目与目录",
+  page20:"同期年度报告",
+  tdw10k24:"年度证券申报",
+  rig10k24:"年度证券申报"
+
+};
+const evidenceDates = {
+  super:"1984 年原文",
+  kahn:"1977 年出版；访谈录于 1976 年",
+  brk23:"2023 年度信，2024 年发布",
+  brk25:"2025 年 11 月 10 日",
+  murdir:"2022 年 2 月 14 日",
+  murmentor:"2015 年年报",
+  murphy:"1985 年度信",
+  lilu:"2024 年 11 月 28 日访谈，12 月刊载",
+  lunch:"2008 年第一人称文章",
+  pabfriend:"2024 年 2 月访谈",
+  pabsleep:"2023 年 5 月演讲",
+  rey:"2023 年 12 月演讲",
+  duan:"2006 年报道",
+  robotti:"2025 年 1 月访谈",
+  london22:"2022 年会议议程",
+  corcoran:"2023 年 2 月 28 日访谈",
+  azsplit:"2016 年 10 月报道",
+  secTPL:"2019 年 7 月公告",
+  tpl:"2023 年研究",
+  hksched:"2022 年申报",
+  stahl:"2026 年 4 月 9 日公告",
+  brkTPL:"2022 年年会实录",
+  nomad:"2001–2014 年多期信件",
+  geico:"1995 年度信，1996 年发布",
+  geico1951:"1951 年原文；2005 年度年报重印",
+  geico96:"1996 年度信",
+  morfit:"2014 年 3 月 11 日",
+  valueact:"2013 年 8 月 30 日",
+  choufair:"2000 年年报",
+  djd:"2019 年委托书",
+  russia:"2022 年 7 月 31 日持仓截面",
+  keynes:"2014 年研究工作论文",
+  fama:"1992 年论文",
+  piotroski:"2000 年论文",
+  asness:"2013 年论文",
+  first04:"2004 年度信",
+  first:"2007 年 3 月 26 日",
+  golar:"2025 年 6 月报告",
+  fsmith24:"2024 年度信",
+  whitkm:"2004 年 5 月报道",
+  kmart:"2003 年公告",
+  gayner:"2024 年度信",
+  cds:"2008 年年报",
+  dexter:"2007 年度信",
+  grahamold:"2023 年 11 月 17 日",
+  col100:"2015 年校史文章",
+  oaktreeHistory:"2020 年周年回顾",
+  oaktree2023:"2023 年 7 月 10 日",
+  marks08:"2008 年 9 月 19 日",
+  brkBYD10:"2010 年 5 月 1 日",
+  byd:"2008 年第三季度 10-Q",
+  bydClose:"2009 年第三季度 10-Q",
+  natura:"2023 年度 20-F，2024 年提交",
+  dynamo117:"2023 年第一季度信",
+  russo:"演讲材料，日期未标注",
+  klarman:"2025 年 8 月访谈",
+  greenbook:"2001 年出版",
+  schloss:"汇编含 1989 年访谈及 1976 年信",
+  eve:"2019 年 7 月 12 日访谈",
+  cundill:"2017 年 6 月 28 日刊载",
+  vic:"2006 年报道",
+  petry:"2016 年 SEC 附件",
+  kingsArchive:"常设档案目录",
+  keynesChapter:"2015 年章节",
+  williamsBook:"1938 年",
+  brk92:"1992 年度",
+  bpl60:"1960 年度",
+  ringwaltDeal:"1967 年签字，2014 年报重印",
+  brk06:"2006 年度",
+  gs08:"2008 年 9 月",
+  gs10k:"2008 年度",
+  brkJapan20:"2020 年 8 月",
+  brkJapan24:"2024 年度",
+  tse23:"2023 年 4 月 14 日",
+  tse24:"2024 年 2 月",
+  yaleSwensen:"2021 年 5 月",
+  yale25:"2025 年",
+  yaleHill:"2016 年",
+  jd20f:"2014 年度，2015 年提交",
+  magellan:"日期未标注",
+  bolton14:"2014 年 3 月财年",
+  young23:"2023 年 12 月 1 日",
+  asiaChair23:"截至 2023 年 7 月财年",
+  sacksBio:"日期未标注",
+  platinumHistory:"日期未标注",
+  platinumASX:"2025 年 8 月 21 日",
+  platinumAsia:"2015 年",
+  monedaVote:"2021 年",
+  monedaClose:"2021 年 12 月 1 日",
+  recmHistory:"日期未标注",
+  lsvPaper:"1994 年 12 月",
+  lsvFirm:"日期未标注",
+  frenchHML:"持续维护的数据说明",
+  gmoTeam:"日期未标注",
+  gmo19:"2019 年第三季度",
+  gmo12:"2012 年 4 月",
+  lynchBook:"2000 年版",
+  fama93:"1993 年 2 月",
+  doddBuffett:"2025 年",
+  allangrayBio:"日期未标注",
+  viljoenBio:"日期未标注",
+  recm24:"2024 年 4 月 18 日",
+  prasadBio:"日期未标注",
+  prasadSummary:"日期未标注",
+  darwinBook:"2023 年 5 月",
+  page20:"截至 2020 年 3 月财年",
+  tdw10k24:"2024 年度",
+  rig10k24:"2024 年度"
+
+};
+
+const history = [
+  ["1921","机构","剑桥国王学院的长期投资账户","档案研究以 1921 年为凯恩斯管理国王学院捐赠基金的样本起点。档案研究把他早期的交易和后来集中于个股的做法分开考察。同一研究也保留他在保险账户和其他载体上的经历。","keynes",["kingsArchive","keynesChapter"]],
+  ["1926–1928","案例","北方管线的资产折价与股东行动","格雷厄姆从监管档案识别闲置债券，第一次股东会未能推动讨论，随后争取代理票、进入董事会和争取资本返还。","northpipe",["kahn"]],
+  ["1928–1934","思想","哥大证券分析课程与《证券分析》","格雷厄姆与多德从课堂到合著，建立了用资产、盈利、证券条款和价格判断安全边际的教学框架。","graham",["col","col100"]],
+  ["1938","思想","John Burr Williams 讨论股利现值","股利现值为企业的长期分派提供一套估值语言。伯克希尔 1992 年度信借用这一框架，把增长放回现金流和增量资本回报中判断。","williams",["williamsBook","brk92"]],
+  ["1948–1951","案例","GEICO 连接资产购买与经营研究","Graham–Newman 先成为股东，之后巴菲特实地了解车险直销模式并个人买入。伯克希尔的后续交易属于不同阶段。","geico",["geicoHistory","kahn","geico1951","geico"]],
+  ["1958–1961","案例","Sanborn Map 分离投资组合与经营资产","合伙人信记录证券组合价值高于公司股价，以及用证券换回股票的办法。把可确认的资产折价与可执行的退出机制分别核对。","sanborn",["bpl60"]],
+  ["1967","案例","伯克希尔进入保险业","伯克希尔收购 National Indemnity 和 National Fire & Marine。可从签字文件和后来股东信同时核对收购与浮存金经济性。","nationalindemnity",["ringwaltDeal","brk06"]],
+  ["1972","案例","See’s Candy 与少增量资本的生意","Blue Chip Stamps 收购 See’s。巴菲特后来披露投入资本、盈利和释放的现金，为判断品牌和增量资本需求提供可核对的例子。","munger",["sees"]],
+  ["1977–1990","机构","Magellan 基金与彼得·林奇","美国开放式共同基金为盈利、估值与成长阶段的个股研究提供了另一种资金载体。经理任期与单个投资者的持有期需分开。","lynch",["magellan","lynchBook"]],
+  ["1984","思想","《格雷厄姆—多德镇的超级投资者》","巴菲特汇集若干有共同思想背景的投资记录。可由此追溯实践分支，比较方法的普遍效果还需从完整样本出发。","buffett",["super"]],
+  ["1989–1995","机构","南非、香港、新加坡及澳大利亚的研究平台","Orbis 创立，Aberdeen 在新加坡设立办公室，惠理在香港成立，Platinum 从悉尼启动全球股票业务。各自的组织沿革独立核对。","hughyoung",["orbis","young23","vp","platinumASX"]],
+  ["1991–2001","机构","海尔布伦资助与哥大课程恢复","哥大 1991 年聘任格林沃尔德，默里受邀重返课堂，2001 年成立 Heilbrunn Center。学术传承也依赖教席、资金和组织。","heilbrunn",["col","col100"]],
+  ["1992–1994","思想","价值因子与逆向收益解释","Fama–French 从平均收益横截面拓展到因子构建。LSV 从投资者外推解释逆向收益。比较两条证据链时应统一股票池、财报可得时点和组合规则。","lsvteam",["fama","fama93","lsvPaper","frenchHML"]],
+  ["1994–2021","机构","智利 Moneda 的地区资本市场路线","从可转债背景走到地区资产管理平台，后与 Patria 合并。这一沿革可从证券申报与成交公告复核。","echeverria",["monedaVote","monedaClose"]],
+  ["1995","机构","Oaktree 承接 TCW 的困境信用实践","马克斯和卡什等人创办 Oaktree。其后可用机构历史与危机备忘录追溯从研究风险到募集并部署资本的过程。","karsh",["oaktreeHistory","marks08","oaktree2023"]],
+  ["2005","机构","耶鲁捐赠基金与高瓴","学校记录了从斯文森手下的实习和长期指导，到耶鲁捐赠基金参与高瓴启动投资的路径。","swensen",["yaleSwensen","yale25","yaleHill"]],
+  ["2007","机构","普拉克·普拉萨德创办那烂陀资本","那烂陀资本在新加坡起步，聚焦印度上市公司。2023 年出版的投资著作用进化生物学讨论风险排除、企业质量和持有纪律。","prasad",["prasadBio","darwinBook"]],
+  ["2008","案例","金融危机中的三种资金用途","比较伯克希尔的高盛优先股与认股权证、Oaktree 的困境债部署，以及 Fairfax 年报披露的信用保护。三种合同的现金流和风险暴露各异。","goldman08",["gs08","gs10k","oaktree2023","cds"]],
+  ["2010–2014","案例","波顿的中国上市投资信托","净值、二级市场股价和指数基准有不同的回报路径。年报也给出杠杆及未上市持仓限制。","bolton",["bolton14"]],
+  ["2014–2015","案例","京东披露早期股东的经济权益与表决权","从 20-F 的股东表与脚注查看高瓴、今日资本背后的持股主体，以及经济权益与投票权的差异。","jdcase",["jd20f"]],
+  ["2019–2020","案例","伯克希尔建立日本五大商社持仓","National Indemnity 对外披露持股，年度信解释早期估值、管理层与资本配置判断，以及日元融资。","jptrading",["brkJapan20","brkJapan24"]],
+  ["2020","案例","Page Industries 年报提供持仓和经营证据","查阅 2019/20 年报，可分别核对那烂陀基金的期末持股、品牌授权和借款情况。","pageindustry",["page20","darwinBook"]],
+  ["2023","制度","东京证券交易所提出资本成本倡议","东证向 Prime 与 Standard 市场上市公司提出改进请求，鼓励公司分析资本使用与市场估值，并披露和更新计划。","tse",["tse23","tse24"]],
+  ["2024","案例","用两份油服年报区分支援船与钻井平台","Tidewater 的船队利用率与日租金，以及 Transocean 的钻井合同和备用费率，提供了学习有效运力与合同现金流的独立样本。","robotti",["tdw10k24","rig10k24"]]
+];
+const audit = [
+  ["思想史","把格雷厄姆等同于只买烟蒂，会遗漏治理行动、特殊机会和保险投资。","把 GEICO、See’s 和 Dexter 对读。比较经营质量、支付价格、付款方式与持有期如何各自影响回报。",["geico","sees","dexter"]],
+  ["关系证据","同列议程、引荐客户和公开确认的友谊，依据与含义不同。","用关系类型区分人员往来与研究对照，并列显示事件时间和文献日期。只有机构或当事人记录的部分，按原文说明证据限度。",["super","murdir","london22"]],
+  ["方法与地区","机构历史、地域与策略彼此独立。同一机构可能在多地研究、筹资和持仓。","按方法浏览，再用地区筛选。扩展新加坡、澳大利亚、智利与南非的在地研究和资金路线，保留这些机构所在地与投资范围的区别。",["keynes","orbis","vp","sparx","natura"]],
+  ["样本与归因","名声、公开持仓与事后赢家容易掩盖职业约束和坏结果。","加入 Dexter、Valeant，以及受交易和托管约束的 Gazprom，配对赢家查看权益稀释、退出通道和资本期限。",["dexter","valeant","russia"]],
+  ["资金期限","合伙企业、共同基金、保险公司和捐赠基金能承担的流动性风险不同。","读每个案例先问谁提供资本、谁能赎回、何时需要现金。保险浮存金要与承保损益一起看，困境机会则要将资金期限和索偿权兑现顺序一起看。",["geico","gayner","cds","baupost"]],
+  ["覆盖边界","本图深挖可追溯链条，地区覆盖深度仍有差异。","各地节点提供原始资料入口。覆盖偏向公开披露较充分的机构和案例，尤其英语文献。比较绩效需要纳入退出者，并统一币种、费用、基准和资金期限。",["natura","dynamo117","vp","sparx","super","young23","platinumASX","monedaVote","recmHistory"]]
+];
+
+</script>
+<script>
+const colors = {graham:"#537357",omaha:"#386657",quality:"#607b8e",credit:"#537494",resources:"#986b39",governance:"#795886",global:"#8e5859",factor:"#686b42",regional:"#485f80"};
+const byId = new Map(nodes.map(node => [node[0], node]));
+const graph = document.querySelector("#graph");
+const lines = document.querySelector("#lines");
+const legend = document.querySelector("#legend");
+const query = document.querySelector("#query");
+const group = document.querySelector("#group");
+const region = document.querySelector("#region");
+const neighbors = document.querySelector("#neighbors");
+const allLines = document.querySelector("#all-lines");
+const detail = document.querySelector("#details");
+const mobileDetail = document.querySelector("#mobile-detail");
+const person = document.querySelector("#person");
+const mobile = matchMedia("(max-width:830px)");
+const svgNS = "http://www.w3.org/2000/svg";
+const nodeButtons = new Map();
+const renderedDetail = new WeakMap();
+let selected = "iben";
+let activeType = "";
+let localGraph = false;
+let pointedNode = null;
+let focusedNode = null;
+let visible = new Set(byId.keys());
+
+function el(tag, value, className) {
+  const item = document.createElement(tag);
+  if (value) item.textContent = value;
+  if (className) item.className = className;
+  return item;
+}
+function svg(tag, attributes) {
+  const item = document.createElementNS(svgNS, tag);
+  for (const [key, value] of Object.entries(attributes)) item.setAttribute(key, value);
+  return item;
+}
+function source(id, label) {
+  const [title, url] = sources[id];
+  const link = el("a", label || title);
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  if (label) link.setAttribute("aria-label", title);
+  return link;
+}
+function button(label, className, action) {
+  const b = el("button", label, className);
+  b.type = "button";
+  b.addEventListener("click", action);
+  return b;
+}
+function relations(id) {
+  return edges.filter(edge => (edge[0] === id || edge[1] === id) && (!activeType || edge[2] === activeType));
+}
+function choose(id, open = true) {
+  if (!visible.has(id)) {
+    query.value = "";
+    group.value = "";
+    region.value = "";
+  }
+  selected = id;
+  applyFilter(false);
+  if (open && mobile.matches && !person.open) person.showModal();
+}
+function detailSection(label, expanded) {
+  const section = el("details", "", "detail-section");
+  section.open = expanded;
+  section.append(el("summary", label));
+  return section;
+}
+
+function populate(target) {
+  const previous = renderedDetail.get(target);
+  if (previous?.id === selected && previous.type === activeType) return;
+  const focusWasInside = target.contains(document.activeElement);
+  const samePerson = previous?.id === selected;
+  const [, method, name, english, org, style, example, refs] = byId.get(selected);
+  const title = el("h2", name);
+  title.tabIndex = -1;
+  const activeRegions = footprints[selected].map(id => regionNames[id]).join(" · ");
+  const rels = relations(selected);
+  const relationSection = detailSection("关系（" + rels.length + "）", samePerson ? previous.relations.open : true);
+  const sourcesSection = detailSection("人物与案例来源（" + refs.length + "）", samePerson && previous.sources.open);
+  target.replaceChildren(title, el("p", english + " ｜ " + activeRegions, "origin"), el("p", org, "org"),
+    el("h3", "投资方法"), el("p", style), el("h3", "代表案例"), el("p", example), relationSection, sourcesSection);
+  renderedDetail.set(target, {id:selected, type:activeType, relations:relationSection, sources:sourcesSection});
+
+  if (rels.length) {
+    const ul = el("ul");
+    for (const [from, to, type, explanation, ref, eventTime, extraRefs = []] of rels) {
+      const peerId = from === selected ? to : from;
+      const li = el("li", "", "relation");
+      const arrow = types[type][3] ? (to === selected ? "← " : "→ ") : "";
+      li.append(button(arrow + byId.get(peerId)[2], "linklike", () => choose(peerId)),
+        el("span", types[type][0], "kind"), el("p", explanation));
+
+      const timing = el("p", "", "record");
+      const event = el("span");
+      event.append(el("b", type === "method" ? "比较时期 " : "事件时间 "), document.createTextNode(eventTime));
+      timing.append(event);
+      li.append(timing);
+      for (const evidenceId of [ref, ...extraRefs]) {
+        const record = el("p", "", "record evidence");
+        const evidence = el("span");
+        evidence.append(el("b", "文献 "), document.createTextNode(
+          (recordKinds[evidenceId] || "关联资料") + " · " + (evidenceDates[evidenceId] || "日期未标注")));
+        record.append(evidence, source(evidenceId, "查看出处 ↗"));
+        li.append(record);
+      }
+      ul.append(li);
+    }
+    relationSection.append(ul);
+  } else {
+    relationSection.append(el("p", activeType ? "当前关系类型下没有连线。" : "本图暂未收录该节点的关系。"));
+  }
+
+  const list = el("ul");
+  for (const ref of refs) {
+    const li = el("li");
+    li.append(source(ref));
+    list.append(li);
+  }
+  sourcesSection.append(list);
+  const relatedLessons = lessons.filter(lesson => lesson.people.includes(selected)
+    || lesson.pair.some(key => casesById.get(key)[0] === selected));
+  if (relatedLessons.length) {
+    const shortcuts = el("div", "", "lesson-links");
+    shortcuts.append(el("strong", "从这里学习"));
+    for (const lesson of relatedLessons) shortcuts.append(lessonLink(lesson));
+    relationSection.before(shortcuts);
+  }
+  target.style.borderTopColor = colors[method];
+  if (focusWasInside) title.focus({preventScroll:true});
+  if (!samePerson) {
+    target.scrollTop = 0;
+    if (target === mobileDetail) person.scrollTop = 0;
+  }
+}
+
+function highlightPeer() {
+  const peer = pointedNode || focusedNode;
+  const isPeer = peer && peer !== selected && visible.has(peer);
+  let matched = false;
+  for (const line of lines.querySelectorAll(".edge.active")) {
+    const focused = Boolean(isPeer && (line.dataset.from === peer || line.dataset.to === peer));
+    line.classList.toggle("focused", focused);
+    matched ||= focused;
+  }
+  lines.classList.toggle("focus-peer", matched);
+}
+
+function gutterPath(width, x1, y1, x2, y2, turn) {
+  const right = Math.max(x1, x2);
+  const lane = Math.min(width - 1, right + turn);
+  const bend = Math.min(5, Math.abs(y2 - y1) / 3, lane - right);
+  const verticalBend = y1 < y2 ? bend : -bend;
+  const corner = lane - bend;
+  return "M" + x1 + "," + y1 + " H" + corner
+    + " Q" + lane + "," + y1 + " " + lane + "," + (y1 + verticalBend)
+    + " V" + (y2 - verticalBend) + " Q" + lane + "," + y2 + " " + corner + "," + y2
+    + " L" + x2 + "," + y2;
+}
+
+function draw() {
+  const rect = graph.getBoundingClientRect();
+  lines.setAttribute("viewBox", "0 0 " + rect.width + " " + rect.height);
+  const defs = svg("defs", {});
+  for (const [kind, [, color, , directional]] of Object.entries(types)) {
+    if (!directional) continue;
+    const marker = svg("marker", {id:"arrow-" + kind, viewBox:"0 0 9 9", refX:7, refY:4.5, markerWidth:5, markerHeight:5, orient:"auto"});
+    marker.append(svg("path", {d:"M0 0 L8 4.5 L0 9 Z", fill:color}));
+    defs.append(marker);
+  }
+
+  const pairs = new Map();
+  for (const [from, to, kind] of edges) {
+    if (!visible.has(from) || !visible.has(to)) continue;
+    const pair = [from, to].sort().join("/");
+    if (!pairs.has(pair)) pairs.set(pair, []);
+    pairs.get(pair).push([from, to, kind]);
+  }
+  const positions = new Map([...visible].map(id => [id, nodeButtons.get(id).getBoundingClientRect()]));
+  const paths = [];
+  const selectedPorts = {left:[], right:[]};
+  for (const pair of pairs.values()) {
+    const laneGap = pair.length > 1 ? Math.min(8, 24 / (pair.length - 1)) : 0;
+    for (const [index, [from, to, kind]] of pair.entries()) {
+      if (activeType && kind !== activeType) continue;
+      const start = positions.get(from);
+      const end = positions.get(to);
+      const offset = (index - (pair.length - 1) / 2) * laneGap;
+      const sameColumn = Math.abs(start.left - end.left) < 4;
+      const forward = start.left < end.left;
+      const fromSide = sameColumn || forward ? "right" : "left";
+      const toSide = sameColumn || !forward ? "right" : "left";
+      const path = {
+        from, to, kind, offset, sameColumn,
+        x1:start[fromSide] - rect.left, x2:end[toSide] - rect.left,
+        y1:start.top + start.height / 2 - rect.top + offset,
+        y2:end.top + end.height / 2 - rect.top + offset,
+        active:selected === from || selected === to
+      };
+      paths.push(path);
+      if (selected === from) {
+        selectedPorts[fromSide].push({path, coordinate:"y1", peerY:path.y2});
+      } else if (selected === to) {
+        selectedPorts[toSide].push({path, coordinate:"y2", peerY:path.y1});
+      }
+    }
+  }
+
+  // Give the selected card a distinct attachment point for each visible edge.
+  const card = positions.get(selected);
+  if (card) {
+    for (const ports of Object.values(selectedPorts)) {
+      ports.sort((a,b) => a.peerY - b.peerY);
+      const span = Math.min(card.height - 12, (ports.length - 1) * 7);
+      const center = card.top + card.height / 2 - rect.top;
+      for (const [index, {path, coordinate}] of ports.entries()) {
+        path[coordinate] = ports.length === 1 ? center : center + span * (index / (ports.length - 1) - .5);
+      }
+    }
+  }
+
+  const selectedTurns = paths.filter(path => path.active && path.sameColumn)
+    .sort((a,b) => Math.abs(a.y2 - a.y1) - Math.abs(b.y2 - b.y1));
+  for (const [index, path] of selectedTurns.entries()) {
+    const right = Math.max(path.x1, path.x2);
+    const available = Math.max(0, Math.min(28, rect.width - right - 7));
+    const spacing = Math.min(3.5, available / Math.max(1, selectedTurns.length - 1));
+    path.turn = 5 + spacing * index;
+  }
+
+  const backgroundPaths = [];
+  const selectedPaths = [];
+  for (const {from,to,kind,offset,sameColumn,x1,x2,y1,y2,active,turn} of paths) {
+    const [, color, dash, directional] = types[kind];
+    const d = sameColumn
+      ? gutterPath(rect.width, x1, y1, x2, y2, turn ?? 7 + offset * .4)
+      : "M" + x1 + "," + y1 + " C" + (x1+x2)/2 + "," + y1 + " " + (x1+x2)/2 + "," + y2 + " " + x2 + "," + y2;
+    const line = svg("path", {d, class:"edge" + (active ? " active" : ""), stroke:color,
+      "stroke-dasharray":dash, "data-from":from, "data-to":to, "data-type":kind});
+    if (directional && active) line.setAttribute("marker-end", "url(#arrow-" + kind + ")");
+    (active ? selectedPaths : backgroundPaths).push(line);
+  }
+  lines.replaceChildren(defs, ...backgroundPaths, ...selectedPaths);
+  highlightPeer();
+}
+
+function update() {
+  const peers = new Set(relations(selected).flatMap(edge => edge.slice(0,2)));
+  for (const [id, item] of nodeButtons) {
+    item.setAttribute("aria-pressed", String(id === selected));
+    item.classList.toggle("related", peers.has(id) && id !== selected);
+  }
+  populate(detail);
+  populate(mobileDetail);
+  draw();
+}
+function applyFilter(announce = true) {
+  const needle = query.value.trim().toLowerCase();
+  const connected = localGraph ? new Set([selected, ...relations(selected).flatMap(edge => edge.slice(0,2))]) : null;
+  visible = new Set();
+  for (const [id, method, ...fields] of nodes) {
+    const contents = fields.slice(0,5).join(" ").toLowerCase().replaceAll("ş", "s");
+    const matches = (!group.value || method === group.value)
+      && (!region.value || footprints[id].includes(region.value))
+      && (!connected || connected.has(id))
+      && (!needle || (id+" "+contents).includes(needle.replaceAll("ş","s")));
+    nodeButtons.get(id).parentElement.hidden = !matches;
+    if (matches) visible.add(id);
+  }
+  for (const section of graph.querySelectorAll(".cluster")) section.hidden = !section.querySelector("li:not([hidden])");
+  document.querySelector("#empty").hidden = visible.size > 0;
+  const count = "显示 " + visible.size + "／" + nodes.length + " 个节点";
+  if (announce) document.querySelector("#status").textContent = count;
+  document.querySelector("#visible-count").textContent = count;
+  if (visible.size && !visible.has(selected)) selected = visible.values().next().value;
+  detail.hidden = !visible.size;
+  update();
+}
+function degreeOf(id) {
+  const peers = new Set();
+  for (const e of edges) { if (e[0] === id) peers.add(e[1]); else if (e[1] === id) peers.add(e[0]); }
+  return peers.size ? "关系 " + peers.size : "";
+}
+function jumpToNode(id) {
+  choose(id);
+  if (!mobile.matches) {
+    const card = nodeButtons.get(id);
+    card.scrollIntoView({block:"center"});
+    card.focus({preventScroll:true});
+  }
+}
+
+function renderHistory() {
+  const list = document.querySelector("#history-items");
+  const filter = document.querySelector("#history-filter");
+  for (const [year, kind, title, explanation, id, refs] of history) {
+    const entry = el("li");
+    entry.dataset.kind = kind;
+    entry.id = "history-" + id;
+    const sources = el("div", "", "route-links");
+    for (const ref of refs) sources.append(source(ref));
+    const heading = el("h3");
+    heading.append(button(title, "linklike", () => jumpToNode(id)));
+    entry.append(el("span", year + " · " + kind, "period"), heading, el("p", explanation), sources);
+    const lesson = lessons.find(item => item.timeline.includes(id));
+    if (lesson) {
+      const link = lessonLink(lesson, "学习：" + lesson.title);
+      link.className = "history-lesson";
+      entry.append(link);
+    }
+    list.append(entry);
+  }
+  filter.addEventListener("change", () => {
+    for (const entry of list.children) entry.hidden = Boolean(filter.value && filter.value !== entry.dataset.kind);
+  });
+}
+
+function renderBibliography() {
+  const panel = document.querySelector("#source-panel");
+  const input = document.querySelector("#source-query");
+  const list = document.querySelector("#source-items");
+  const count = document.querySelector("#source-count");
+  const ids = Object.keys(sources).sort((a,b) => sources[a][0].localeCompare(sources[b][0], "zh-CN"));
+  const entries = ids.map(id => {
+    const item = el("li");
+    const metadata = [recordKinds[id], evidenceDates[id]].filter(Boolean).join(" · ");
+    item.append(source(id));
+    if (metadata) item.append(el("p", metadata, "source-meta"));
+    list.append(item);
+    return [item, (sources[id].join(" ") + " " + metadata).toLowerCase()];
+  });
+  document.querySelector("#source-summary").textContent = "浏览 " + ids.length + " 条文献";
+  const updateList = () => {
+    const terms = input.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    let found = 0;
+    for (const [item, text] of entries) {
+      item.hidden = !terms.every(term => text.includes(term));
+      if (!item.hidden) found++;
+    }
+    count.textContent = found + "／" + ids.length + " 条文献";
+  };
+  input.addEventListener("input", updateList);
+  document.querySelector("#bibliography-link").addEventListener("click", () => { panel.open = true; });
+  if (location.hash === "#bibliography") panel.open = true;
+  updateList();
+}
+
+function renderBase() {
+  for (const [id,name] of Object.entries(regionNames)) region.add(new Option(name, id));
+  for (const [title, finding, repair, refs] of audit) {
+    const item = el("section");
+    item.append(el("h3",title), el("p",finding), el("p",repair));
+    for (const ref of refs) item.append(source(ref));
+    document.querySelector("#audit").append(item);
+  }
+  for (const [id, title, description] of groups) {
+    group.add(new Option(title, id));
+    const section = el("section", "", "cluster");
+    section.style.setProperty("--group-color", colors[id]);
+    const list = el("ul");
+    for (const [nid,,name,english] of nodes.filter(node => node[1] === id)) {
+      const listItem = el("li");
+      const item = button("", "node", () => choose(nid));
+      item.dataset.node = nid;
+      item.addEventListener("pointerenter", event => {
+        if (event.pointerType === "touch") return;
+        pointedNode = nid;
+        highlightPeer();
+      });
+      item.addEventListener("pointerleave", () => {
+        pointedNode = null;
+        highlightPeer();
+      });
+      item.addEventListener("focus", () => {
+        focusedNode = nid;
+        highlightPeer();
+      });
+      item.addEventListener("blur", () => {
+        focusedNode = null;
+        highlightPeer();
+      });
+      item.append(el("b", name), el("small", english), el("span", degreeOf(nid), "deg"));
+      listItem.append(item);
+      list.append(listItem);
+      nodeButtons.set(nid, item);
+    }
+    section.append(el("h2", title), el("p", description), list);
+    graph.append(section);
+  }
+  for (const [kind,[name,color,dash]] of Object.entries(types)) {
+    const item = button("", "", () => {
+      activeType = activeType === kind ? "" : kind;
+      for (const b of legend.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b === item && activeType === kind));
+      applyFilter();
+    });
+    item.setAttribute("aria-pressed", "false");
+    item.dataset.type = kind;
+    const icon = svg("svg", {width:23, height:12, "aria-hidden":"true"});
+    icon.append(svg("line",{x1:1,y1:6,x2:22,y2:6,stroke:color,"stroke-width":2,"stroke-dasharray":dash}));
+    item.append(icon, document.createTextNode(name));
+    legend.append(item);
+  }
+  for (const [title, desc, id, kind, refs] of routes) {
+    const li = el("li");
+    li.style.setProperty("--route-color", types[kind][1]);
+    li.append(button(title, "linklike", () => jumpToNode(id)), el("p", desc));
+    const links = el("div", "", "route-links");
+    for (const ref of refs) links.append(source(ref));
+    li.append(links);
+    document.querySelector("#routes").append(li);
+  }
+  for (const [place, name, explanation, refs] of events) {
+    const li = el("li");
+    li.append(el("em",place), el("h3", name), el("p", explanation));
+    for (const ref of refs) li.append(source(ref));
+    document.querySelector("#events").append(li);
+  }
+}
+
+const cases = [
+  ["schloss","施罗斯 · Cleveland-Cliffs","按保守资产价值买入，兼看公司在行业中的地位。","资产变现折价、负债与现金消耗会蚕食安全边际。",["schloss"],"","cliffs"],
+  ["geico","Graham–Newman／巴菲特 · GEICO","直销降低分销成本。1948 年机构入股、1951 年个人买入、1976 年伯克希尔入场与 1996 年全资收购，分别承担不同的经营风险。","1970 年代的承保危机表明，应把低分销成本、承保定价、赔付准备和浮存金成本分开核对。",["geicoHistory","kahn","geico1951","geico","geico96"],"compare","geico"],
+  ["buffett","伯克希尔 · Dexter Shoe","1993 年伯克希尔以当时价值 4.33 亿美元的自家股票收购，买入逻辑依赖 Dexter 的持久竞争优势。","竞争优势在数年内消失。评估股票对价时，还需计入让渡的伯克希尔股份未来价值。",["dexter"],"downside","dexter"],
+  ["buffett","巴芒 · See’s Candy","Blue Chip Stamps 于 1972 年以 2,500 万美元收购。按伯克希尔 2007 年股东信，期间经营所需资本仅增加 3,200 万美元，业务依靠品牌和定价权释放现金。","提价损伤销量，或增长伴随持续抬升的资本需求。",["sees"],"","sees"],
+  ["greenblatt","Greenblatt · Marriott 1993 年分拆","Marriott International 分拆出去，原公司更名为 Host Marriott。用 Greenblatt 的框架检查两家公司的资产、负债分配与潜在被动卖盘。","拆分后的负债集中、再融资压力及实际经营表现会改变估值。",["marriott","host"],"","marriott"],
+  ["nomad","Nomad · Costco / Amazon","把规模效益返还给顾客，再用流量和周转巩固成本优势。","规模扩大后，单位经济仍恶化，或顾客留存无法验证。",["nomad"],"","nomad"],
+  ["pabrai","帕布莱 · Reysaş","仓库与土地提供价值锚，市场卖盘带来买入折价。","里拉贬值、债务与本地治理侵蚀外币股东回报。",["rey"],"","reysas"],
+  ["iben","Iben · Kazatomprom / 实物铀","低价造成供给退出，供给恢复缓慢。矿股另有生产成本和兑现能力。","增产或二级供给改变平衡。矿业权利、结算及地区风险需要另算。",["corcoran","uranium"],"","uranium"],
+  ["iben","Kopernik · Gazprom","2022 年 7 月，Kopernik Global All-Cap Fund 将 Gazprom 普通股及 ADR 同时列为不流动证券和第三层级公允价值资产。","估值、可交易性和现金汇回要分别核对。持仓披露给出当期估值和流动性分类，实际回收还要看后续处置。",["russia"],"downside","gazprom"],
+  ["robotti","Robotti · Tidewater","可用支援船供给、日租金、维护资本开支和自由现金流。","大量复航、新造船或客户收缩开支削弱议价。",["tdw","tdwletter","tdw10k24"],"","tidewater"],
+  ["parames","Cobas · Golar LNG","海上液化设施、合同期限与对手方付款提供现金流锚。","项目延误、追加资本开支或合同履约变化。",["golar"],"","golar"],
+  ["azvalor","azValor · Transocean（RIG）","超深水钻井船供给、钻井平台日租金、合同储备。","再融资压力或复航／新造运力增长压缩股东兑现空间。",["azrig","rig10k24"],"","transocean"],
+  ["tpl","Horizon / SoftVest · TPL","油气权利金、土地和水业务有不同现金流驱动。","盆地开发节奏、权利条款、水业务资本需求、治理和回购价格。",["tpl","secTPL"],"","tpl"],
+  ["ruane","Sequoia 后任团队 · Valeant","用 Sequoia 后任团队的退出说明，回看重仓前对盈利质量、收购及融资模式的判断。","融资、激励与经营假设同时受损时，单一大仓位会放大损失。",["valeant"],"downside","valeant"],
+  ["whitman","Whitman · Kmart 债权转股","先持有债权，参与重组融资，再评估获配股权和重组后企业价值。","债权优先次序、担保覆盖、库存处置和重组后经营会改变回收。",["kmart","whitkm"],"compare","kmart"],
+  ["russo","Russo · Nestlé","部分再投资压低短期利润，回报依赖品牌、渠道及新品类扩张。","若持续投入也未带来销量、市场份额或定价权改善，应下调未来回报。",["russo"],"compare","nestle"],
+  ["msft","ValueAct／Fundsmith · Microsoft","前者的公开材料可追董事会参与，后者的报告用于看市场所付价格和质量复利。","董事加入后的回报也受行业变化、管理层执行和估值影响，应分别核对这些因素。",["morfit","fsmith24"],"compare","microsoft"],
+  ["singleton","Singleton · Teledyne","收购和回购的价值取决于付出的钱或股票与收到的资产之间的差额。","若回购高于保守内在价值，或以低估股票付价，会稀释余下股东。",["singleton"],"compare","teledyne"],
+  ["chou","Chou · 金融危机后的信用与股票","把高收益债、投资级债与股票的跌价放在同一资本预算下，用持有人信跟踪利差收敛后机会如何变化。","价格反弹可能只是流动性修复。需要分别检验违约、回收和持续盈利。",["chouletters"],"compare","chou"],
+  ["thakkar","PPFAS · Alphabet","印度基金 2024 年末披露海外持仓。可用来比较本地和海外标的在资金可用性、行业结构与估值上的机会成本。","披露只反映截面。研究时需要复核后续仓位、汇率和适用的海外投资额度。",["ppffund"],"compare","alphabet"],
+  ["watsa","Fairfax · 信用保护","用保费购买信用尾部保护，信用恶化扩大保护价值。","保费与持有期成本偏高，触发或对手方条件削弱保护。",["cds"],"","fairfax"],
+  ["byd","MidAmerican · 比亚迪","2008 年签约、2009 年交割。结合李录的回忆与交易披露，可以检验制造能力能否转化成可规模化的新业务。","规模扩大后若无法产生足够的单位利润与现金流，产能投入、行业竞争和技术路线变化会改变回报。",["byd","bydClose","lilu"],"compare","byd"],
+  ["karsh","Oaktree · 2008 年困境债部署","危机前筹备资金。据 Marks 回顾，Karsh 团队在 2008 年 9 月 18 日至年底投入约 60 亿美元，利用供给失衡与风险补偿扩大的机会。","跟踪实际债权回收、买入成本与期限错配。备忘录中的部署金额是投入规模，基金回报需另查。",["marks08","oaktree2023"],"compare","oaktree"],
+  ["natura","Dynamo／Rocha · Natura &Co","Dynamo 信件讨论集团扩张带来的复杂度。20-F 记录 Rocha 任独立董事，可对照投资研究和董事会履职。","核对整合成本、现金转化及品牌经营。董事履历与股东回报需分别归因。",["natura","dynamo117"],"compare","natura"],
+  ["keynes","Keynes · 剑桥国王学院捐赠基金","按档案比较早期择时与后期长期选股。把交易记录、集中度与捐赠基金资金期限放在一起。","基准、可投资范围和组合统计口径都会改变绩效结论，也要检查结果是否受少数头寸驱动。",["keynes"],"","keynes"],
+  ["northpipe","格雷厄姆 · 北方管线","监管申报显示可交易债券多于业务所需，表面折价可借股东行动兑现。1928 年取得董事席位后，管理层同意返还资本。","若证券并非闲置、债务或资本开支吸收了储备，或表决机制使分派无法推动，账面折价难以兑现。",["kahn"],"compare","northpipe"],
+  ["sanborn","Buffett Partnership · Sanborn Map","比较可分离的证券组合与衰退中的地图业务。合伙人信用换股安排说明组合价值如何传到愿意退出的股东。","可实现价值受税负、控股条件、主业持续资金及流通证券价格变化约束。",["bpl60"],"compare","sanborn"],
+  ["nationalindemnity","伯克希尔 · National Indemnity","保险业务能以承保获得可投资的浮存金。1967 年签字文件提供投资起点，与 GEICO 可比较不同险种和经营渠道。","赔付尾部、准备金不足或持续承保亏损可以推高浮存金成本，比较时还需核对可投资资产与监管约束。",["ringwaltDeal","brk06","geico96"],"compare","national-indemnity"],
+  ["goldman08","伯克希尔 · 高盛 2008 年融资","50 亿美元换取 10% 累积永续优先股和五年认股权证。现金股息、赎回条款和股权上行是不同的价值部分。","机构的偿付能力、资本结构和赎回时间决定优先股回收。权证另受行权价格、期限及普通股价值影响。",["gs08","gs10k"],"compare","goldman"],
+  ["jptrading","伯克希尔 · 日本五大商社","用价格相对盈利、股息、回购与管理层资本纪律检查投资逻辑，再用日元债务匹配部分币种风险。","大宗商品周期、分部资本占用、再融资和股息变化都会影响结果。日元融资未完全消除外汇和股权风险。",["brkJapan20","brkJapan24","tse23"],"compare","japan"],
+  ["jdcase","高瓴／今日资本 · 京东","20-F 可比较大股东的经济权益、投票权及实际持股载体。商业回报要靠投入物流网络后的履约成本和单位经济改善。","较高表决权集中度、持续资本开支或回收周期延长会改变股东回报。证券披露中的持股比例也不提供初始成本。",["jd20f","yale25"],"compare","jd"],
+  ["bolton","波顿 · Fidelity China Special Situations","2014 年报列自成立以来累计净值回报 +18.6%、股价回报 +6.3%、MSCI 中国 −5.7%。均为英镑计价、含收益再投资的累计回报。","同一报告的 2011/12 财年股价回报为 −26.4%。检查折溢价、杠杆和资金进出的时点，区别组合与股东体验。",["bolton14"],"downside","bolton"],
+  ["hughyoung","Hugh Young · Aberdeen Asia Focus","用本地公司研究寻找亚洲小盘企业。2023 财年主席报告同时披露组合净值、股价和折价变化。","地区权重、成交深度和持股估值对净值有影响，信托折溢价与股息再投资还会改变股东回报。",["young23","asiaChair23"],"compare","aberdeen"],
+  ["grantham","GMO · 互联网泡沫前后的相对回撤","估值与均值回归可以提供反向配置的依据。GMO 2019 年通讯把泡沫前的相对落后与之后的阶段表现放在一起。","若投资人或委托方在修正前退出，长期逻辑无法兑现。应核对相对回撤、赎回条款、可持续资金与实际建仓。",["gmo19","gmo12"],"downside","gmo"],
+  ["lsvteam","LSV 与 Fama–French · 价值因子复核","把价值因子构建、风险解释、过度外推解释放在一张研究表里。统一形成期、持有期、市场及加权方式。","需处理可投资性、财务数据披露滞后、退市收益、换手和交易成本。历史多空组合没有自动等价的可投资收益。",["fama","fama93","frenchHML","lsvPaper"],"compare","factor"],
+  ["newman","Graham–Newman · 分派后的业绩口径","Kahn 与 Milne 的研究把已分派给股东的 GEICO 单列。1945–1956 年公司组合按其估算扣管理费后年化 15.5%，样本期标普 500 为 18.3%，两者风险暴露不同。","先明确统计对象是公司净值还是股东拿到并继续持有的资产，再对齐现金分派、费用、基准和风险模型。",["kahn"],"compare","graham-newman"],
+  ["viljoen","Viljoen · RECM 的业务压力","当事人回顾 2015 年的业务冲击，提供从投资结果走到客户留存和机构存续的观察。","长周期投资仍须检查资金来源、委托期限和公司经营现金流。单个机构的事后回顾只能支持其经历。",["recm24","recmHistory"],"downside","recm"],
+  ["pageindustry","那烂陀资本 · Page Industries","2019/20 年报同时记录品牌授权、分销网络和 Nalanda India Fund Limited 的 7.56% 期末持股。用渠道效率、营运资本及现金转化检验经营质量。","检查授权续期、费率、库存现金占用及融资压力。期末持股可核对历史头寸，买入价格与投资回报需要其他证据。",["page20","prasadSummary","darwinBook"],"compare","page-industries"]
+];
+const lessons = [
+  {"id":"margin","title":"安全边际与兑现","idea":"买入价低于保守估值，给估错和情况变化留出余地。先确认哪些资产能在扣除债务、税费和经营所需资金后分给股东，再问谁有能力启动兑现。","context":"1920 年代格雷厄姆从监管文件查找闲置证券。约三十年后，巴菲特用另一种安排应对类似折价。两案都需要看股东权利和交易成本。","pair":["northpipe","sanborn"],"people":["graham","buffett","newman"],"timeline":["northpipe","sanborn"],"question":"据巴菲特的合伙人信，1958 年 Sanborn 股价约 45 美元，每股投资组合约 65 美元。哪个结论站得住？","choices":["有 20 美元的确定套利，买入后等分派即可。","价格比每股组合价值低约 31%。还需核对主业、税费和兑现途径。","地图业务按 20 美元估值，才可解释两者差价。"],"answer":1,"explain":"以 65 美元为分母，折价是 (65 − 45) ÷ 65 ≈ 30.8%。市场价格扣去组合价值后隐含 −20 美元，范围还包括对运营、税负以及价值够不够得着的判断。合伙人信记录了用证券换回股份的后续安排。","practice":"给另一家持有大量资产的公司写三行底稿。第一行是可变现资产，第二行是负债、税费和经营留存，第三行是兑现路径与预计时间。"},
+  {"id":"quality","title":"商业质量与买入价格","idea":"把增长拆成新增利润、为增长投入的资本，以及利润能转成多少现金。即使公司有定价权，回报也取决于买入价格、优势能维持多久和付款方式。","context":"See’s Candy 和 Dexter Shoe 都曾让伯克希尔为竞争优势付钱。回看买入时能看到的证据，可以区分优势是否持久与当时花了多少钱。","pair":["sees","dexter"],"people":["munger","buffett","fisher"],"timeline":["munger","geico"],"question":"两家品牌企业收入增长相近。要判断哪家更可能把增长变成股东现金，最应该先看什么？","choices":["各自的品牌知名度。","各自上一年的收入增速。","各自维持销量和优势所需的新增资本，以及经营现金流。"],"answer":2,"explain":"See’s 的案例同时披露了利润增长和经营资本变化。Dexter 则提示应复核竞争优势的耐久性，并计算用伯克希尔股票支付所让出的价值。这些信息比一年的增速更接近股东最终拿到的现金。","practice":"列出一个可检验的定价权信号，例如提价后的销量或客户留存。再写出足以降低估值的反向变化。"},
+  {"id":"credit","title":"困境投资与索偿顺位","idea":"同一家公司的债权、优先股、普通股和权证，能拿到现金的顺序和条件各异。用不同经营情景检验企业价值如何分到各层，再和自己付出的价格比较。","context":"Kmart 进入破产重组时，Third Avenue 参与重组投资。2008 年伯克希尔向高盛提供资本，拿到的是优先股与认股权证组合，回报机制和 Kmart 不同。","pair":["kmart","goldman"],"people":["whitman","karsh","marks"],"timeline":["goldman08","karsh"],"question":"高盛发行给伯克希尔的优先股票息为 10%，并附认股权证。先做哪项分析？","choices":["核对优先股顺位、派息和赎回条款，再单独评估认股权证。","将每年回报直接设成 10% 加普通股涨幅。","用普通股估值倍数直接替代优先股分析。"],"answer":0,"explain":"10% 是合约票息。实际回报还取决于派息、赎回和持有期。权证的价值受行权价、期限和普通股价格影响。重组案则需要把原有债权的受偿与新资金所获权益分别估值。","practice":"做一个假想压力测试。把企业可分配价值调低 30%，按合同顺位逐层分配，记录最先失去回收的证券。"},
+  {"id":"cycle","title":"供给周期与逆向投资","idea":"周期复苏要经过供给退出、需求回暖、价格改善和新供给进入。把这些阶段落到利用率、实际日租金、资本开支和债务到期上，才知道复苏能否传到股东。","context":"Tidewater 经营海上支援船，Transocean 经营海上钻井装备。两者共享部分需求背景，有效运力、合同和资金约束各有自己的周期。","pair":["tidewater","transocean"],"people":["robotti","hosking","azvalor"],"timeline":["robotti"],"question":"两类船只的行业报价都上升。哪项证据最能帮你判断一家公司能否兑现复苏？","choices":["同一季度油价上涨。","实际成交日租金、利用率和合同期限能否覆盖维护开支及债务现金支出。","两家公司都在海上作业，所以现金流将同步改善。"],"answer":1,"explain":"行业报价要经过签约、开工和实际结算才进入现金流。停工费率、复航成本、设备维护和再融资都会改变回报。先按油服细分行业建立自己的有效运力和合同表。","practice":"从两份 2024 年 10-K 各找一项供给数据和一项现金支出。注明分母、日期与数据口径，再写下你需要继续观察的指标。"},
+  {"id":"horizon","title":"资金期限与持有纪律","idea":"一个判断即使后来被证实，也可能在兑现之前经历长时间落后。把投资期限和资金的赎回、分派、负债到期放在一起，用实际可持有时间衡量风险。","context":"剑桥国王学院的捐赠基金提供了长周期的观察。GMO 回顾互联网泡沫前后的配置时，记录了相对基准长期落后对客户耐心和机构经营的考验。","pair":["keynes","gmo"],"people":["keynes","grantham","swensen"],"timeline":["keynes","swensen","bolton"],"question":"两位研究者估值相同，但一位客户可按月赎回，另一位用五年内不需支付的自有资本。该如何比较？","choices":["估值相同，仓位和持有期限理应相同。","视五年期资本为可以忽略流动性的资金。","分别写下两者能承受的回撤、现金需要和最早被迫卖出的时间。"],"answer":2,"explain":"估值差解决买入理由，现金支出和赎回条款决定能否坚持。还要核对组合净值和投资人的实际结果是否一致。波顿案例的净值回报、上市信托股价回报和基准就有不同路径。","practice":"额外对读波顿中国信托。把净值、股价、基准与同区间结果放在一张表里。注明币种和是否含收益再投资。"},
+  {"id":"rights","title":"跨境投资与股东权利","idea":"先确认持有的法律实体和证券形式，再确认股东可要求哪些现金、投哪些票，以及交易、托管和资金汇回会在哪一步受限。","context":"京东 20-F 披露经济权益与投票权。Kopernik 的 Gazprom 持仓表记录了普通股、ADR 的流动性与估值分类。两案分别暴露不同的权利约束。","pair":["jd","gazprom"],"people":["zhanglei","xuxin","iben"],"timeline":["jdcase","jptrading"],"question":"一份持仓表把某只 ADR 列为第三层级公允价值且不流动。它能确认什么？","choices":["能确认在该报告日的估值分类和流动性分类。处置价格和资金汇回还需其他记录。","第三层级表明该证券的经济价值为零。","持仓表上列有估值，表示可按该金额立即卖出。"],"answer":0,"explain":"持仓表记录财务报告时点的估值和分类。该估值不能直接给出处置的现金。京东案例也值得区分持股比例、实际投票权以及投资主体，分别找对应的披露。","practice":"为每种证券画出「持有人 → 券商／托管 → 所持实体 → 经营现金」的路径，再标出投票、分红及退出各自需要满足的条件。"},
+  {"id":"evidence","title":"价值因子与历史证据","idea":"先确定想验证的命题。低估值组合的平均收益、某位投资人有没有能力，以及个股值多少钱，分别需要不同的样本、基准和证据。","context":"Fama–French 与 LSV 研究组合收益的不同解释。Graham–Newman 的分派后记录则提醒，绩效口径甚至会在同一个机构内产生分歧。","pair":["factor","graham-newman"],"people":["famafrench","lsvteam","newman"],"timeline":["lsvteam","buffett"],"question":"两份 Graham–Newman 历史回报表结果不一样。一份包括分派后继续持有的 GEICO，另一份只统计公司组合。首先应做什么？","choices":["直接使用更高的结果，因为体现了最成功的选择。","先统一统计对象和现金分派处理，再比较费用、币种、区间和基准。","对两张表的结果取平均。"],"answer":1,"explain":"分派后的股票能留在投资人账户，却不再属于管理公司账户。两个口径回答的问题不同。做因子复核也一样，需定义可投资样本、财报可得时间、退市、换手和成本。","practice":"找一个声称有效的价值信号，先写如何在当时获得数据、怎样形成组合、哪些公司后来退出、用什么基准，然后再看收益。"},
+  {"id":"darwin","title":"达尔文视角与长期持有","idea":"普拉萨德从进化生物学借来三个问题。哪些风险会让公司失去继续经营的余地？哪些经营特征经多次变化仍能产生现金？多高的价格会把这些优势提前付掉？","context":"普拉萨德 2007 年创办那烂陀资本，2023 年出版《What I Learned About Investing from Darwin》。用 Page Industries 和 See’s 对读时，特别区分品牌授权、渠道能力与品牌所有权。","pair":["page-industries","sees"],"people":["prasad","parag","fisher"],"timeline":["prasad","pageindustry"],"question":"Page Industries 的年报列出稳定的机构持股，也介绍了 Jockey 授权。用普拉萨德的框架，哪一步阅读最有价值？","choices":["看到长期持股就认定这家公司值得长期买入。","看到品牌知名度就假设授权永久有效。","核对授权风险、借款和现金转化，再判断买入价格是否给这些不确定性留有余地。"],"answer":2,"explain":"先查股东表与 Jockey 授权介绍，再对照财报附注 13。经营概况写着无债务，附注仍列有银行借款，读者需要分别核对总借款、现金和净债务。低换手是一种持有纪律，经营假设或估值变了仍要重新判断。","practice":"从 Page 年报找出授权、存货和借款三个证据，分别写下能支持什么结论、还缺什么数据。再和 See’s 的品牌权属与新增资本需求对照。"}
+];
+
+const casesById = new Map(cases.map(record => [record[6], record]));
+const historyByNode = new Map(history.map(entry => [entry[4], entry]));
+const lessonPanels = new Map();
+const lessonTabs = new Map();
+const comparisonInputs = [document.querySelector("#compare-first"), document.querySelector("#compare-second")];
+
+function showLesson(id) {
+  if (!lessonPanels.has(id)) return;
+  for (const [key, panel] of lessonPanels) {
+    const current = key === id;
+    panel.hidden = !current;
+    const tab = lessonTabs.get(key);
+    if (current) tab.setAttribute("aria-current", "true");
+    else tab.removeAttribute("aria-current");
+  }
+}
+
+function lessonLink(lesson, label = lesson.title) {
+  const link = el("a", label);
+  link.href = "#lesson-" + lesson.id;
+  link.addEventListener("click", () => {
+    showLesson(lesson.id);
+    if (person.open) person.close();
+  });
+  return link;
+}
+
+function showLessonFromHash() {
+  if (!location.hash.startsWith("#lesson-")) return;
+  const id = location.hash.slice("#lesson-".length);
+  showLesson(id);
+  lessonPanels.get(id)?.scrollIntoView({block:"start"});
+}
+
+function studyCase(record) {
+  const [id, title, thesis, risk, refs] = record;
+  const card = el("article", "", "study-card");
+  const comparison = el("dl");
+  comparison.append(el("dt", "回报来自哪里"), el("dd", thesis),
+    el("dt", "什么会推翻判断"), el("dd", risk));
+  const links = el("div", "", "route-links");
+  for (const ref of refs) links.append(source(ref));
+  card.append(el("h4", title), comparison, links,
+    button("查看地图节点 ↗", "linklike", () => jumpToNode(id)));
+  return card;
+}
+
+function renderCaseComparison() {
+  const [first, second] = comparisonInputs.map(input => input.value);
+  const content = document.querySelector("#compare-cards");
+  const status = document.querySelector("#compare-status");
+  if (first === second) {
+    const message = "请选择两个不同的案例。";
+    content.replaceChildren(el("p", message));
+    status.textContent = message;
+    return;
+  }
+  const records = [casesById.get(first), casesById.get(second)];
+  content.replaceChildren(...records.map(studyCase));
+  status.textContent = "正在比较 " + records[0][1] + " 与 " + records[1][1];
+}
+
+function openComparison() {
+  renderCaseComparison();
+  const title = document.querySelector("#compare-title");
+  title.focus({preventScroll:true});
+  document.querySelector("#case-compare").scrollIntoView({block:"start"});
+}
+
+function setPair([first, second]) {
+  comparisonInputs[0].value = first;
+  comparisonInputs[1].value = second;
+  openComparison();
+}
+
+function useAsSecondCase(key) {
+  const [first, second] = comparisonInputs;
+  if (first.value === key) {
+    first.value = second.value === key ? cases.find(record => record[6] !== key)[6] : second.value;
+  }
+  second.value = key;
+  openComparison();
+}
+
+function renderQuiz(lesson) {
+  const form = el("form", "", "lesson-quiz");
+  const fieldset = el("fieldset");
+  fieldset.append(el("legend", "做一道判断题"), el("p", lesson.question));
+  const options = el("div", "", "lesson-options");
+  for (const [index, choice] of lesson.choices.entries()) {
+    const option = el("label");
+    const input = el("input");
+    input.type = "radio";
+    input.name = "answer-" + lesson.id;
+    input.value = String(index);
+    input.required = true;
+    option.append(input, el("span", choice));
+    options.append(option);
+  }
+  const submit = el("button", "核对答案", "quiet");
+  submit.type = "submit";
+  const status = el("p", "", "lesson-feedback");
+  status.setAttribute("role", "status");
+  fieldset.append(options, submit, status);
+  form.append(fieldset);
+  form.addEventListener("change", () => { status.textContent = ""; });
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    const checked = form.querySelector(":checked");
+    if (!checked) return;
+    status.textContent = Number(checked.value) === lesson.answer
+      ? "判断正确。下面的参考拆解说明依据。"
+      : "这个判断的证据还不够。可以再试，或展开参考拆解。";
+  });
+  return form;
+}
+
+function renderLearning() {
+  const nav = document.querySelector("#lesson-nav");
+  const panels = document.querySelector("#lesson-panels");
+  for (const [index, lesson] of lessons.entries()) {
+    const panel = el("article", "", "lesson-panel");
+    panel.id = "lesson-" + lesson.id;
+    panel.hidden = true;
+    panel.append(el("h3", lesson.title), el("p", lesson.idea), el("p", lesson.context, "lesson-context"));
+
+    const people = el("div", "", "lesson-links");
+    people.append(el("strong", "相关人物"));
+    for (const id of lesson.people) people.append(button(byId.get(id)[2], "linklike", () => jumpToNode(id)));
+
+    const dates = el("div", "", "lesson-links");
+    dates.append(el("strong", "历史脉络"));
+    for (const id of lesson.timeline) {
+      const [year, , event] = historyByNode.get(id);
+      const link = el("a", year + " · " + event);
+      link.href = "#history-" + id;
+      link.addEventListener("click", () => {
+        const filter = document.querySelector("#history-filter");
+        if (document.getElementById("history-" + id).hidden) {
+          filter.value = "";
+          filter.dispatchEvent(new Event("change"));
+        }
+      });
+      dates.append(link);
+    }
+
+    const pair = el("div", "", "study-cases");
+    pair.append(...lesson.pair.map(key => studyCase(casesById.get(key))));
+    const compare = button("在比较工具中打开这两案", "linklike study-action", () => setPair(lesson.pair));
+    const review = el("details", "", "lesson-review");
+    review.append(el("summary", "展开参考拆解"), el("p", lesson.explain));
+    const pageLinks = el("nav", "", "lesson-pages");
+    pageLinks.setAttribute("aria-label", "课程导航");
+    const topics = el("a", "所有学习主题");
+    topics.href = "#learn";
+    pageLinks.append(topics);
+    const next = lessons[index + 1];
+    if (next) pageLinks.append(lessonLink(next, "下一课：" + next.title));
+    panel.append(people, dates, pair, compare, renderQuiz(lesson), review,
+      el("p", "带走一个练习｜" + lesson.practice, "lesson-practice"), pageLinks);
+
+    const tab = lessonLink(lesson);
+    nav.append(tab);
+    panels.append(panel);
+    lessonTabs.set(lesson.id, tab);
+    lessonPanels.set(lesson.id, panel);
+  }
+
+  for (const input of comparisonInputs) {
+    for (const [, title, , , , , key] of cases) input.add(new Option(title, key));
+    input.addEventListener("change", renderCaseComparison);
+  }
+  const [first, second] = lessons[0].pair;
+  comparisonInputs[0].value = first;
+  comparisonInputs[1].value = second;
+  renderCaseComparison();
+
+  showLesson(lessons[0].id);
+  requestAnimationFrame(showLessonFromHash);
+  window.addEventListener("hashchange", showLessonFromHash);
+}
+
+renderBase();
+renderHistory();
+renderBibliography();
+renderLearning();
+for (const [id, name, thesis, risk, refs, category, key] of cases) {
+  const row = el("tr");
+  row.dataset.category = category || "";
+  const label = el("td");
+  label.append(button(name, "linklike", () => jumpToNode(id)), el("br"));
+  for (const ref of refs) label.append(source(ref, "原文 ↗"));
+  const actions = el("div", "", "case-actions");
+  actions.append(button("放入比较", "linklike", () => useAsSecondCase(key)));
+  const lesson = lessons.find(item => item.pair.includes(key));
+  if (lesson) actions.append(lessonLink(lesson, "学习此案"));
+  label.append(actions);
+  const t1 = el("td", thesis); t1.dataset.label = "回报来自哪里";
+  const t2 = el("td", risk); t2.dataset.label = "什么会推翻判断";
+  row.append(label, t1, t2);
+  document.querySelector("#cases").append(row);
+}
+query.addEventListener("input", () => applyFilter());
+group.addEventListener("change", () => applyFilter());
+region.addEventListener("change", () => applyFilter());
+allLines.addEventListener("click", () => {
+  const showAll = lines.classList.toggle("show-all");
+  allLines.setAttribute("aria-pressed", String(showAll));
+});
+neighbors.addEventListener("click", () => {
+  localGraph = !localGraph;
+  neighbors.setAttribute("aria-pressed", String(localGraph));
+  if (localGraph) {
+    query.value = "";
+    group.value = "";
+    region.value = "";
+  }
+  applyFilter();
+});
+const caseFilter = document.querySelector("#case-filter");
+caseFilter.addEventListener("change", () => {
+  for (const row of document.querySelector("#cases").children) {
+    row.hidden = Boolean(caseFilter.value && row.dataset.category !== caseFilter.value);
+  }
+});
+document.querySelector("#search").addEventListener("submit", event => {
+  event.preventDefault();
+  if (visible.size) choose(selected);
+});
+document.querySelector("#reset").addEventListener("click", () => {
+  query.value = "";
+  group.value = "";
+  region.value = "";
+  activeType = "";
+  localGraph = false;
+  lines.classList.remove("show-all");
+  allLines.setAttribute("aria-pressed", "false");
+  neighbors.setAttribute("aria-pressed", "false");
+  for (const b of legend.querySelectorAll("button")) b.setAttribute("aria-pressed", "false");
+  selected = "iben";
+  applyFilter();
+});
+mobile.addEventListener("change", () => { if (!mobile.matches && person.open) person.close(); draw(); });
+const tools = document.querySelector("#tools");
+const syncTools = () => { tools.open = !mobile.matches; };
+syncTools();
+mobile.addEventListener("change", syncTools);
+new ResizeObserver(draw).observe(graph);
+document.fonts.ready.then(draw);
+applyFilter(false);
+</script>
+</body>
+</html>
