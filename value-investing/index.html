@@ -99,6 +99,26 @@ dialog .detail{border:0}
 #learn,#map-search,#history,#case-compare,#case-title,#bibliography,.lesson-panel,.history-list li{scroll-margin-top:16px}
 .learning{margin-bottom:20px}
 .learning h2{font:800 25px/1.3 "Noto Serif CJK SC","Songti SC",serif;margin:0 0 10px}
+.case-curriculum{padding:14px 0 20px;border-block:1px solid var(--line);margin-bottom:24px}
+.track{border-top:1px solid var(--line)}
+.track summary,.case-dossier summary{cursor:pointer;padding:10px 0;line-height:1.5}
+.track summary small{display:block;color:var(--muted);margin-left:1em}
+.track-body{padding:0 0 12px 1em}
+.track-body>p{max-width:92ch;color:var(--muted)}
+.track-links{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 10px}
+.track-links a,.track-links button{min-height:38px;display:inline-flex;align-items:center;font-size:13px}
+.case-dossier{border-top:1px solid var(--line);scroll-margin-top:16px}
+.case-dossier dl{display:grid;grid-template-columns:7em minmax(0,1fr);gap:8px 12px;margin:0 0 10px;max-width:92ch}
+.case-dossier dt{font-weight:750;color:var(--accent)}
+.case-dossier dd{margin:0;overflow-wrap:anywhere}
+.track-assignment{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.study-card .dossier-link{display:inline-block;margin:4px 12px 4px 0;font-size:13px}
+@media(max-width:660px){
+  .track-body{padding-left:0}
+  .case-dossier dl{display:block}
+  .case-dossier dd{margin-bottom:10px}
+  .track summary,.case-dossier summary,.track-links a,.track-links button{min-height:44px}
+}
 .lesson-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
 .lesson-nav a{display:inline-flex;align-items:center;min-height:38px;padding:5px 10px;border:1px solid #bccbc0;border-radius:5px;background:var(--panel);font-size:13px;text-decoration:none}
 .lesson-nav a[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -220,20 +240,23 @@ footer{margin:19px 0 4px;color:var(--muted);font-size:12px}
     <a class="site-return" href="../">← 返回资本周期</a>
     <p class="eyebrow">学习与研究 · 人物谱系、机构与案例</p>
     <h1>全球价值投资人物关系地图</h1>
-    <p>用历史案例学习价值投资。先读理念和证据，再做判断题，最后沿人物关系、大事年表和文献继续查证。</p>
+    <p>从真实交易和持仓出发，复盘投资判断、回报来源及失效条件。按流派读案例，或带着手头的研究问题做对照。</p>
   </div>
 </header>
 <main class="wrap">
   <nav class="page-links" aria-label="页面章节">
-    <a href="#learn">开始学习</a>
+    <a href="#learn">流派案例</a>
+    <a href="#research-topics">研究专题</a>
+    <a href="#case-compare">比较案例</a>
     <a href="#map-search">关系地图</a>
     <a href="#history">大事年表</a>
-    <a href="#case-compare">比较案例</a>
     <a href="#case-title">案例库</a>
     <a href="#bibliography" id="bibliography-link">文献索引</a>
   </nav>
   <section class="learning" id="learn" aria-labelledby="learn-title">
-    <h2 id="learn-title">开始学习</h2>
+    <h2 id="learn-title">按流派读案例</h2>
+    <div class="case-curriculum" id="case-curriculum"></div>
+    <h2 id="research-topics">按研究问题选专题</h2>
     <nav class="lesson-nav" id="lesson-nav" aria-label="学习主题"></nav>
     <div id="lesson-panels"></div>
   </section>
@@ -326,6 +349,7 @@ footer{margin:19px 0 4px;color:var(--muted);font-size:12px}
   <form method="dialog" class="dialog-bar"><button class="quiet" type="submit">关闭详情</button></form>
   <div class="detail" id="mobile-detail"></div>
 </dialog>
+<script src="case-studies.js"></script>
 <script>
 const sources = {
   marks:["Oaktree｜Howard Marks 履历","https://www.oaktreecapital.com/about/leadership/bio/howard-marks"],
@@ -383,6 +407,7 @@ const sources = {
   azsplit:["Cinco Días｜Bestinver 团队分流","https://cincodias.elpais.com/cincodias/2016/10/14/mercados/1476461035_932898.html"],
   azrep:["azValor Internacional｜2025 年下半年组合","https://www.azvalor.com/wp-content/uploads/2026/02/Azvalor-Internacional-2S2025.pdf"],
   golar:["Cobas AM 2025 年 6 月组合报告｜Golar LNG、BW Offshore","https://www.cobasam.com/wp-content/uploads/2025/07/Portfolio-News-Cobas-AM-June-2025.pdf"],
+  golarHilli:["SEC｜Golar LNG 融资披露：Hilli 加工费条款","https://www.sec.gov/Archives/edgar/data/1207179/000120717925000005/a500munsecuredbond.htm"],
   hosking:["Hosking Partners｜Jeremy Hosking 履历","https://hoskingpartners.com/people/jeremy-hosking/"],
   hosmethod:["Hosking Partners｜资本周期方法","https://hoskingpartners.com/investment-approach/"],
   capital:["Edward Chancellor｜《Capital Returns》","https://www.edwardchancellor.com/books/capital-returns"],
@@ -957,6 +982,7 @@ const evidenceDates = {
   first04:"2004 年度信",
   first:"2007 年 3 月 26 日",
   golar:"2025 年 6 月报告",
+  golarHilli:"2024 财年 20-F 附件",
   fsmith24:"2024 年度信",
   whitkm:"2004 年 5 月报道",
   kmart:"2003 年公告",
@@ -1499,7 +1525,7 @@ const cases = [
   ["iben","Iben · Kazatomprom / 实物铀","低价造成供给退出，供给恢复缓慢。矿股另有生产成本和兑现能力。","增产或二级供给改变平衡。矿业权利、结算及地区风险需要另算。",["corcoran","uranium"],"","uranium"],
   ["iben","Kopernik · Gazprom","2022 年 7 月，Kopernik Global All-Cap Fund 将 Gazprom 普通股及 ADR 同时列为不流动证券和第三层级公允价值资产。","估值、可交易性和现金汇回要分别核对。持仓披露给出当期估值和流动性分类，实际回收还要看后续处置。",["russia"],"downside","gazprom"],
   ["robotti","Robotti · Tidewater","可用支援船供给、日租金、维护资本开支和自由现金流。","大量复航、新造船或客户收缩开支削弱议价。",["tdw","tdwletter","tdw10k24"],"","tidewater"],
-  ["parames","Cobas · Golar LNG","海上液化设施、合同期限与对手方付款提供现金流锚。","项目延误、追加资本开支或合同履约变化。",["golar"],"","golar"],
+  ["parames","Cobas · Golar LNG","海上液化设施、合同期限与对手方付款提供现金流锚。","项目延误、追加资本开支或合同履约变化。",["golar","golarHilli"],"","golar"],
   ["azvalor","azValor · Transocean（RIG）","超深水钻井船供给、钻井平台日租金、合同储备。","再融资压力或复航／新造运力增长压缩股东兑现空间。",["azrig","rig10k24"],"","transocean"],
   ["tpl","Horizon / SoftVest · TPL","油气权利金、土地和水业务有不同现金流驱动。","盆地开发节奏、权利条款、水业务资本需求、治理和回购价格。",["tpl","secTPL"],"","tpl"],
   ["ruane","Sequoia 后任团队 · Valeant","用 Sequoia 后任团队的退出说明，回看重仓前对盈利质量、收购及融资模式的判断。","融资、激励与经营假设同时受损时，单一大仓位会放大损失。",["valeant"],"downside","valeant"],
@@ -1573,16 +1599,80 @@ function showLessonFromHash() {
   lessonPanels.get(id)?.scrollIntoView({block:"start"});
 }
 
+function dossierLink(key) {
+  const link = el("a", "读完整复盘", "dossier-link");
+  link.href = "#case-study-" + key;
+  link.setAttribute("aria-label", "读完整复盘：" + casesById.get(key)[1]);
+  return link;
+}
+
+function showDossierFromHash() {
+  if (!location.hash.startsWith("#case-study-")) return;
+  const dossier = document.getElementById(location.hash.slice(1));
+  if (!dossier) return;
+  dossier.closest(".track").open = true;
+  dossier.open = true;
+  dossier.scrollIntoView({block:"start"});
+}
+
+function renderStudyTracks() {
+  const curriculum = document.querySelector("#case-curriculum");
+  const trackNames = new Map(groups.map(([id, title]) => [id, title]));
+  for (const [index, track] of studyTracks.entries()) {
+    const section = el("details", "", "track");
+    section.setAttribute("name", "study-tracks");
+    section.open = index === 0 && !location.hash.startsWith("#case-study-");
+    const heading = el("summary");
+    heading.append(el("strong", trackNames.get(track.id)), el("small", track.lens));
+    const body = el("div", "", "track-body");
+    const actions = el("div", "", "track-links");
+    actions.append(
+      button("对读前两案", "linklike", () => setPair(track.cases)),
+      lessonLink(lessons.find(lesson => lesson.id === track.lesson), "延伸专题")
+    );
+    body.append(el("p", track.comparison), actions);
+
+    for (const key of track.cases) {
+      const [personId, title, , risk, refs] = casesById.get(key);
+      const {entry, mechanism, evidence, task} = caseDossiers[key];
+      const dossier = el("details", "", "case-dossier");
+      dossier.id = "case-study-" + key;
+      const notes = el("dl");
+      for (const [label, description] of [
+        ["入场判断", entry],
+        ["收益机制", mechanism],
+        ["后续证据", evidence],
+        ["失效条件", risk],
+        ["复盘任务", task]
+      ]) notes.append(el("dt", label), el("dd", description));
+      const links = el("div", "", "track-links");
+      for (const ref of refs) links.append(source(ref));
+      links.append(button("查看地图节点", "linklike", () => jumpToNode(personId)));
+      links.append(button("加入案例比较", "linklike", () => useAsSecondCase(key)));
+      dossier.append(el("summary", title), notes, links);
+      body.append(dossier);
+    }
+    const assignment = el("div", "", "track-assignment");
+    assignment.append(el("strong", "应用到自己的研究"), el("p", track.assignment));
+    body.append(assignment);
+    section.append(heading, body);
+    curriculum.append(section);
+  }
+  requestAnimationFrame(showDossierFromHash);
+  window.addEventListener("hashchange", showDossierFromHash);
+}
+
 function studyCase(record) {
-  const [id, title, thesis, risk, refs] = record;
+  const [id, title, thesis, risk, refs, , key] = record;
   const card = el("article", "", "study-card");
   const comparison = el("dl");
   comparison.append(el("dt", "回报来自哪里"), el("dd", thesis),
     el("dt", "什么会推翻判断"), el("dd", risk));
   const links = el("div", "", "route-links");
   for (const ref of refs) links.append(source(ref));
-  card.append(el("h4", title), comparison, links,
-    button("查看地图节点 ↗", "linklike", () => jumpToNode(id)));
+  card.append(el("h4", title), comparison, links);
+  if (Object.hasOwn(caseDossiers, key)) card.append(dossierLink(key));
+  card.append(button("查看地图节点 ↗", "linklike", () => jumpToNode(id)));
   return card;
 }
 
@@ -1689,16 +1779,16 @@ function renderLearning() {
     pair.append(...lesson.pair.map(key => studyCase(casesById.get(key))));
     const compare = button("在比较工具中打开这两案", "linklike study-action", () => setPair(lesson.pair));
     const review = el("details", "", "lesson-review");
-    review.append(el("summary", "展开参考拆解"), el("p", lesson.explain));
+    review.append(el("summary", "课末自测与参考拆解"), renderQuiz(lesson), el("p", lesson.explain));
     const pageLinks = el("nav", "", "lesson-pages");
     pageLinks.setAttribute("aria-label", "课程导航");
-    const topics = el("a", "所有学习主题");
-    topics.href = "#learn";
+    const topics = el("a", "所有研究专题");
+    topics.href = "#research-topics";
     pageLinks.append(topics);
     const next = lessons[index + 1];
     if (next) pageLinks.append(lessonLink(next, "下一课：" + next.title));
-    panel.append(people, dates, pair, compare, renderQuiz(lesson), review,
-      el("p", "带走一个练习｜" + lesson.practice, "lesson-practice"), pageLinks);
+    panel.append(people, dates, pair, compare,
+      el("p", "研究练习｜" + lesson.practice, "lesson-practice"), review, pageLinks);
 
     const tab = lessonLink(lesson);
     nav.append(tab);
@@ -1725,6 +1815,7 @@ renderBase();
 renderHistory();
 renderBibliography();
 renderLearning();
+renderStudyTracks();
 for (const [id, name, thesis, risk, refs, category, key] of cases) {
   const row = el("tr");
   row.dataset.category = category || "";
@@ -1733,8 +1824,9 @@ for (const [id, name, thesis, risk, refs, category, key] of cases) {
   for (const ref of refs) label.append(source(ref, "原文 ↗"));
   const actions = el("div", "", "case-actions");
   actions.append(button("放入比较", "linklike", () => useAsSecondCase(key)));
+  if (Object.hasOwn(caseDossiers, key)) actions.append(dossierLink(key));
   const lesson = lessons.find(item => item.pair.includes(key));
-  if (lesson) actions.append(lessonLink(lesson, "学习此案"));
+  if (lesson) actions.append(lessonLink(lesson, "相关专题"));
   label.append(actions);
   const t1 = el("td", thesis); t1.dataset.label = "回报来自哪里";
   const t2 = el("td", risk); t2.dataset.label = "什么会推翻判断";
