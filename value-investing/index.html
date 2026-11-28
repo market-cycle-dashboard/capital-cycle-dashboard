@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>全球价值投资人物关系地图｜资本周期</title>
-<meta name="description" content="沿价值投资人物谱系和历史年表，学习八个投资理念，完成有原始出处的案例对读。">
+<title>价值投资档案馆｜资本周期</title>
+<meta name="description" content="从投资史、原始文献、人物关系与案例复盘学习价值投资。">
 <link rel="canonical" href="https://capital-cycle-dashboard.pages.dev/value-investing/">
 <style>
 :root{color-scheme:light;--page:#f7f5ef;--panel:#fffefa;--ink:#1e2d29;--muted:#52635b;--line:#d8ddd3;--accent:#145744;--dark:#142e27}
@@ -15,11 +15,31 @@ button,input,select{font:inherit}
 button{cursor:pointer}
 button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #236daa;outline-offset:3px}
 a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
-header.hero{background:var(--dark);color:#faf7e8;padding:45px 24px 40px;border-bottom:5px solid #a77f45}
+header.hero{position:relative;isolation:isolate;overflow:hidden;background:var(--dark);color:#faf7e8;padding:26px 24px 18px;border-bottom:4px solid #a77f45}
+.hero-image{position:absolute;inset:0 0 0 auto;width:67%;height:100%;object-fit:cover;object-position:50% 46%;z-index:-2}
+header.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#142e27 28%,#142e27f7 36%,#142e27a8 66%,#142e2766)}
 .wrap{width:min(1420px,100%);margin:auto}
-.eyebrow{font-size:12px;letter-spacing:.12em;font-weight:700;color:#b9d1c4}
-h1{font-family:"Noto Serif CJK SC","Songti SC",serif;font-size:clamp(30px,5vw,57px);font-weight:800;line-height:1.24;margin:8px 0 13px}
-.hero p:last-child{max-width:790px;color:#d8e5dc;font-size:15px}
+h1{font-family:"Noto Serif CJK SC","Songti SC",serif;font-size:52px;font-weight:800;line-height:1.24;margin:16px 0 8px}
+.hero-intro{max-width:38em;color:#f0f6f1;font-size:16px}
+.hero-links{display:flex;flex-wrap:wrap;gap:6px 20px;margin:9px 0}
+.hero-links a{color:#fff8e4;padding:8px 0;font-weight:700}
+.photo-credit{display:block;text-align:right;font-size:11px}
+.photo-credit a{color:#f7f3e7;background:#142e27e8;padding:3px 5px}
+.archive-index{margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.archive-index h2{font:800 23px/1.3 "Noto Serif CJK SC","Songti SC",serif;margin-bottom:8px}
+.archive-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 20px}
+.archive-links a{border-top:1px solid var(--line);display:block;padding:7px 0;text-decoration:none;line-height:1.5}
+.archive-links a:hover strong{text-decoration:underline}
+.archive-links span{display:block;font-size:12px;color:var(--muted)}
+#map-title{font:800 23px/1.3 "Noto Serif CJK SC","Songti SC",serif;margin-bottom:10px}
+@media(max-width:660px){
+  header.hero{padding:18px 17px 12px}
+  .hero-image{width:100%;object-position:60% 44%}
+  header.hero::before{background:#142e27d6}
+  .hero h1{font-size:36px}
+  .hero-intro{font-size:14px}
+  .archive-links{grid-template-columns:minmax(0,1fr)}
+}
 main{padding:24px}
 .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .search{display:flex;align-items:center;gap:8px;flex:1 1 290px;max-width:435px}
@@ -236,23 +256,35 @@ footer{margin:19px 0 4px;color:var(--muted);font-size:12px}
 </head>
 <body>
 <header class="hero">
+  <img class="hero-image" src="nyse-1908.jpg" alt="" width="737" height="501" fetchpriority="high">
   <div class="wrap">
     <a class="site-return" href="../">← 返回资本周期</a>
-    <p class="eyebrow">学习与研究 · 人物谱系、机构与案例</p>
-    <h1>全球价值投资人物关系地图</h1>
-    <p>从真实交易和持仓出发，复盘投资判断、回报来源及失效条件。按流派读案例，或带着手头的研究问题做对照。</p>
+    <h1>价值投资档案馆</h1>
+    <p class="hero-intro">从格雷厄姆的资产折价到危机中的资本配置，沿原始文献重读投资史。把每一次买入放回当年的信息、价格与约束之中。</p>
+    <nav class="hero-links" aria-label="档案馆入口">
+      <a href="history.html">读价值投资史 →</a>
+      <a href="#learn">按流派读案例 ↓</a>
+    </nav>
+    <small class="photo-credit"><a href="https://commons.wikimedia.org/wiki/File:Stockexchange.jpg">纽约证券交易所交易大厅，1908 年 · Helen D. van Eaton</a></small>
   </div>
 </header>
 <main class="wrap">
   <nav class="page-links" aria-label="页面章节">
-    <a href="#learn">流派案例</a>
     <a href="#research-topics">研究专题</a>
     <a href="#case-compare">比较案例</a>
-    <a href="#map-search">关系地图</a>
+    <a href="#map-title">人物关系地图</a>
     <a href="#history">大事年表</a>
     <a href="#case-title">案例库</a>
     <a href="#bibliography" id="bibliography-link">文献索引</a>
   </nav>
+  <section class="archive-index" aria-labelledby="archive-title">
+    <h2 id="archive-title">从历史开始</h2>
+    <div class="archive-links">
+      <a href="history.html#disclosure"><span>1920 年代至 1934 年</span><strong>价格之外，去哪里找证据</strong></a>
+      <a href="history.html#geico"><span>1948–1996</span><strong>四次走进 GEICO</strong></a>
+      <a href="history.html#sanborn-lab"><span>1958 年价格截面</span><strong>Sanborn Map 复盘工作台</strong></a>
+    </div>
+  </section>
   <section class="learning" id="learn" aria-labelledby="learn-title">
     <h2 id="learn-title">按流派读案例</h2>
     <div class="case-curriculum" id="case-curriculum"></div>
@@ -265,6 +297,7 @@ footer{margin:19px 0 4px;color:var(--muted);font-size:12px}
     <p>最重要的修正来自 GEICO。Graham–Newman 早在 1948 年就投资了这家有成本优势的保险商。巴菲特随后亲自研究它。格雷厄姆到芒格的演变，体现为商业质量、买入价格、持有期和再投资在组合中的权重变化。</p>
     <div class="assessment-grid" id="audit"></div>
   </details>
+  <h2 id="map-title">全球价值投资人物关系地图</h2>
   <div class="controls" id="map-search" aria-label="地图搜索">
     <form class="search" id="search">
       <label class="sr" for="query">搜索人物、机构或案例</label>
@@ -1647,6 +1680,11 @@ function renderStudyTracks() {
       ]) notes.append(el("dt", label), el("dd", description));
       const links = el("div", "", "track-links");
       for (const ref of refs) links.append(source(ref));
+      if (key === "sanborn") {
+        const replay = el("a", "打开复盘工作台");
+        replay.href = "history.html#sanborn-lab";
+        links.append(replay);
+      }
       links.append(button("查看地图节点", "linklike", () => jumpToNode(personId)));
       links.append(button("加入案例比较", "linklike", () => useAsSecondCase(key)));
       dossier.append(el("summary", title), notes, links);

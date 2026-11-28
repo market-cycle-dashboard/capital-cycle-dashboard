@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>价值投资史｜价值投资档案馆</title>
+<meta name="description" content="七篇有原始文献的价值投资史，从证券分析制度到保险、复利、价值因子、危机交易、跨境资本配置和印度投资实践。">
+<link rel="canonical" href="https://capital-cycle-dashboard.pages.dev/value-investing/history.html">
+<style>
+:root{color-scheme:light;--ink:#24302d;--muted:#536660;--paper:#f7f6f2;--line:#cfd8d1;--green:#185642;--dark:#162e29;--accent:#97642e;--serif:"Noto Serif CJK SC","Songti SC","SimSun",serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.8 "Noto Sans CJK SC","PingFang SC",system-ui,sans-serif}
+a{color:var(--green);text-underline-offset:4px}
+:focus-visible{outline:3px solid #2067a0;outline-offset:3px}
+h1,h2,h3,p,figure{margin:0}
+header{background:var(--dark);color:#fff8e9;border-bottom:4px solid #ac864f}
+header>div,main,footer{width:min(1120px,100%);margin:auto;padding-inline:24px}
+header>div{padding-block:24px 32px}
+header a{color:#d5ebe1;font-size:14px}
+h1,h2{font-family:var(--serif);line-height:1.3}
+h1{font-size:44px;margin:12px 0 8px}
+header p{max-width:64ch;color:#d5e6dc}
+main{display:grid;grid-template-columns:230px minmax(0,1fr);gap:42px;align-items:start;padding-block:26px 40px}
+.contents{position:sticky;top:18px}
+.contents h2{font-size:19px;margin-bottom:10px}
+.contents ol{list-style:none;padding:0;margin:0}
+.contents li{border-top:1px solid var(--line)}
+.contents a{display:block;padding:7px 0;text-decoration:none;font-size:14px;line-height:1.5}
+.contents a:hover{text-decoration:underline}
+.contents span,.years{display:block;color:var(--accent);font-variant-numeric:tabular-nums;font-size:13px}
+article,.lab{max-width:77ch;scroll-margin-top:20px;border-top:1px solid var(--line);padding:22px 0 30px}
+article h2,.lab h2{font-size:27px;margin:4px 0 14px}
+article h3{font-size:17px;margin:16px 0 3px}
+article p+p,.lab p+p{margin-top:10px}
+.question{border-left:3px solid #a88049;padding-left:12px;margin:15px 0;color:var(--dark)}
+.sources{font-size:14px;color:var(--muted);padding-left:1.4em;margin:5px 0 13px}
+.sources li+li{margin-top:4px}
+.related{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:14px}
+.related a{padding-block:4px}
+.contents-return{display:none}
+.decision-table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+.decision-table caption{text-align:left;font-weight:700;margin-bottom:5px}
+.decision-table th,.decision-table td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+.decision-table thead th{background:#e8eee8}
+.decision-table tbody th{white-space:nowrap;font-variant-numeric:tabular-nums}
+.fact{font-size:14px;color:var(--muted);margin-bottom:14px}
+.lab-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin:10px 0 16px}
+.lab label{display:grid;gap:2px;font-size:14px}
+.lab input,.lab button{font:inherit;color:var(--ink);min-height:42px;background:#fffefa;border:1px solid #a6b7ab;border-radius:4px;padding:6px 9px}
+.lab input{width:100%;min-width:0;font-variant-numeric:tabular-nums}
+.lab button{cursor:pointer;font-size:14px}
+.lab button:hover{background:#e9f0e9}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.result{margin:16px 0 6px;border-block:1px solid var(--line);padding:12px 0;font-variant-numeric:tabular-nums}
+.result div{display:flex;justify-content:space-between;gap:8px}
+.result dd{margin:0;font-weight:700}
+footer{border-top:1px solid var(--line);padding-block:15px 22px;font-size:14px}
+@media(max-width:720px){
+  header>div,main,footer{padding-inline:17px}
+  h1{font-size:34px}
+  main{display:block;padding-top:18px}
+  .contents{position:static;margin-bottom:22px}
+  .contents ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+  .contents a{min-height:44px}
+  .contents-return{display:inline-block;min-height:44px}
+  article h2,.lab h2{font-size:24px}
+}
+@media(max-width:390px){.lab-fields{grid-template-columns:1fr}}
+@media print{header{background:white;color:black}header p{color:black}main{display:block}.contents,.presets{display:none}article{break-inside:avoid}}
+</style>
+<script src="sanborn.js" defer></script>
+</head>
+<body>
+<header>
+  <div>
+    <a href="./">← 价值投资档案馆</a>
+    <h1>价值投资史</h1>
+    <p>把投资决定放回它发生的年代。先看当时的制度、信息和资金约束，再读交易结果。七篇选读从美国证券分析传统写到跨境配置与印度本土实践。</p>
+  </div>
+</header>
+<main>
+  <nav class="contents" id="contents" aria-label="历史章节">
+    <h2>章节目录</h2>
+    <ol>
+      <li><a href="#disclosure"><span>1920 年代至 1934 年</span>价格之外，去哪里找证据</a></li>
+      <li><a href="#geico"><span>1948–1996</span>四次走进 GEICO</a></li>
+      <li><a href="#compounders"><span>1972 与 1993</span>两次为竞争优势付钱</a></li>
+      <li><a href="#factor"><span>1992–1994</span>低估值作为一组股票的特征</a></li>
+      <li><a href="#crisis"><span>2008 年 9 月</span>危机里谁还能提供资本</a></li>
+      <li><a href="#japan"><span>2019–2024</span>跨境所有权与日本商社</a></li>
+      <li><a href="#nalanda"><span>2020–2023</span>印度长期投资的证据</a></li>
+      <li><a href="#sanborn-lab">复盘工作台 · Sanborn Map</a></li>
+    </ol>
+  </nav>
+  <div>
+    <article id="disclosure">
+      <p class="years">1920 年代至 1934 年</p>
+      <h2>价格之外，去哪里找证据</h2>
+      <p>格雷厄姆研究北方管线时，公司的交易价格只告诉他市场肯付多少。监管系统留下的另一本账才告诉他公司拥有什么。他从州际商务委员会的申报材料里寻找可变现的证券，再追问有多少是管道业务确实需要的储备。即使答案对股东有利，钱还在公司手里，必须研究股东能否推动分派。</p>
+      <p>1929 年股灾和随后展开的调查，暴露了证券市场在发行、交易和披露上的问题。美国 1933 年《证券法》建立公开发行的联邦披露框架，1934 年《证券交易法》建立 SEC 并推进持续报告。同一年，格雷厄姆与多德出版《证券分析》。制度改变了研究者能取得什么资料，证券分析则提供了一套把资料转化为价格判断的方法。</p>
+      <p>这里最容易被忽略的是样本选择。北方管线留下的是一宗有行动路径的折价案例。倘若公司需要那些资产持续经营，或投资者无法推动分派，估值表上的流动资产和股东手中的现金之间还隔着很远。</p>
+      <p class="question"><strong>复盘问题</strong>　把北方管线换成没有明确催化剂的小股东持仓，你会在哪个日期用什么证据重新评估？</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://www.sec.gov/files/about/annual_report/1944.pdf">SEC 首十年报告</a> · 制度沿革</li>
+        <li><a href="https://rpc.cfainstitute.org/-/media/documents/book/rf-publication/1977/rf-v1977-n1-4731-pdf.pdf">Kahn 与 Milne 的格雷厄姆访谈与传记</a> · 事后回忆和研究</li>
+        <li><a href="https://business.columbia.edu/heilbrunn/about/valueinvestinghistory">哥伦比亚商学院价值投资历史</a> · 教学及出版背景</li>
+      </ul>
+      <div class="related"><a href="./#case-study-northpipe">北方管线案例</a><a href="#sanborn-lab">用 Sanborn Map 演算折价</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <article id="geico">
+      <p class="years">1948–1996</p>
+      <h2>四次走进 GEICO</h2>
+      <p>1948 年 Graham–Newman 买入 GEICO，随后向股东分派股份。到 1951 年，年轻的巴菲特拜访公司，向洛里默·戴维森了解直销模式和承保，再在当年的文章里列出保费增长、承保利润和同行对照。把这篇文章与后来的股东信分开读，可以看见当时他用哪些数据来支持成本优势。</p>
+      <p>1970 年代初，公司管理层低估赔付成本，使保单定价不足。低分销成本依然有价值，实际承保却一度把 GEICO 推到破产边缘。1976 年，Jack Byrne 接手并着手修复经营，伯克希尔在下半年买入大额持仓。这一阶段要估的是修复能否赶在资本耗尽之前发生。</p>
+      <p>1996 年 1 月 2 日完成全资收购，问题又变了。全资控制带来的税务和经营益处，需要和买余下股份所付的价格比较。巴菲特在 1996 年股东信里还解释了原有股份在分步收购会计下的账面调整。这使近半世纪的案例同时串起经营价值、证券权利和会计口径。</p>
+      <table class="decision-table">
+        <caption>同一家公司，四次不同的决策</caption>
+        <thead><tr><th scope="col">年份</th><th scope="col">买方与交易</th><th scope="col">需要查证的问题</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">1948</th><td>Graham–Newman 买入，随后向股东分派</td><td>机构持股受什么约束，分派后谁继续持有？</td></tr>
+          <tr><th scope="row">1951</th><td>巴菲特个人买入</td><td>直销成本和承保利润相对同行有多大优势？</td></tr>
+          <tr><th scope="row">1976</th><td>伯克希尔在经营危机中建立持仓</td><td>重新定价和补充资本能否赶在失去偿付能力之前？</td></tr>
+          <tr><th scope="row">1996</th><td>伯克希尔取得全资控制</td><td>控制权增量价值能否覆盖收购余下股权的成本？</td></tr>
+        </tbody>
+      </table>
+      <p class="question"><strong>复盘问题</strong>　为四个时点各写一行。买方是谁，拿到什么权利，若对保单成本估错，会先在哪里暴露？</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://www.berkshirehathaway.com/2005ar/2005ar.pdf">伯克希尔 2005 年报附录</a> · 收录巴菲特 1951 年原文</li>
+        <li><a href="https://www.berkshirehathaway.com/letters/1995.html">伯克希尔 1995 年股东信</a> · 直销、承保失误和 1976 年投资的事后回顾</li>
+        <li><a href="https://www.berkshirehathaway.com/letters/1996.html">伯克希尔 1996 年股东信</a> · 全资收购及会计处理</li>
+      </ul>
+      <div class="related"><a href="./#history-geico">GEICO 在大事年表中的位置</a><a href="./#lesson-quality">商业质量专题</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <article id="compounders">
+      <p class="years">1972 与 1993</p>
+      <h2>两次为竞争优势付钱</h2>
+      <p>1972 年 Blue Chip Stamps 买下 See’s Candy。伯克希尔 2007 年股东信回顾，买价 2,500 万美元，收购时年税前利润不到 500 万美元，经营所需资本约 800 万美元。读这宗交易时，核心证据是几十年里利润和经营资本各增加了多少。产品提价或销量增长带来的利润，只有扣除为此投入的资本，才能变成可供母公司另行配置的现金。</p>
+      <p>1993 年买入 Dexter Shoe 时，伯克希尔也对企业的竞争地位有信心。它以当时价值 4.33 亿美元的伯克希尔股票付款。后来巴菲特回顾，所看重的竞争优势很快消失。分析这笔投资要做两张表，一张重建收购日对标的未来现金流的估值，一张估让出去的母公司股份。多年后股份的市值说明了机会成本，收购日评价仍须用当时的信息。</p>
+      <p>把这两案一同摆上桌，还有一个会影响今天研究的问题。企业有高回报的存量生意，能否在新地域或新品类用同样回报扩张？如果扩张需要不同渠道、资本和客户关系，新投资应单独证明。</p>
+      <p class="question"><strong>复盘问题</strong>　收购前能查到哪些渠道、消费者或竞品证据？分别写出会缩短竞争优势持续期的两条证据。</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://www.berkshirehathaway.com/letters/2007ltr.pdf">伯克希尔 2007 年股东信</a> · 两宗收购与资本需求的回顾</li>
+        <li><a href="https://www.berkshirehathaway.com/letters/2014ltr.pdf">伯克希尔 2014 年股东信</a> · 用股票付款的长期机会成本</li>
+      </ul>
+      <div class="related"><a href="./#case-study-sees">See’s Candy 案例</a><a href="./#case-study-dexter">Dexter Shoe 案例</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <article id="factor">
+      <p class="years">1992–1994</p>
+      <h2>低估值作为一组股票的特征</h2>
+      <p>格雷厄姆式个案分析要估某一项证券的价值。到 1990 年代，学术文献把问题放到大样本上。Fama 与 French 在 1992 年论文里用美国股票横截面考察平均回报，发现规模与账面市值比在他们的样本和模型里有解释力。于是研究者可以问，买一组高账面市值比股票，在不同区间会怎样表现。</p>
+      <p>Lakonishok、Shleifer 与 Vishny 通过不同的价值组合讨论另一种机制。投资者可能把过去的高增长外推得太远，从而在热门股票上付出过高价格。读两篇论文时要分别记下样本、组合构造和检验口径。一个收益差可以和多种解释相容，区分解释需要看坏状态、风险承担或市场预期本身的证据。</p>
+      <p>这条支线对有经验的投资人尤其有用。它提供了一个机会成本基准。个股研究花了大量时间，最终回报也许大部分来自长期暴露在某类便宜资产上。反过来，组合有效也没有替你核实某家公司的资产质量和融资风险。</p>
+      <p class="question"><strong>复盘问题</strong>　挑一个价值信号，先写形成日可用的财报、退市处理、成本和可买到的规模，再比较样本内与样本外。</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://doi.org/10.1111/j.1540-6261.1992.tb04398.x">Fama 与 French，1992 年论文</a> · 横截面证据</li>
+        <li><a href="https://www.nber.org/papers/w4360">Lakonishok、Shleifer 与 Vishny，NBER 工作论文</a> · 外推与风险的检验</li>
+      </ul>
+      <div class="related"><a href="./#lesson-evidence">价值因子与历史证据</a><a href="../#factor-monitor-module">进入投研站因子监控</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <article id="crisis">
+      <p class="years">2008 年 9 月</p>
+      <h2>危机里谁还能提供资本</h2>
+      <p>9 月 15 日雷曼申请破产。次日，一只持有雷曼商业票据的货币基金宣布无法继续按每份 1 美元赎回，赎回压力向同类资金扩散。在这个背景下看成交价格，要同时读发行人和持有人两张资产负债表。前者给出未来能否偿付，后者解释为什么有人今天必须卖。</p>
+      <p>Oaktree 的行动体现了此前准备好可部署资金的价值。按 Howard Marks 2023 年回顾，Bruce Karsh 团队从 9 月 18 日至年底投入约 60 亿美元。将这篇回顾与 2008 年 9 月 19 日的备忘录对读，可以看见决策时保留的不确定性。执行投资需要逐笔评估回收、顺位和等待时间，部署金额本身只说明规模。</p>
+      <p>9 月 23 日，高盛宣布伯克希尔同意投入 50 亿美元，换取票息 10% 的累积永续优先股及权证，交易在 10 月 1 日交割。二级市场折价买债和直接给一家机构融资，回报结构各自不同。前者要重建买入成本与债权回收，后者要逐项估派息、赎回和权证。</p>
+      <p class="question"><strong>复盘问题</strong>　先假设一时无法卖出，再画发行人的偿付路径。什么情况下，你的资金会比它更早耗尽？</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://www.federalreservehistory.org/essays/support-for-specific-institutions">美联储历史档案</a> · 雷曼与货币基金赎回</li>
+        <li><a href="https://www.oaktreecapital.com/insights/memo/nobody-knows">Nobody Knows，2008 年 9 月 19 日</a> · 同期备忘录</li>
+        <li><a href="https://www.oaktreecapital.com/insights/memo/taking-the-temperature">Taking the Temperature，2023 年</a> · 事后回顾和部署规模</li>
+        <li><a href="https://www.sec.gov/Archives/edgar/data/886982/000095012308011720/y71480e8vk.htm">高盛 2008 年 9 月 8-K</a> · 同期融资条款</li>
+        <li><a href="https://www.sec.gov/Archives/edgar/data/886982/000095012308011959/y71604e8vk.htm">高盛 2008 年 10 月 8-K</a> · 交割</li>
+      </ul>
+      <div class="related"><a href="./#case-study-oaktree">Oaktree 案例</a><a href="./#case-study-goldman">高盛优先股与权证</a><a href="../#liquidity-module">进入投研站流动性分析</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <article id="japan">
+      <p class="years">2019–2024</p>
+      <h2>跨境所有权与日本商社</h2>
+      <p>伯克希尔 2019 年开始建立日本五大商社的持仓，2020 年对外披露。对象是跨行业经营的伊藤忠、丸红、三菱商事、三井物产和住友商事。读报表要往下拆，辨认资源项目的周期性利润、其他业务的现金流，以及总部把留存资本投到了哪里。</p>
+      <p>2024 年股东信给出了一个可复核截面。按美元计，年末总成本约 138 亿美元，持有市值约 235 亿美元，另有股息和日元债务利息。要归因，先在日元账里记录经营和分派，再在美元账里记录实际换汇、股价变化和负债。日元融资覆盖了部分敞口，也有期限和现金支出。</p>
+      <p>把此案与 2022 年 Gazprom 的跨境持仓对读，关注的是所有权到现金的路径。汇率可以进入模型，交易、托管和汇回却分别受到制度与合同约束。应先查证券持有人能行使什么权利，才谈最终回报。</p>
+      <p class="question"><strong>复盘问题</strong>　写一份跨境投资的双币种现金流，标出股息、利息、再融资与汇回障碍分别出现在哪一行。</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://www.berkshirehathaway.com/news/aug3020.pdf">伯克希尔 2020 年持股公告</a> · 初次披露</li>
+        <li><a href="https://www.berkshirehathaway.com/letters/2024ltr.pdf">伯克希尔 2024 年股东信</a> · 成本、市值与日元融资</li>
+        <li><a href="https://www.sec.gov/Archives/edgar/data/890540/000175272422217506/July_Kopernik_ScheduleF.htm">Kopernik 2022 年 7 月持仓表</a> · Gazprom 的流动性和公允价值分类</li>
+      </ul>
+      <div class="related"><a href="./#case-study-japan">日本商社案例</a><a href="./#case-study-gazprom">Gazprom 案例</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <article id="nalanda">
+      <p class="years">2020–2023</p>
+      <h2>印度长期投资的证据</h2>
+      <p>Page Industries 的 2019/20 财年年报给了读者一个明确入口。股东表列示 Nalanda India Fund Limited 期末持股 7.56%，经营部分介绍了 Jockey 授权和分销网络。读者可以据此追问，客户认的是谁的品牌，公司掌握的是哪些渠道，以及渠道贡献怎样体现于存货、回款与经营现金。</p>
+      <p>2023 年，Nalanda 创办人普拉克·普拉萨德出版《What I Learned About Investing from Darwin》。读这本书时，可以先把风险排除和持有纪律写成两道独立程序。第一道评估哪些情况会让企业或股东无法继续等待。第二道检查哪些特征经过几轮经营变化仍能创造现金。年报中的期末持股只提供一个截面，建仓成本、实际持有期与回报需要另外查证。</p>
+      <p>与 See’s 对读时，关键差异在权利上。持有品牌与获得授权都可能带来消费黏性，但续约、费率和授权范围决定现金流能留多久。可用一份合同和一张营运资本表，检查乐观的经营描述怎样进入估值。</p>
+      <p class="question"><strong>复盘问题</strong>　找到授权、库存与借款的披露。标出会改变你的长期假设的三项证据，并注明哪项目前仍然缺失。</p>
+      <h3>文献</h3>
+      <ul class="sources">
+        <li><a href="https://nsearchives.nseindia.com/corporate/PAGEIND_21072020132638_AGMNOTICEANNUALREPORT2020.pdf">Page Industries 2019/20 年报</a> · 同期经营、股东和借款披露</li>
+        <li><a href="https://cup.columbia.edu/book/what-i-learned-about-investing-from-darwin/9780231203487/">哥伦比亚大学出版社书目</a> · 普拉萨德原书与方法背景</li>
+      </ul>
+      <div class="related"><a href="./#case-study-page-industries">Page Industries 案例</a><a href="./#lesson-darwin">达尔文视角与长期持有</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </article>
+
+    <section class="lab" id="sanborn-lab" aria-labelledby="lab-title">
+      <p class="years">1958 年价格截面</p>
+      <h2 id="lab-title">Sanborn Map 复盘工作台</h2>
+      <p>巴菲特合伙人信记载，1958 年 Sanborn 股价约为每股 45 美元，而每股证券组合价值约为 65 美元。试算这部分资产在不同条件下能支撑多少买入价。</p>
+      <p class="fact">原信只提供起始截面。下面可调参数均为教学假设。模型只估可释放证券的现值，主业剩余价值及真实交易回报需另算。</p>
+      <form id="sanborn-model">
+        <div class="presets" aria-label="预设情景">
+          <button type="button" data-scenario="base">原始差价</button>
+          <button type="button" data-scenario="friction">税费与等待</button>
+          <button type="button" data-scenario="stress">组合下跌</button>
+        </div>
+        <div class="lab-fields">
+          <label>证券组合折损（%）<input name="haircut" type="number" min="0" max="100" step="any" value="0" required></label>
+          <label>税费和经营留存（美元／股）<input name="cost" type="number" min="0" max="65" step="any" value="0" required></label>
+          <label>预计兑现年数<input name="years" type="number" min="0" max="30" step="any" value="0" required></label>
+          <label>年折现率（%）<input name="rate" type="number" min="0" max="100" step="any" value="10" required></label>
+        </div>
+        <dl class="result" aria-live="polite">
+          <div><dt>剩余可释放资产／股</dt><dd><output id="releasable">65.00 美元</output></dd></div>
+          <div><dt>可释放资产现值／股</dt><dd><output id="present">65.00 美元</output></dd></div>
+          <div><dt>现值相对买价的差额／股</dt><dd><output id="gap">+20.00 美元</output></dd></div>
+        </dl>
+        <p class="fact" id="model-note">折损后资产扣除税费与留存，最低为零，再按预计兑现时间折现。</p>
+      </form>
+      <div class="related"><a href="./#case-study-sanborn">完整案例</a><a href="https://buffett-letters.com/en/02-letters/partnership/1960-Partnership-Letter">1960 年合伙人信转录</a><a class="contents-return" href="#contents">返回章节目录</a></div>
+    </section>
+  </div>
+</main>
+<footer><a href="./#learn">按流派继续读案例</a>　 <a href="./#bibliography">查阅文献索引</a></footer>
+</body>
+</html>
