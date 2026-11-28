@@ -46,6 +46,8 @@ article p+p,.lab p+p{margin-top:10px}
 .fact{font-size:14px;color:var(--muted);margin-bottom:14px}
 .lab-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin:10px 0 16px}
 .lab label{display:grid;gap:2px;font-size:14px}
+.lab fieldset{border:0;padding:0;margin:0;min-inline-size:0}
+.lab fieldset:disabled{opacity:.65}
 .lab input,.lab button{font:inherit;color:var(--ink);min-height:42px;background:#fffefa;border:1px solid #a6b7ab;border-radius:4px;padding:6px 9px}
 .lab input{width:100%;min-width:0;font-variant-numeric:tabular-nums}
 .lab button{cursor:pointer;font-size:14px}
@@ -68,7 +70,7 @@ footer{border-top:1px solid var(--line);padding-block:15px 22px;font-size:14px}
 @media(max-width:390px){.lab-fields{grid-template-columns:1fr}}
 @media print{header{background:white;color:black}header p{color:black}main{display:block}.contents,.presets{display:none}article{break-inside:avoid}}
 </style>
-<script src="sanborn.js" defer></script>
+<script src="sanborn.js?v=2" defer></script>
 </head>
 <body>
 <header>
@@ -220,17 +222,20 @@ footer{border-top:1px solid var(--line);padding-block:15px 22px;font-size:14px}
       <p>巴菲特合伙人信记载，1958 年 Sanborn 股价约为每股 45 美元，而每股证券组合价值约为 65 美元。试算这部分资产在不同条件下能支撑多少买入价。</p>
       <p class="fact">原信只提供起始截面。下面可调参数均为教学假设。模型只估可释放证券的现值，主业剩余价值及真实交易回报需另算。</p>
       <form id="sanborn-model">
-        <div class="presets" aria-label="预设情景">
-          <button type="button" data-scenario="base">原始差价</button>
-          <button type="button" data-scenario="friction">税费与等待</button>
-          <button type="button" data-scenario="stress">组合下跌</button>
-        </div>
-        <div class="lab-fields">
-          <label>证券组合折损（%）<input name="haircut" type="number" min="0" max="100" step="any" value="0" required></label>
-          <label>税费和经营留存（美元／股）<input name="cost" type="number" min="0" max="65" step="any" value="0" required></label>
-          <label>预计兑现年数<input name="years" type="number" min="0" max="30" step="any" value="0" required></label>
-          <label>年折现率（%）<input name="rate" type="number" min="0" max="100" step="any" value="10" required></label>
-        </div>
+        <fieldset id="model-controls" aria-label="估算参数" disabled>
+          <div class="presets" aria-label="预设情景">
+            <button type="button" data-scenario="base">原始差价</button>
+            <button type="button" data-scenario="friction">税费与等待</button>
+            <button type="button" data-scenario="stress">组合下跌</button>
+          </div>
+          <div class="lab-fields">
+            <label>证券组合折损（%）<input name="haircut" type="number" min="0" max="100" step="any" value="0" required></label>
+            <label>税费和经营留存（美元／股）<input name="cost" type="number" min="0" max="65" step="any" value="0" required></label>
+            <label>预计兑现年数<input name="years" type="number" min="0" max="30" step="any" value="0" required></label>
+            <label>年折现率（%）<input name="rate" type="number" min="0" max="100" step="any" value="10" required></label>
+          </div>
+        </fieldset>
+        <noscript><p class="fact">打开 JavaScript 后可调整情景参数。</p></noscript>
         <dl class="result" aria-live="polite">
           <div><dt>剩余可释放资产／股</dt><dd><output id="releasable">65.00 美元</output></dd></div>
           <div><dt>可释放资产现值／股</dt><dd><output id="present">65.00 美元</output></dd></div>

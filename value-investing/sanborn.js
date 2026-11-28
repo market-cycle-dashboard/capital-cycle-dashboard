@@ -34,4 +34,5 @@ for (const button of model.querySelectorAll("[data-scenario]")) {
     updateModel();
   });
 }
+document.getElementById("model-controls").disabled = false;
 updateModel();
